@@ -14,5 +14,3 @@
 Route::get('/', function () {
     return view('frontend.home');
 });
-
-Route::get('api/sirup/{year}', 'ApiBIRMS@sirupAll');
