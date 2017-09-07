@@ -1,0 +1,47 @@
+body {
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+	 
+}
+
+select.homepage-chart {
+	float: right;
+	width: 150px;
+}
+
+.other-colors {
+	  background: #f44336;
+	  background-color: #f9f0d0;
+	  background-color: #1b3050;
+}
+
+a {
+	text-decoration: none;
+	color: black;
+}
+
+.img-chart {
+	height: 350px;
+
+}
+
+.f300 {
+	font-weight: 300;
+}
+
+.text-center {
+	text-align: center;
+}
+.logo  {
+	vertical-align: middle;
+	height: 40px;
+
+}
+.text-center {
+	text-align: center;
+}
+
+.white {
+	color: #fff;
+}

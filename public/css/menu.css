@@ -1,0 +1,202 @@
+/* Common styles for all menus */
+
+.intro {
+	background-color: #35b7c2;
+}
+.menu {
+	line-height: 1;
+	margin: 0 auto 1em;
+	float: right;
+	padding-top: 25px;
+}
+
+.menu__list {
+	position: relative;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-wrap: wrap;
+	flex-wrap: wrap;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.menu__item {
+	display: block;
+	margin: 1em 0;
+}
+
+.menu__link {
+ 
+	display: block;
+	padding: 1em;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+	-khtml-user-select: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.menu__link:hover,
+.menu__link:focus {
+	outline: none;
+}
+
+.menu--valentine .menu__item {
+	position: relative;
+	margin: 0 1em;
+}
+
+.menu--valentine .menu__link {
+	position: relative;
+	display: block;
+	min-width: 105px;
+	text-align: center;
+	color: #fff;
+	-webkit-transition: color 0.3s;
+	transition: color 0.3s;
+}
+
+.menu--valentine .menu__link:hover,
+.menu--valentine .menu__link:focus {
+	color: #fff;
+}
+
+.menu--valentine .menu__item--current .menu__link {
+	color: #fff;
+}
+
+.menu--valentine .menu__item::before,
+.menu--valentine .menu__item::after,
+.menu--valentine .menu__link::before,
+.menu--valentine .menu__link::after {
+	content: '';
+	position: absolute;
+	background: #fff;
+	-webkit-transform-origin: 350% 350%;
+	transform-origin: 350% 350%;
+	-webkit-transition: -webkit-transform 0.5s;
+	transition: transform 0.5s;
+	-webkit-transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+	transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+.menu--valentine .menu__item::before,
+.menu--valentine .menu__item::after {
+	top: 0;
+	width: 2px;
+	height: 100%;
+	-webkit-transform: scale3d(1, 0, 1);
+	transform: scale3d(1, 0, 1);
+}
+
+/* left line */
+.menu--valentine .menu__item::before {
+	left: 0;
+	-webkit-transition-delay: 0.05s;
+	transition-delay: 0.05s;
+}
+
+/* right line */
+.menu--valentine .menu__item::after {
+	right: 0;
+	-webkit-transition-delay: 0.15s;
+	transition-delay: 0.15s;
+}
+
+.menu--valentine .menu__link::before,
+.menu--valentine .menu__link::after {
+	left: 0;
+	width: 100%;
+	height: 2px;
+	-webkit-transform: scale3d(0, 1, 1);
+	transform: scale3d(0, 1, 1);
+}
+
+/* top line */
+.menu--valentine .menu__link::before {
+	top: 0;
+	-webkit-transition-delay: 0.1s;
+	transition-delay: 0.1s;
+}
+
+/* bottom line */
+.menu--valentine .menu__link::after {
+	bottom: 0;
+}
+
+.menu--valentine .menu__item--current::before,
+.menu--valentine .menu__item--current::after,
+.menu--valentine .menu__item--current .menu__link::before,
+.menu--valentine .menu__item--current .menu__link::after {
+	-webkit-transform: scale3d(1, 1, 1);
+	transform: scale3d(1, 1, 1);
+}
+
+/* Puck (by @eden_sg) */
+.menu--puck .menu__link {
+	position: relative;
+	display: block;
+	margin: 0 1em;
+	text-align: center;
+	color: #fff;
+	-webkit-transition: color 0.4s;
+	transition: color 0.4s;
+}
+
+.menu--puck .menu__link:hover,
+.menu--puck .menu__link:focus {
+	color: #828282;
+}
+
+.menu--puck .menu__item--current .menu__link {
+	color: #fff;
+}
+
+.menu--puck .menu__link::before,
+.menu--puck .menu__link::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 7px;
+	background: #fff;
+	-webkit-transform: scale3d(0, 1, 1);
+	transform: scale3d(0, 1, 1);
+	-webkit-transition: -webkit-transform 0.2s;
+	transition: transform 0.2s;
+}
+
+.menu--puck .menu__link::before {
+	bottom: -5px;
+	height: 2px;
+	-webkit-transition-delay: 0.1s;
+	transition-delay: 0.1s;
+}
+
+.menu--puck .menu__link::after {
+	bottom: 0;
+}
+
+.menu--puck .menu__item--current .menu__link::before,
+.menu--puck .menu__item--current .menu__link::after {
+	-webkit-transform: scale3d(1, 1, 1);
+	transform: scale3d(1, 1, 1);
+	-webkit-transition-timing-function: cubic-bezier(0, 1.54, 0.34, 1);
+	transition-timing-function: cubic-bezier(0, 1.54, 0.34, 1);
+	-webkit-transition-duration: 0.8s;
+	transition-duration: 0.8s;
+}
+
+/* Media queries */
+
+/* Stack items for smaller screens */
+@media screen and (max-width:55em) {
+	.menu__list {
+		display: block;
+		margin: 0 auto;
+	}
+}
