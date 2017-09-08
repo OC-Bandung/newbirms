@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Sirup;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class ApiBIRMS extends Controller
 {
@@ -12,6 +13,19 @@ class ApiBIRMS extends Controller
 	{
 		$results = Sirup::where("tahun", $year)->limit(5)->get(); 
     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+	}
+
+	public function contractAll()
+	{
+    	$results = Sirup::paginate(15);
+
+ 
+
+		// return response()->json($results['data']['sirupID']);
+		// array('ocid' => $results->sirupID, 'nama' => $results->nama)
+
+
+    	return response()->json($new_json)->header('Access-Control-Allow-Origin', '*');
 	}
 
 	/* get_pns function

@@ -19,3 +19,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('sirup/{year}', 'ApiBIRMS@sirupAll');
 Route::get('pns/{kewenangan}/{year}', 'ApiBIRMS@get_pns');
+
+Route::get('contract/all','ApiBIRMS@contractAll');
+
+
+/*
+
+	
+*/
