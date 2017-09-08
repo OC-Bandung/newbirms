@@ -17,13 +17,18 @@ class ApiBIRMS extends Controller
 
 	public function contractsAll()
 	{
-    	$results = Sirup::paginate(15);
+		$results = Sirup::selectRaw('sirupID, CONCAT(\'ocds-afzrfb-\',sirupID) AS ocid, tahun, nama, pagu')
+    						->orderBy('sirupID')
+    						->paginate(15);
 
-		// return response()->json($results['data']['sirupID']);
-		// array('ocid' => $results->sirupID, 'nama' => $results->nama)
+// <<<<<<< master
+// =======
+// 		// return response()->json($results['data']['sirupID']);
+// 		// array('ocid' => $results->sirupID, 'nama' => $results->nama)
 
 
-    	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+// >>>>>>> master
+//     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	}
 
 	/* get_pns function
