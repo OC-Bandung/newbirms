@@ -9,19 +9,26 @@ use App\Http\Controllers\Controller;
 
 class ApiBIRMS extends Controller
 {
-    public function sirupAll($year)
+    public function contractsPerYear($year)
 	{
 		$results = Sirup::where("tahun", $year)->limit(5)->get(); 
     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function contractAll()
+	public function contractsAll()
 	{
 		$results = Sirup::selectRaw('sirupID, CONCAT(\'ocds-afzrfb-\',sirupID) AS ocid, tahun, nama, pagu')
     						->orderBy('sirupID')
     						->paginate(15);
 
-    	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+// <<<<<<< master
+// =======
+// 		// return response()->json($results['data']['sirupID']);
+// 		// array('ocid' => $results->sirupID, 'nama' => $results->nama)
+
+
+// >>>>>>> master
+//     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	}
 
 	/* get_pns function
