@@ -13,7 +13,7 @@ class Sirup extends Model
     protected $table = "tbl_sirup";
 
 public function getOCIDAttribute(){
-    return "ocds-afzrfb-" . $this->attributes['sirupID'];
+    return env('OCID') . $this->attributes['sirupID'];
 }
 
 public function getYearAttribute(){
@@ -21,7 +21,7 @@ public function getYearAttribute(){
 }
 
 public function getURIAttribute(){
-    return "http://api.birms.bandung.go.id/contract/ocds-afzrfb-" . $this->attributes['sirupID'];
+    return   env('API_ENDPOINT') . "/contract/" . env('OCID') . $this->attributes['sirupID'];
 }
 
 public function getTitleAttribute(){
@@ -31,7 +31,10 @@ public function getTitleAttribute(){
 
 public function getValueAttribute() {
  
-	$value = array('amount' => $this->attributes['pagu'], 'currency' => 'IDR' );
+	$value = array(
+			'amount' => $this->attributes['pagu'], 
+			'currency' => env('CURRENCY')
+			);
 
 	 return ($value);
 }

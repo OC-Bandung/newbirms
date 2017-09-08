@@ -19,6 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('contracts/all', 'ApiBIRMS@contractsAll');
 Route::get('contracts/year/{year}', 'ApiBIRMS@contractsPerYear');
+
+
+Route::get('contract/{ocid}', 'ApiBIRMS_Contract@get_contract');
+
 Route::get('pns/{kewenangan}/{year}', 'ApiBIRMS@get_pns');
 
 Route::get('contract/all','ApiBIRMS@contractAll');
