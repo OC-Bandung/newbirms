@@ -11,79 +11,85 @@ class ApiBIRMS_contract extends Controller
      
 
 	function get_contract($ocid) {
-	    $dbplanning = '2016_birms_eproject_planning';
+	     //////////////////////  
+        // settings    //
+        //////////////////////
+
+        $dbplanning = '2016_birms_eproject_planning';
 	    $dbcontract = '2016_birms_econtract';
 	    $dbmain 	= '2016_birms_prime';
-	   
- 		
-		$sql = 'SELECT * 
-FROM
-	2016_birms_econtract.tpengadaan
-LEFT JOIN 2016_birms_prime.tbl_skpd ON 2016_birms_econtract.tpengadaan.skpdid = tbl_skpd.skpdid
-LEFT JOIN 2016_birms_prime.tbl_instansi ON 2016_birms_prime.tbl_skpd.instansiid = tbl_instansi.instansiid
-LEFT JOIN 2016_birms_econtract.tsumberdana ON 2016_birms_econtract.tpengadaan.sumberdanaid = tsumberdana.sumberdanaid
-LEFT JOIN 2016_birms_econtract.tklasifikasi ON tpengadaan.klasifikasiID = tklasifikasi.klasifikasiID
-LEFT JOIN 2016_birms_econtract.tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid       
-LEFT JOIN 2016_birms_econtract.tpekerjaan ON tpengadaan.pid = tpekerjaan.pid
-LEFT JOIN 2016_birms_econtract.tkontrak_penunjukan ON tpengadaan.pgid = tkontrak_penunjukan.pgid
-LEFT JOIN 2016_birms_eproject_planning.tbl_pekerjaan ON tpekerjaan.pekerjaanID = 2016_birms_eproject_planning.tbl_pekerjaan.pekerjaanID
-LEFT JOIN 2016_birms_eproject_planning.tbl_sirup ON 2016_birms_eproject_planning.tbl_pekerjaan.sirupID = 2016_birms_eproject_planning.tbl_sirup.sirupID
--- WHERE tpengadaan.ta = 2016 AND tbl_pekerjaan.sirupID <> 0 AND NOT ISNULL(tbl_pekerjaan.sirupID) 
-LIMIT 1';
 
-		
-		
-		$results = DB::select($sql);
-		$results = $results[0];
-    	
+        //////////////////////  
+        // general //
+        //////////////////////
 
-    	$ocid = env('OCID') . $results->sirupID ;
-
-		$id = '1';
-		$date = '20100101';
-		$tag = 'planning';
-
-		$initiationType = 'tender';
+        $id = '1';
+        $date = '20100101';
+        $tag = 'planning';
+        $initiationType = 'tender';
  
-    	
+      
+
+	    $sirup_id = '3662192';
+        $pgid = '14252';
+
+	
  
  		//////////////////////	
  		// planning stage 	//
  		//////////////////////
 
-    	
+    	   
+        $sql_intro = "select * from tbl_sirup where sirupID = '". $sirup_id ."' ";
 
-    	$rationale = $results->nama;
+        $results = DB::select($sql_intro);
+        $results = $results[0];
+         
+        $ocid = env('OCID') . $results->sirupID ;
+    	$contract_name =  $results->nama;
+        $city = $results->kldi ;
+        $unit = $results->satuan_kerja;
 
-    	$project = array('project' =>   $results->namapekerjaan);
- 
-    	$planning_value = array('amount' =>  $results->anggaran, 'currency'=> env('CURRENCY') );
+    	$planning_value = array('amount' =>  $results->pagu, 'currency'=> env('CURRENCY') );
 
-    	$budget = array(
-    					'id' => $results->kode ,
-    					 'description' => $results->sumberdana,
-    					 'value' => $planning_value
-    					);
 
     	///compiling all stages together
-    	$planning_stage = array('rationale' =>  $rationale,
-    							'budget' => $budget );
+    	$planning_stage = array('contract_name' =>  $contract_name,
+    							'city' => $city,
+                                'unit' => $unit,
+                                'planning_value' => $planning_value );
 
-    	//////////////////////
-    	//////////////////////
+    	////////////////////// 
+        //   selection stage  //
+        //////////////////////
+        $sql_selection = "select * from 2016_birms_econtract.tpengadaan_pemenang where pgid = '". $pgid ."' ";
 
-    	$tender_stage = array ("status" => "active");
+        $results = DB::select($sql_selection);
+        $results = $results[0];
+
+        $winning_bidder = $results->perusahaannama;
+        $award_amount = $results->nilai;
 
 
-    	//return $results;
+        $list_of_items_sql = "select * from  2016_birms_econtract.tpengadaan_rincian where pgid = '". $pgid ."' ";
+        $items = DB::select($list_of_items_sql);
 
-    	$release  = array( 'ocid' => $ocid ,
+
+        //build the award stage
+        $award_stage = array('winning_bidder' => $winning_bidder ,
+                             'award_amount' => $award_amount , 
+                             'items' => $items);
+
+
+      
+
+    	$release  = array(  'ocid' => $ocid ,
     						'id' => $id,
     						'date' => $date,
     						'tag' => $tag,
     						'initiationType' => 'tender',
-    						'planning' => $planning_stage,
-    						'tender' => $tender_stage
+    						'planning' => $planning_stage ,
+                            'award' => $award_stage
     						
     					  );
     	return response()->json($release)->header('Access-Control-Allow-Origin', '*');
