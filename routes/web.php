@@ -14,3 +14,9 @@
 Route::get('/', function () {
     return view('frontend.home');
 });
+
+
+
+Route::get('/{locale}', function ($locale) {
+    App::setLocale($locale);
+});
