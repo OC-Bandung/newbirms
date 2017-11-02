@@ -25,8 +25,16 @@
 					var currentItem = nav.querySelector('.nav__item--current');
 					currentItem.classList.remove('nav__item--current');
 					
+
 					// set current
 					item.classList.add('nav__item--current');
+				 
+					$(".mockup-slider__image").attr("src" , item.getAttribute("img"));
+					$(".mockup-slider__title").html( item.getAttribute("slider-title"));
+					$(".mockup-slider__subtitle").html( item.getAttribute("slider-subtitle"));
+				 
+
+
 				};
 			
 			navItems.forEach(function(item) {

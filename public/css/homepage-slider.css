@@ -74,34 +74,8 @@ body {
 	-webkit-flex-direction: row-reverse;
 	flex-direction: row-reverse;
 }
-
-.section__title {
-	font-size: 0.65em;
-	font-weight: 700;
-	-webkit-flex: none;
-	flex: none;
-	margin: 3em 0 15em;
-	text-indent: 3px;
-	letter-spacing: 3px;
-	text-transform: uppercase;
-	color: #d1d1d1;
-}
-
-.section.section--intro {
-	font-size: 1.6em;
-	position: relative;
-	min-height: 100vh;
-	text-align: center;
-	color: #fff;
-	background: #333;
-}
-
-.section--intro p {
-	max-width: 1000px;
-	margin: 0 auto;
-	padding: 1em;
-}
-
+ 
+ 
 /* Mockup Slider */
 .mockup-slider {
 	position: relative;
@@ -134,7 +108,6 @@ body {
 	position: absolute;
 	top: 70%;
 	left: -1em;
-	background: #ee1c25;
 	margin: 0;
 	color: #fff;
 	font-size: 1.05em;
@@ -181,7 +154,7 @@ body {
 .nav {
 	position: relative;
 	width: 8em;
-	margin: 0 0 0 3em;
+	margin: 0 0 0 1em;
 }
 
 .nav__item {
@@ -219,7 +192,7 @@ body {
 	left: 5px;
 	width: 2px;
 	height: calc(2em - 12px);
-	background: #98322a;
+	background: #1960a2;
 }
 
 .nav--zahi .nav__item::after {
@@ -228,9 +201,9 @@ body {
 	width: 12px;
 	height: 12px;
 	margin: -5px 0 0 0;
-	border: 2px solid #98322a;
+	border: 2px solid #1960a2;
 	border-radius: 50%;
-	background: #ee1c25;
+	background: #35b7c2;
 	-webkit-transition: -webkit-transform 0.3s, border-color 0.3s, border-width 0.3s, background 0.3s;
 	transition: transform 0.3s, border-color 0.3s, border-width 0.3s, background 0.3s;
 }
@@ -244,19 +217,19 @@ body {
 
 .nav--zahi .nav__item:not(.nav__item--current):focus::after,
 .nav--zahi .nav__item:not(.nav__item--current):hover::after {
-	border-color: black;
-	background: black;
+	border-color: #1960a2;
+	background: #1960a2;
 }
 
 .nav--zahi .nav__item-title {
-	font-family: 'Roboto Condensed', sans-serif;
+ 
 	line-height: 1.5;
 	display: block;
 	position: relative;
 	padding: 0 0 0 2.5em;
 	white-space: nowrap;
 	opacity: 0.3;
-	color: #98322a;
+ 
 	-webkit-transition: opacity 0.3s, color 0.3s;
 	transition: opacity 0.3s, color 0.3s;
 }
@@ -268,5 +241,5 @@ body {
 
 .nav--zahi .nav__item--current .nav__item-title {
 	opacity: 1;
-	color: black;
+	color: #35b7c2;
 }

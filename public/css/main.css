@@ -5,10 +5,119 @@ body {
 	 
 }
 
+ 
+
+body {
+	font-family: 'Roboto', sans-serif;
+	 
+}
+
+footer {
+	margin-top: 100px;
+	background-color: #212121;
+	height: 150px;
+}
+
+footer img {
+	float: right;
+	padding: 20px;
+}
+
+.mdc-typography--display1 {
+	font-weight: 900;
+}
+
 select.homepage-chart {
 	float: right;
 	width: 150px;
 }
+
+ul.map-list li {
+	margin-bottom: 20px;
+}
+.hidden {
+	visibility: none;
+}
+.stat-settings {
+	height: 300px;
+ 	
+}
+
+.mdc-grid-tile__secondary {
+	background-color: rgba(0,0,0,0.7);
+}
+
+.mdc-button--stroked:not(:disabled) {
+	border-color: #000;
+	color: #000;
+}
+
+.stat-settings-button {
+	padding-top: 110px;
+
+}
+
+.stat-settings-button button {
+	display: block;
+}
+
+.sticky {
+	  top: 20px;
+    position: -webkit-sticky;
+    position: sticky;
+
+}
+.even {
+  background-color: #f8f8f8;
+}
+
+.blog-1 {
+	border-top: 15px solid #c6e9bc;
+	padding: 20px;
+}
+
+.blog-2 {
+	border-top: 15px solid #7ccdbd;
+	padding: 20px;
+}
+
+.blog-3 {
+	border-top: 15px solid #35b7c2;
+	padding: 20px;
+}
+
+.blog-4 {
+	border-top: 15px solid #0092bb;
+	padding: 20px;
+}
+
+.bg-primary {
+	background-color: #7ccdbd;
+}
+
+.dark-gray {
+	color: darkgray;
+}
+
+.color-primary {
+	color: #7ccdbd;
+}
+
+.procurement-card {
+	box-shadow: unset;
+	border-bottom: 1px solid lightgray;
+}
+
+.procurement-card img {
+	opacity: 0.3;
+}
+.procurement-card-container {
+	width: 100%;
+}
+.procurement-card-details {
+	min-width: 100px;
+}
+ 
 
 .other-colors {
 	  background: #f44336;
@@ -16,14 +125,94 @@ select.homepage-chart {
 	  background-color: #1b3050;
 }
 
+.flex {
+	display: flex;
+	 
+}
+ 
+.pull-right {
+	float: right;
+}
+.icon-large{
+	height: 36px;
+}
+
+.icon-large-label {
+	font-size: 36px;
+	line-height: 36px;
+	vertical-align: middle;
+	font-weight: 300;
+}
+
 a {
 	text-decoration: none;
 	color: black;
 }
 
+ul {
+	list-style: none;
+}
+
+.f300 {
+	font-weight: 300;
+}
+
+.f900 {
+	font-weight: 900;
+}
+
+ 
+.list-planning {
+	border-left: 4px solid orange;
+	padding: 20px;
+
+}
+
+.list-planning.active , .list-planning:hover {
+	background-color: orange;
+}
+
+.list-tender {
+	border-left: 4px solid #c6e9bc;
+	padding: 20px;
+	
+}
+
+.list-tender.active , .list-tender:hover {
+	background-color: #c6e9bc;
+}
+
+.list-award {
+	border-left: 4px solid #7ccdbd;
+	padding: 20px;
+}
+
+.list-award:hover, .list-award.active {
+	background-color: #7ccdbd;
+}
+
+.list-contract {
+	border-left: 4px solid #7ccdbd;
+	padding: 20px;
+}
+
+.list-contract:hover , .list-contract.active {
+	background-color: #7ccdbd;
+}
+
+.list-implementation {
+	border-left: 4px solid #0092bb;
+	padding: 20px;
+}
+
+.list-implementation:hover , .list-implementation.active  {
+	background-color: #0092bb;
+ 
+}
+
 .img-chart {
 	height: 350px;
-
+	min-height: 350px;
 }
 
 .f300 {
@@ -45,3 +234,49 @@ a {
 .white {
 	color: #fff;
 }
+
+.padding-small {
+  padding: 10px; }
+
+ .padding-large {
+ 	padding: 25px;
+ }
+
+ .padding-left-large {
+ 	padding-left: 25px;
+ }
+
+ .padding-left-small {
+  padding-left: 15px;
+ }
+
+
+
+.padding-top-large {
+  padding-top: 25px; }
+
+.padding-top-small {
+  padding-top: 10px; }
+
+.padding-bottom-small {
+	padding-bottom: 10px;
+}
+
+.padding-right-small {
+	padding-right: 10px;
+}
+
+.padding-right-large {
+	padding-right: 25px;
+}
+
+
+.nudge-to-boundary {
+  margin-left: -5px;
+  margin-right: -5px;
+ }
+
+ .nudge-to-boundary-15 {
+ 	 margin-left: -15px;
+ 	 margin-right: -15px;
+ }

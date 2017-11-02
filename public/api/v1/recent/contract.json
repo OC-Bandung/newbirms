@@ -1,0 +1,134 @@
+[
+  {
+    "ocid": "ocds-afzrfb-3662192",
+    "uri": "https://sirup.lkpp.go.id/sirup/rup/detailPaketPenyedia2017/11180775",
+    "title": "Belanja Pembelian Accu, Ban",
+    "kode": "1.01.1.01.01.01.02.24.5.2.2.05.09",
+    "activity": "Pemeliharaan Rutin/Berkala Kendaraan Dinas/Operasional",
+    "sirupID": "541",
+    "SKPD": "Dinas Pendidikan",
+    "anggaran": "180410000",
+    "hps": "179056900",
+    "nilai_penawaran" : "178222000",
+    "nilai_nego": "173959500",
+    "suppliers": [{
+      "id": "1324",
+      "name": "Koperasi Mitra Usaha Sejahtera (KAMUS)"
+    },
+    {
+      "id": "1324",
+      "name": "Koperasi Mitra Usaha Sejahtera (KAMUS)"
+    }
+    ]
+    ,
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Sayembara Kontes",
+    "awardCriteria": "bestProposal",
+    "dateSigned": "2017-02-01T00:00:00+07:00",
+    "contract": {
+      "startDate": "2017-02-01T00:00:00+07:00",
+      "endDate": "2017-02-01T00:00:00+07:00"
+    },
+    "created_at": "2016-04-04T00:00:00Z",
+    "updated_at": "2016-04-04T00:00:00Z"
+  } ,
+  {
+    "ocid": "ocds-afzrfb-3662192",
+    "uri": "https://sirup.lkpp.go.id/sirup/rup/detailPaketPenyedia2017/11180775",
+    "title": "Belanja Pembelian Accu, Ban",
+    "kode": "1.01.1.01.01.01.02.24.5.2.2.05.09",
+    "activity": "Pemeliharaan Rutin/Berkala Kendaraan Dinas/Operasional",
+    "sirupID": "541",
+    "SKPD": "Dinas Pendidikan",
+    "anggaran": "180410000",
+    "hps": "179056900",
+    "nilai_penawaran" : "178222000",
+    "nilai_nego": "173959500",
+    "suppliers": [{
+      "id": "1324",
+      "name": "Koperasi Mitra Usaha Sejahtera (KAMUS)"
+    },
+    {
+      "id": "1324",
+      "name": "Koperasi Mitra Usaha Sejahtera (KAMUS)"
+    }
+    ]
+    ,
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Sayembara Kontes",
+    "awardCriteria": "bestProposal",
+    "dateSigned": "2017-02-01T00:00:00+07:00",
+    "contract": {
+      "startDate": "2017-02-01T00:00:00+07:00",
+      "endDate": "2017-02-01T00:00:00+07:00"
+    },
+    "created_at": "2016-04-04T00:00:00Z",
+    "updated_at": "2016-04-04T00:00:00Z"
+  },
+  {
+    "ocid": "ocds-afzrfb-3662192",
+    "uri": "https://sirup.lkpp.go.id/sirup/rup/detailPaketPenyedia2017/11180775",
+    "title": "Belanja Pembelian Accu, Ban",
+    "kode": "1.01.1.01.01.01.02.24.5.2.2.05.09",
+    "activity": "Pemeliharaan Rutin/Berkala Kendaraan Dinas/Operasional",
+    "sirupID": "541",
+    "SKPD": "Dinas Pendidikan",
+    "anggaran": "180410000",
+    "hps": "179056900",
+    "nilai_penawaran" : "178222000",
+    "nilai_nego": "173959500",
+    "suppliers": [{
+      "id": "1324",
+      "name": "Koperasi Mitra Usaha Sejahtera (KAMUS)"
+    },
+    {
+      "id": "1324",
+      "name": "Koperasi Mitra Usaha Sejahtera (KAMUS)"
+    }
+    ]
+    ,
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Sayembara Kontes",
+    "awardCriteria": "bestProposal",
+    "dateSigned": "2017-02-01T00:00:00+07:00",
+    "contract": {
+      "startDate": "2017-02-01T00:00:00+07:00",
+      "endDate": "2017-02-01T00:00:00+07:00"
+    },
+    "created_at": "2016-04-04T00:00:00Z",
+    "updated_at": "2016-04-04T00:00:00Z"
+  },
+  {
+    "ocid": "ocds-afzrfb-3662192",
+    "uri": "https://sirup.lkpp.go.id/sirup/rup/detailPaketPenyedia2017/11180775",
+    "title": "Belanja Pembelian Accu, Ban",
+    "kode": "1.01.1.01.01.01.02.24.5.2.2.05.09",
+    "activity": "Pemeliharaan Rutin/Berkala Kendaraan Dinas/Operasional",
+    "sirupID": "541",
+    "SKPD": "Dinas Pendidikan",
+    "anggaran": "180410000",
+    "hps": "179056900",
+    "nilai_penawaran" : "178222000",
+    "nilai_nego": "173959500",
+    "suppliers": [{
+      "id": "1324",
+      "name": "Koperasi Mitra Usaha Sejahtera (KAMUS)"
+    },
+    {
+      "id": "1324",
+      "name": "Koperasi Mitra Usaha Sejahtera (KAMUS)"
+    }
+    ]
+    ,
+    "procurementMethod": "open",
+    "procurementMethodDetails": "Sayembara Kontes",
+    "awardCriteria": "bestProposal",
+    "dateSigned": "2017-02-01T00:00:00+07:00",
+    "contract": {
+      "startDate": "2017-02-01T00:00:00+07:00",
+      "endDate": "2017-02-01T00:00:00+07:00"
+    },
+    "created_at": "2016-04-04T00:00:00Z",
+    "updated_at": "2016-04-04T00:00:00Z"
+  }
+]

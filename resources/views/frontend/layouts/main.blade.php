@@ -9,7 +9,6 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{{ !empty($title) ? $title : "" }}</title>
     <meta name="description" content="{{ !empty($description) ? $description : " " }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,10 +19,14 @@
     <link rel=stylesheet href="{{ url('css/menu.css') }}">
     <link rel=stylesheet href="{{ url('css/search.css') }}">
     <link rel=stylesheet href="{{ url('css/homepage-slider.css') }}">
+    <link rel=stylesheet href="{{ url('css/map.css') }}">
     <link rel=stylesheet href="{{ url('css/main.css') }}">
 </head>
 
 <body>
+    <script src="{{ url('js/highcharts.js') }}"></script>
+    <script src="{{ url('js/avocado.js') }}"></script>
+
     <!--intro-->
     @include('frontend.layouts.intro')
 

@@ -1,5 +1,5 @@
 <!-- intro -->
-<svg class="hidden">
+    <svg class="hidden">
         <defs>
             <symbol id="icon-arrow" viewBox="0 0 24 24">
                 <title>arrow</title>
@@ -26,5 +26,4 @@
 
         <!--search-->
         @include('frontend.search') 
-        
     </div>
