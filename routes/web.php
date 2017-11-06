@@ -11,10 +11,11 @@
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('frontend.home');
-});
+});*/
 
+Route::get('/', 'HomeController@index');
 
 
 Route::get('/{locale}', function ($locale) {

@@ -78,10 +78,7 @@
                                     <option value="e">Sayembara Kontes</option>
                                 </select>
                             </div>
-
-   
-     
-                            
+                          
                              <div class="search-select mdc-layout-grid__cell--span-12 ">
                                 <label>Value</label>
                                 <div class="mdc-layout-grid__cell--span-12 padding-top-small">
@@ -100,8 +97,8 @@
                             </div>
 
                            <div class="search-select mdc-layout-grid__cell--span-12 pull-right">
-                              <button class="mdc-button mdc-button--stroked mdc-button--compact">Search</button>
-                              <button class="mdc-button mdc-button--stroked mdc-button--compact" >CLOSE</button>
+                              <button class="mdc-button mdc-button--stroked mdc-button--compact">Cari</button>
+                              <button class="mdc-button mdc-button--stroked mdc-button--compact" onClick="close();" >Tutup</button>
                            </div>
 
                         </div>

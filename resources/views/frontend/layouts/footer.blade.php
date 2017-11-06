@@ -1,6 +1,6 @@
 	<!--footer-->
 	<footer>
-        <img src="{{ url('img/bandung-branding.png') }}">
+        <a href="https://www.bandung.go.id" target="_blank"><img src="{{ url('img/bandung-branding.png') }}"></a>
     </footer>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="{{ url('js/clipboard.min.js') }}"></script>

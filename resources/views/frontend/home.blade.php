@@ -5,25 +5,21 @@
         <div class="mdc-layout-grid text-center">
             <div class="mdc-layout-grid__inner">
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
-                    <span class="mdc-typography--title">  Rp. </span>
-                    <span class="mdc-typography--display1 f300">  561,56  </span>
-                    <span class="mdc-typography--title"> M </span>
+                    <span class="mdc-typography--display1 f300">  {{ MyGlobals::moneyDisplay($total_nilai_pengadaan) }}  </span>
                     <p> Pengadaan Barang / Jasa </p>
                 </div>
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
-                    <span class="mdc-typography--display1 f300">  169  </span>
-                    <span class="mdc-typography--title"> Paket</span>
+                    <span class="mdc-typography--display1 f300">  {{ $total_paket_lelang }}  </span>
+                    <span class="mdc-typography--title"> Paket </span>
                     <p>Lelang Umum</p>
                 </div>
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
-                    <span class="mdc-typography--display1 f300">3.031 </span>
-                    <span class="mdc-typography--title">  Paket</span>
+                    <span class="mdc-typography--display1 f300">{{ $total_paket_pl }}</span>
+                    <span class="mdc-typography--title"> Paket </span>
                     <p>Pengadaan Langsung</p>
                 </div>
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
-                    <span class="mdc-typography--title">  Rp. </span>
-                    <span class="mdc-typography--display1 f300">  200,08  </span>
-                    <span class="mdc-typography--title"> M </span>
+                    <span class="mdc-typography--display1 f300">  {{ MyGlobals::moneyDisplay($total_nilai_pengumuman_pl) }}  </span>
                     <p>Pengumuman Pengadaan Barang / Jasa</p>
                 </div>
             </div>
@@ -40,21 +36,19 @@
                     <section class="section section--nav" id="Zahi">
                         <span class="link-copy"></span>
                         <nav class="nav nav--zahi">
-                            <button class="nav__item" aria-label="Item 7" slider-title="Integration" slider-subtitle="LEARN ABOUT OUR NEW API" img="images/API.jpg"><span class="nav__item-title"> Sept 2019</span></button>
-                            <button class="nav__item" slider-title="Report" slider-subtitle="THE ANNUAL PROCUREMENT REPORT" img="images/report.jpg" aria-label="Report"><span class="nav__item-title">December 2016</span></button>
-                            <button class="nav__item  nav__item--current" slider-title="Award" slider-subtitle="NATIONAL PROCUREMENT AWARD - read article" img="images/award.jpg" aria-label="Item 2"><span class="nav__item-title">August 2016</span></button>
-                            <button class="nav__item" slider-title="Workshop" slider-subtitle="PROCUREMENT WORKSHOP AND CAPACITY BUILDING" img="images/workshop.jpg" aria-label="Item 3"><span class="nav__item-title">July 2016</span></button>
-                            <button class="nav__item" slider-title="Engagement" slider-subtitle="CONVERSATION ON PROCUREMENT" img="images/engage.jpg" aria-label="Item 4"><span class="nav__item-title">Mei 2016</span></button>
-                            <button class="nav__item" slider-title="TRANSPARENCY" slider-subtitle="OPEN CONTRACTING MEETING" img="images/open-contracting.jpg" aria-label="Item 5"><span class="nav__item-title">February 2016</span></button>
-                            <button class="nav__item" slider-title="REPORT" slider-subtitle="PROGRESS REPORT" img="images/report.jpg" aria-label="Item 6"><span class="nav__item-title">January 2015</span></button>
-                            <button class="nav__item" aria-label="Item 7" slider-title="PANEL" slider-subtitle="PANEL DISCUSSION" img="images/panel.jpg"><span class="nav__item-title"> 2012</span></button>
+                            @foreach($article as $row)
+                             <button class="nav__item  nav__item--current" aria-label="article{{ $row->pst_id }}" slider-title="{{ $row->title }}" slider-subtitle="{{ $row->summary }}" img="http://localhost/birms2017/assets/media/{{ $row->filename }}"><span class="nav__item-title"> {{ date('d F Y', strtotime($row->created)) }}</span></button>
+                            @endforeach
+                           
                         </nav>
+                        
                         <!-- Mockup slider for decorative purpose only -->
                         <div class="mockup-slider">
-                            <img class="mockup-slider__image" src="images/award.jpg" alt="img04" />
-                            <h3 class="mockup-slider__title">Award</h3>
-                            <p class="mockup-slider__subtitle bg-primary">NATIONAL PROCUREMENT AWARD <span class="mdc-typography--caption"><a href="#"> - read article</a></span></p>
+                            <img class="mockup-slider__image" src="http://localhost/birms2017/assets/media/{{ $row->filename }}" alt="{{ $row->title }}" />
+                            <h3 class="mockup-slider__title">{{ $row->title }}</h3>
+                            <p class="mockup-slider__subtitle bg-primary">{{ $row->summary }} <span class="mdc-typography--caption"><a href="#"> - Baca Artikel</a></span></p>
                         </div>
+
                     </section>
                 </div>
             </div>
@@ -684,30 +678,12 @@
         </div>
         <div class="mdc-layout-grid">
             <div class="mdc-layout-grid__inner">
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 blog-1">
-                    <div class="mdc-typography--title">Article Title</div>
-                    <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                </div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 blog-2">
-                    <div class="mdc-typography--title">Article Title</div>
-                    <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                </div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 blog-3">
-                    <div class="mdc-typography--title">Article Title</div>
-                    <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                </div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 blog-4">
-                    <div class="mdc-typography--title">Article Title</div>
-                    <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                </div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 blog-1">
-                    <div class="mdc-typography--title">Article Title</div>
-                    <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                </div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 blog-2">
-                    <div class="mdc-typography--title">Article Title</div>
-                    <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                </div>
+                @foreach ($article as $idx => $row)
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4 blog-{{ $idx % 4 + 1 }}">
+                    <div class="mdc-typography--title">{{ $row->title }}</div>
+                        <p align="justify">{{ $row->summary }}</p>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -724,104 +700,18 @@
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-8">
                     <div class="mdc-grid-list">
                         <ul class="mdc-grid-list__tiles">
+                            @foreach($app as $rowapp)
                             <li class="mdc-grid-tile">
+                                <a href="{{ $rowapp['Link'] }}" title="{{ $rowapp['Title'] }}">
                                 <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/0.png" />
+                                    <img class="mdc-grid-tile__primary-content" src="{{ url('images/apps/'.$rowapp['Iconimg']) }}" />
                                 </div>
                                 <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <a href="test">
-                                    <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/1.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                    <span class="mdc-grid-tile__title">SIMDA</span>
+                                    <span class="mdc-grid-tile__title">{{ $rowapp['Title'] }}</span>
                                 </span>
                                 </a>
                             </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/2.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">SIRUP</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/3.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/4.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/5.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/6.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/7.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/8.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/9.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/10.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
-                            <li class="mdc-grid-tile">
-                                <div class="mdc-grid-tile__primary">
-                                    <img class="mdc-grid-tile__primary-content" src="images/apps/11.png" />
-                                </div>
-                                <span class="mdc-grid-tile__secondary">
-                                <span class="mdc-grid-tile__title">Title</span>
-                                </span>
-                            </li>
+                            @endforeach
                         </ul>
                     </div>
                     <br>
@@ -837,8 +727,8 @@
                     </div>
                 </div>
                 <div class="mdc-layout-grid__cell--span-4">
-                    <div class="mdc-typography--subheading1">GET IN TOUCH</div>
-                    <p>Sistem Pengelolaan Sumber Daya Pemerintahan Terintegrasi. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    <div class="mdc-typography--display1">@lang('homepage.contact_title')</div>
+                    @lang('homepage.contact_text')
                     <div>
                         <div class="mdc-textfield mdc-textfield--fullwidth">
                             <input class="mdc-textfield__input" type="text" placeholder="Name" aria-label="Name">
