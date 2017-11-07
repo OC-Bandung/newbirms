@@ -37,15 +37,15 @@
                         <span class="link-copy"></span>
                         <nav class="nav nav--zahi">
                             @foreach($article as $row)
-                             <button class="nav__item  nav__item--current" aria-label="article{{ $row->pst_id }}" slider-title="{{ $row->title }}" slider-subtitle="{{ $row->summary }}" img="http://localhost/birms2017/assets/media/{{ $row->filename }}"><span class="nav__item-title"> {{ date('d F Y', strtotime($row->created)) }}</span></button>
+                             <button class="{{ $loop->first? 'nav__item nav__item--current' : 'nav__item' }}" aria-label="article{{ $row->pst_id }}" slider-title="{{ $row->title }}" slider-subtitle="{{ $row->summary }}" img="/assets/media/{{ $row->filename }}"><span class="nav__item-title"> {{ date('d M Y', strtotime($row->created)) }}</span></button>
                             @endforeach
                            
                         </nav>
                         
                         <!-- Mockup slider for decorative purpose only -->
                         <div class="mockup-slider">
-                            <img class="mockup-slider__image" src="http://localhost/birms2017/assets/media/{{ $row->filename }}" alt="{{ $row->title }}" />
-                            <h3 class="mockup-slider__title">{{ $row->title }}</h3>
+                            <img class="mockup-slider__image" src="/assets/media/{{ $row->filename }}" alt="{{ $row->title }}" />
+                            <h3 class="mockup-slider__title"> <span>{{ $row->title }}</span></h3>
                             <p class="mockup-slider__subtitle bg-primary">{{ $row->summary }} <span class="mdc-typography--caption"><a href="#"> - Baca Artikel</a></span></p>
                         </div>
 

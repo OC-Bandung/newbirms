@@ -30,8 +30,8 @@
 					item.classList.add('nav__item--current');
 				 
 					$(".mockup-slider__image").attr("src" , item.getAttribute("img"));
-					$(".mockup-slider__title").html( item.getAttribute("slider-title"));
-					$(".mockup-slider__subtitle").html( item.getAttribute("slider-subtitle"));
+					$(".mockup-slider__title").html('<span>' +  item.getAttribute("slider-title") + '</span>');
+					$(".mockup-slider__subtitle").html( item.getAttribute("slider-subtitle" ) );
 				 
 
 
