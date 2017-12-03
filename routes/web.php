@@ -16,7 +16,7 @@
 });*/
 
 Route::get('/', 'HomeController@index');
-
+Route::get('/post/{id}', 'HomeController@post');
 
 Route::get('/{locale}', function ($locale) {
     App::setLocale($locale);

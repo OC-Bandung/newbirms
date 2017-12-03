@@ -27,8 +27,8 @@
     <script src="{{ url('js/highcharts.js') }}"></script>
     <script src="{{ url('js/avocado.js') }}"></script>
 
-    <!--intro-->
-    @include('frontend.layouts.intro')
+    <!--header-->
+    @yield('header')
 
     <!--content-->
     @yield('content')

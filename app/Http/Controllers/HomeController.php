@@ -246,4 +246,33 @@ class HomeController extends Controller
 		
     	return View::make("frontend.home")->with($data);
     }
+
+    function post($id)
+    {
+    	$dbprime = env("DB_PRIME");
+    	/* Article ---- Start */
+    	$sql = 	"SELECT tbl_post.pst_id,
+					UPPER(tbl_post.title) AS title,
+					tbl_post.summary,
+					tbl_post.content,
+					tbl_post.source,
+					tbl_post.tags,
+					tbl_post.poststatus,
+					tbl_post.hits,
+					tbl_postcontent.position,
+					tbl_content.shortname,
+					tbl_content.`name`,
+					tbl_content.filename,
+					tbl_post.created
+				FROM $dbprime.tbl_post 
+					LEFT OUTER JOIN $dbprime.tbl_postcontent ON $dbprime.tbl_post.pst_id = $dbprime.tbl_postcontent.pst_id
+					LEFT OUTER JOIN $dbprime.tbl_content ON $dbprime.tbl_postcontent.con_id = $dbprime.tbl_content.con_id
+				WHERE tbl_post.pst_id = ".$id." ";
+		$rspost = DB::select($sql);
+    	/* Article ---- Finish */
+
+    	$data			 = [];
+		$data['article'] = $rspost;
+    	return View::make("frontend.post")->with($data);
+    }
 }
