@@ -27,6 +27,10 @@ Route::get('pns/{kewenangan}/{year}', 'ApiBIRMS@get_pns');
 
 Route::get('contract/all','ApiBIRMS@contractAll');
 
+Route::get('graph/1','ApiBIRMS@graph1');
+Route::get('graph/2/{year}','ApiBIRMS@graph2');
+Route::get('graph/3/{year}','ApiBIRMS@graph3');
+Route::get('graph/4','ApiBIRMS@graph4');
 
 /*
 

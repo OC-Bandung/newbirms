@@ -67,7 +67,7 @@ class HomeController extends Controller
 		$rsjmlplselesai_select 	= DB::select($sql);
 		$rsjmlplselesai 		= json_decode(json_encode($rsjmlplselesai_select), true);
 
-		/* Dashboard Data ---- Finish */
+		/* Dashboard Data ---- End */
 
 		/* Link ---- Start */
 		$birms_app[0] = array(	'Name' => "e-Musrenbang", 
@@ -215,7 +215,18 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 	                    );
-		/* Link ---- Finish */
+		/* Link ---- End */
+
+		/* Chart ---- Start */
+		$sql = "SELECT * FROM $dbecontract.vlelang_bypaket";
+		$rspaketlelang_select = DB::select($sql);
+		$rspaketlelang 		  = json_decode(json_encode($rspaketlelang_select), true);
+
+		$sql = "SELECT * FROM $dbecontract.vpl_bypaket";
+		$rspaketpl_select = DB::select($sql);
+		$rspaketpl 		  = json_decode(json_encode($rspaketpl_select), true);
+
+		/* Chart ---- End */		
 
 		$total_nilai_pengadaan 		= $rspgd[0]['nilai_nego'] + $rspl[0]['nilai_nego'];
 		$total_paket_lelang 		= number_format($rsjmllelang[0]['jumlah'],0,',','.');
@@ -229,6 +240,9 @@ class HomeController extends Controller
 		$data['total_nilai_pengumuman_pl'] = $total_nilai_pengumuman_pl;
 		$data['article']				= $rspost;
 		$data['app']					= $birms_app;
+
+		$data['paket_lelang']			= $rspaketlelang;
+		$data['paket_pl']				= $rspaketpl;
 		
     	return View::make("frontend.home")->with($data);
     }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Sirup;
+use App\Paketlng;
+use App\Paketpl;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -47,9 +49,10 @@ class ApiBIRMS extends Controller
 	*/
 
 	function get_pns($kewenangan,$year) {
-	    $dbplanning = '2016_birms_eproject_planning';
-	    $dbcontract = '2016_birms_econtract';
-	    $dbmain 	= '2016_birms_prime';
+	    $dbplanning = env('DB_PLANNING');
+	    $dbcontract = env('DB_CONTRACT');
+	    $dbmain 	= env('DB_PRIME');
+
 	    switch ($kewenangan) {
 	      case "pa" :
 	        $sktipeID = 1;
@@ -107,15 +110,186 @@ class ApiBIRMS extends Controller
 		$sql = 'SELECT
 					*
 				FROM
-					2016_birms_eproject_planning.tr_sk_user
+					$dbplanning.tr_sk_user
 				LEFT OUTER JOIN tbl_sk ON tr_sk_user.skID = tbl_sk.skID 
 				LEFT OUTER JOIN tbl_sk_tipe ON tbl_sk.sktipeID = tbl_sk_tipe.sktipeID			
-				LEFT OUTER JOIN 2016_birms_prime.tbl_user ON tr_sk_user.usrID = 2016_birms_prime.tbl_user.usrID
-				LEFT OUTER JOIN 2016_birms_prime.tbl_skpd ON tbl_sk.skpdID = 2016_birms_prime.tbl_skpd.skpdID
+				LEFT OUTER JOIN $dbmain.tbl_user ON tr_sk_user.usrID = $dbmain.tbl_user.usrID
+				LEFT OUTER JOIN $dbmain.tbl_skpd ON tbl_sk.skpdID = $dbmain.tbl_skpd.skpdID
 				LIMIT 10';
-
 		$results = DB::select($sql);
     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	  
+	}
+
+	public function graph1()
+	{
+		$sql = 'SELECT tahun, (nilaikontrak/1000000000) AS nilaikontrak FROM '.env('DB_CONTRACT').'.vlelang_bypaket ORDER BY tahun ASC';
+		$rs1 = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+		foreach($rs1 as $row) {
+			array_push($data, array($row->tahun, (float)$row->nilaikontrak));
+		}
+		array_push($rowdata, array("name"=>"Lelang", "data"=> $data));
+
+		$sql = 'SELECT tahun, (nilaikontrak/1000000000) AS nilaikontrak FROM '.env('DB_CONTRACT').'.vpl_bypaket ORDER BY tahun ASC';
+		$rs1 = DB::select($sql);
+
+		$data = array();
+		foreach($rs1 as $row) {
+			array_push($data, array($row->tahun, (float)$row->nilaikontrak));
+		}
+		array_push($rowdata, array("name"=>"Pengadaan Langsung", "data"=> $data));
+		$results = $rowdata;
+
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
+	}
+
+	public function graph2($year)
+	{
+		$sql = 'SELECT
+					`tlelangumum`.`skpdID` AS `skpdID` ,
+					`tbl_skpd`.`nama` AS `nama` ,
+					`tlelangumum`.`ta` AS `ta` ,
+					SUM(`tlelangumum`.`anggaran`)/1000000000 AS `anggaran`,
+					SUM(`tlelangumum`.`nilai_nego`)/1000000000 AS `nilai_kontrak`
+				FROM
+					(
+						'.env('DB_CONTRACT').'.`tlelangumum`
+						LEFT JOIN '.env('DB_PRIME').'.`tbl_skpd` ON(
+							(
+								`tlelangumum`.`skpdID` = '.env('DB_PRIME').'.`tbl_skpd`.`skpdID`
+							)
+						)
+					)
+				WHERE
+					(
+						(`tlelangumum`.`nilai_nego` <> 0)
+						AND(`tlelangumum`.`ta` = '.$year.')
+					)
+					GROUP BY
+						`tlelangumum`.`skpdID` ,
+						'.env('DB_PRIME').'.`tbl_skpd`.`nama`,
+						`ta`
+				UNION
+					SELECT
+						`tpengadaan`.`skpdID` AS `skpdID` ,
+						`tbl_skpd`.`nama` AS `nama` ,
+						`tpengadaan`.`ta` AS `ta` ,
+						SUM(`tpengadaan`.`anggaran`)/1000000000 AS `anggaran`,
+						SUM(`tpengadaan`.`nilai_nego`)/1000000000 AS `nilai_kontrak`
+					FROM
+						(
+							'.env('DB_CONTRACT').'.`tpengadaan`
+							LEFT JOIN '.env('DB_PRIME').'.`tbl_skpd` ON(
+								(
+									`tpengadaan`.`skpdID` = '.env('DB_PRIME').'.`tbl_skpd`.`skpdID`
+								)
+							)
+						)
+					WHERE
+						(
+							(
+								`tpengadaan`.`pekerjaanstatus` = 7
+							)
+							AND(`tpengadaan`.`ta` = '.$year.')
+						)
+					GROUP BY
+						`tpengadaan`.`skpdID` ,
+						'.env('DB_PRIME').'.`tbl_skpd`.`nama`,
+						`ta`
+					ORDER BY
+						`nilai_kontrak` DESC
+					LIMIT 10';
+		$rs1 = DB::select($sql);
+
+		$rowdata = array();
+		$data1 = array(); //pagu anggaran
+		$data2 = array(); //nilai kontrak
+		foreach($rs1 as $row) {
+			array_push($data1, array($row->nama, (float)$row->anggaran));
+			array_push($data2, array($row->nama, (float)$row->nilai_kontrak));
+		}
+		array_push($rowdata, array("name"=>"Pagu Anggaran", "data"=> $data1));
+		array_push($rowdata, array("name"=>"Nilai Kontrak", "data"=> $data2));
+
+		$results = $rowdata;
+		return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
+	}
+
+	public function graph3($year) 
+	{
+		$sql = 'SELECT
+					ta ,
+					LEFT(tklasifikasi.kode,2) AS kodepengadaan,
+					(
+						CASE LEFT(tklasifikasi.kode , 2)
+						WHEN "01" THEN
+							"Konstruksi"
+						WHEN "02" THEN
+							"Pengadaan Barang"
+						WHEN "03" THEN
+							"Jasa Konsultansi"
+						WHEN "04" THEN
+							"Jasa Lainnya"
+						ELSE
+							"N/A"
+						END
+					) AS jenispengadaan ,
+
+					COUNT(0) AS paket,	
+					SUM(anggaran) AS anggaran ,
+					SUM(hps) AS hps ,
+					SUM(nilai_nego) AS nilaikontrak
+				FROM
+					'.env('DB_CONTRACT').'.tpengadaan
+				LEFT JOIN '.env('DB_CONTRACT').'.tklasifikasi ON tpengadaan.klasifikasiID = tklasifikasi.klasifikasiID
+				WHERE
+					pekerjaanstatus = 7 AND ta = '.$year.'
+				GROUP BY ta, kodepengadaan, jenispengadaan';
+		$rs2 = DB::select($sql);
+
+		$data = array();
+
+		foreach($rs2 as $row) {
+			array_push($data, array("name"=>$row->jenispengadaan, "y"=>(float)$row->nilaikontrak));
+		}
+		$results = $data;
+
+		return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
+	}
+
+	public function graph4()
+	{
+		$sql = 'SELECT tahun, paket FROM '.env('DB_CONTRACT').'.vlelang_bypaket ORDER BY tahun ASC';
+		$rs1 = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+		foreach($rs1 as $row) {
+			array_push($data, array($row->tahun, (int)$row->paket));
+		}
+		array_push($rowdata, array("name"=>"Lelang", "data"=> $data));
+
+		$sql = 'SELECT tahun, paket FROM '.env('DB_CONTRACT').'.vpl_bypaket ORDER BY tahun ASC';
+		$rs2 = DB::select($sql);
+
+		$data = array();
+		foreach($rs2 as $row) {
+			array_push($data, array($row->tahun, (int)$row->paket));
+		}
+		array_push($rowdata, array("name"=>"Pengadaan Langsung", "data"=> $data));
+		$results = $rowdata;
+
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
 	}
 }

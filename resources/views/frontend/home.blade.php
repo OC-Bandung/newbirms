@@ -20,7 +20,9 @@
                 </div>
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
                     <span class="mdc-typography--display1 f300">  {{ MyGlobals::moneyDisplay($total_nilai_pengumuman_pl) }}  </span>
-                    <p>Pengumuman Pengadaan Barang / Jasa</p>
+                    <p>Pengumuman Pengadaan Barang / Jasa 
+                    
+                    </p>
                 </div>
             </div>
         </div>
@@ -37,14 +39,14 @@
                         <span class="link-copy"></span>
                         <nav class="nav nav--zahi">
                             @foreach($article as $row)
-                             <button class="{{ $loop->first? 'nav__item nav__item--current' : 'nav__item' }}" aria-label="article{{ $row->pst_id }}" slider-title="{{ $row->title }}" slider-subtitle="{{ $row->summary }}" img="/assets/media/{{ $row->filename }}"><span class="nav__item-title"> {{ date('d M Y', strtotime($row->created)) }}</span></button>
+                             <button class="{{ $loop->first? 'nav__item nav__item--current' : 'nav__item' }}" aria-label="article{{ $row->pst_id }}" slider-title="{{ $row->title }}" slider-subtitle="{{ $row->summary }}" img="http://localhost/birms2017/assets/media/{{$row->filename}}"><span class="nav__item-title"> {{ date('d M Y', strtotime($row->created)) }}</span></button>
                             @endforeach
                            
                         </nav>
                         
                         <!-- Mockup slider for decorative purpose only -->
                         <div class="mockup-slider">
-                            <img class="mockup-slider__image" src="/assets/media/{{ $row->filename }}" alt="{{ $row->title }}" />
+                            <img class="mockup-slider__image" src="http://localhost/birms2017/assets/media/{{$row->filename}}" alt="{{ $row->title }}" />
                             <h3 class="mockup-slider__title"> <span>{{ $row->title }}</span></h3>
                             <p class="mockup-slider__subtitle bg-primary">{{ $row->summary }} <span class="mdc-typography--caption"><a href="#"> - Baca Artikel</a></span></p>
                         </div>
@@ -462,7 +464,7 @@
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
                     <div class="mdc-card demo-card">
                         <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Lelang Umum vs Pengadaan Langsung</h1>
+                            <?/*<h1 class="mdc-card__title mdc-card__title--large f300">Lelang Umum vs Pengadaan Langsung</h1>
                             <h2 class="mdc-card__subtitle">Indikator Efektif</h2>
                             <select class="mdc-select homepage-chart">
                                 <option value="" default selected>Pick a year</option>
@@ -470,11 +472,11 @@
                                 <option value="b">2016</option>
                                 <option value="b">2015</option>
                                 <option value="b">2014</option>
-                            </select>
+                            </select>*/?>
                         </section>
                         <div class="mdc-card__horizontal-block">
-                            <div id="graph01" style="min-width: 70%; height: 400px; margin: 0 auto"></div>
-                            <section class="stat-settings mdc-card__actions mdc-card__actions--vertical">
+                            <div id="graph01" style="min-width: 100%; height: 400px; margin: 0 auto"></div>
+                            <? /*<section class="stat-settings mdc-card__actions mdc-card__actions--vertical">
                                 <div class="mdc-form-field">
                                     <div class="mdc-radio" data-demo-no-js="">
                                         <input class="mdc-radio__native-control" type="radio" id="ex1-radio1" checked="" name="ex1">
@@ -505,7 +507,7 @@
                                         Get Data
                                     </button>
                                 </div>
-                            </section>
+                            </section>*/?>
                         </div>
                     </div>
                 </div>
@@ -513,7 +515,7 @@
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
                     <div class="mdc-card demo-card">
                         <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Top Pengadaan SKPD</h1>
+                            <?/*<h1 class="mdc-card__title mdc-card__title--large f300">Top Pengadaan SKPD</h1>
                             <h2 class="mdc-card__subtitle">Indikator Efisiensi</h2>
                             <select class="mdc-select homepage-chart">
                                 <option value="" default selected>Pick a year</option>
@@ -521,11 +523,11 @@
                                 <option value="b">2016</option>
                                 <option value="b">2015</option>
                                 <option value="b">2014</option>
-                            </select>
+                            </select>*/?>
                         </section>
                         <div class="mdc-card__horizontal-block">
-                            <div id="graph02" style="min-width: 70%; height: 400px; margin: 0 auto"></div>
-                            <section class="stat-settings mdc-card__actions mdc-card__actions--vertical">
+                            <div id="graph02" style="min-width: 100%; height: 400px; margin: 0 auto"></div>
+                            <?/*<section class="stat-settings mdc-card__actions mdc-card__actions--vertical">
                                 <div class="mdc-form-field">
                                     <div class="mdc-radio" data-demo-no-js="">
                                         <input class="mdc-radio__native-control" type="radio" id="ex1-radio1" checked="" name="ex1">
@@ -556,7 +558,7 @@
                                         Get Data
                                     </button>
                                 </div>
-                            </section>
+                            </section>*/?>
                         </div>
                     </div>
                 </div>
@@ -564,7 +566,7 @@
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
                     <div class="mdc-card demo-card">
                         <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Jenis Pengadaan</h1>
+                            <?/*<h1 class="mdc-card__title mdc-card__title--large f300">Jenis Pengadaan</h1>
                             <h2 class="mdc-card__subtitle">Indikator Efektif</h2>
                             <select class="mdc-select homepage-chart">
                                 <option value="" default selected>Pick a year</option>
@@ -572,11 +574,11 @@
                                 <option value="b">2016</option>
                                 <option value="b">2015</option>
                                 <option value="b">2014</option>
-                            </select>
+                            </select>*/?>
                         </section>
                         <div class="mdc-card__horizontal-block">
-                            <div id="graph03" style="min-width: 70%; height: 400px; margin: 0 auto"></div>
-                            <section class="stat-settings mdc-card__actions mdc-card__actions--vertical">
+                            <div id="graph03" style="min-width: 100%; height: 400px; margin: 0 auto"></div>
+                            <?/*<section class="stat-settings mdc-card__actions mdc-card__actions--vertical">
                                 <div class="mdc-form-field">
                                     <div class="mdc-radio" data-demo-no-js="">
                                         <input class="mdc-radio__native-control" type="radio" id="ex1-radio1" checked="" name="ex1">
@@ -607,7 +609,7 @@
                                         Get Data
                                     </button>
                                 </div>
-                            </section>
+                            </section>*/?>
                         </div>
                     </div>
                 </div>
@@ -615,7 +617,7 @@
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
                     <div class="mdc-card demo-card">
                         <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Total Paket Pengadaan</h1>
+                            <?/*<h1 class="mdc-card__title mdc-card__title--large f300">Total Paket Pengadaan</h1>
                             <h2 class="mdc-card__subtitle">Indikator Efisiensi</h2>
                             <select class="mdc-select homepage-chart">
                                 <option value="" default selected>Pick a year</option>
@@ -623,11 +625,11 @@
                                 <option value="b">2016</option>
                                 <option value="b">2015</option>
                                 <option value="b">2014</option>
-                            </select>
+                            </select>*/?>
                         </section>
                         <div class="mdc-card__horizontal-block">
-                            <div id="graph04" style="min-width: 70%; height: 400px; margin: 0 auto"></div>
-                            <section class="stat-settings mdc-card__actions mdc-card__actions--vertical">
+                            <div id="graph04" style="min-width: 100%; height: 400px; margin: 0 auto"></div>
+                            <?/*<section class="stat-settings mdc-card__actions mdc-card__actions--vertical">
                                 <div class="mdc-form-field">
                                     <div class="mdc-radio" data-demo-no-js="">
                                         <input class="mdc-radio__native-control" type="radio" id="ex1-radio1" checked="" name="ex1">
@@ -658,7 +660,7 @@
                                         Get Data
                                     </button>
                                 </div>
-                            </section>
+                            </section>*/?>
                         </div>
                     </div>
                 </div>
