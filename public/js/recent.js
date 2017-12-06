@@ -1,5 +1,5 @@
 $(document).ready(function(){
-   var jqxhr = $.getJSON("api/v1/recent/planning.json", function(data) {
+   var jqxhr = $.getJSON("api/recent/planning/2017", function(data) {
 
     planning(data);
 

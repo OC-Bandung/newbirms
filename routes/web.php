@@ -18,6 +18,18 @@
 Route::get('/', 'HomeController@index');
 Route::get('/post/{id}', 'HomeController@post');
 
+/*Route::group(['prefix' => 'id', 'namespace' => 'id', 'middleware' => 'locale:id'], function() {
+    Route::get('/', 'HomeController@index')->name('idHome');
+});
+
+Route::group(['prefix' => 'en', 'namespace' => 'en', 'middleware' => 'locale:en'], function() {
+    Route::get('/', 'HomeController@index')->name('enHome');
+});
+
+Route::get('/', function() {
+    return redirect()->route('idHome');
+});*/
+
 Route::get('/{locale}', function ($locale) {
     App::setLocale($locale);
 });

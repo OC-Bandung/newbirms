@@ -121,6 +121,7 @@ class ApiBIRMS extends Controller
 	  
 	}
 
+	/*--- Start Data Statistic ---*/
 	public function graph1()
 	{
 		$sql = 'SELECT tahun, (nilaikontrak/1000000000) AS nilaikontrak FROM '.env('DB_CONTRACT').'.vlelang_bypaket ORDER BY tahun ASC';
@@ -289,6 +290,142 @@ class ApiBIRMS extends Controller
 		$results = $rowdata;
 
     	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
+	}
+
+	/*--- End Data Statistic ---*/
+
+	public function planning($year) {
+		$sql = 'SELECT * FROM '.env('DB_PLANNING').'.tbl_sirup ORDER BY sirupID DESC LIMIT 10';
+		$rsdummy = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+
+		$jenis_belanja[1] = 'Barang/Jasa'; 
+		$jenis_belanja[2] = 'Modal';
+		
+		$jenis_pengadaan[1] = 'Barang'; 
+		$jenis_pengadaan[2] = 'Pekerjaan Konstruksi';
+		$jenis_pengadaan[3] = 'Jasa Konsultansi';
+		$jenis_pengadaan[4] = 'Jasa Lainnya';
+		
+		$metode_pengadaan[1] = 'Lelang Umum'; 
+		$metode_pengadaan[2] = 'Lelang Sederhana'; 
+		$metode_pengadaan[3] = 'Lelang Terbatas';  
+		$metode_pengadaan[4] = 'Seleksi Umum';  
+		$metode_pengadaan[5] = 'Seleksi Sederhana'; 
+		$metode_pengadaan[6] = 'Pemilihan Langsung'; 
+		$metode_pengadaan[7] = 'Penunjukan Langsung';  
+		$metode_pengadaan[8] = 'Pengadaan Langsung';  
+		$metode_pengadaan[9] = 'e-Purchasing'; 
+
+		foreach($rsdummy as $row) {
+			$sirupID = $row->sirupID;
+			$ocid = env('OCID') . $sirupID ;
+
+			$data['ocid'] 		= $ocid;
+			$data['uri'] 		= env('LINK_SIRUP').$year."/".$sirupID;
+			$data['title'] 		= $row->nama; 
+			$data['project'] 	= "";
+			$data['sirupID'] 	= "".$sirupID."";
+			$data['SKPD']		= $row->satuan_kerja;
+			$data['budget']		= array(
+					'description' =>$row->sumber_dana_string,
+					'amount' => array(
+						'amount' => $row->pagu,
+						'currency' => env('CURRENCY')
+					),
+					'uri' => env('LINK_SIRUP').$year."/".$sirupID
+				);
+			$data['mainProcurementCategory']		= $jenis_pengadaan[$row->jenis_pengadaan];
+			$data['procurementMethod']				= $metode_pengadaan[$row->metode_pengadaan];
+			$data['procurementMethodDetails']		= "";
+			$data['awardCriteria']					= "";
+			$data['tender']		= array(
+					'startDate' => $row->tanggal_awal_pengadaan,
+					'endDate' => $row->tanggal_akhir_pengadaan
+			);
+			$data['contract']	= array(
+					'startDate' => $row->tanggal_awal_pekerjaan,
+					'endDate' => $row->tanggal_akhir_pekerjaan
+			);
+			$data['created_at']		= "";
+			$data['updated_at']		= "";
+			array_push($rowdata, $data);
+        }
+
+		$results = $rowdata;
+
+		return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
+	}
+
+	public function contract($year) {
+		$sql =  'SELECT sirupID, tpengadaan.kode, tpengadaan.namakegiatan, tpengadaan.namapekerjaan, tpengadaan.anggaran, tpengadaan.hps, tpengadaan.nilai_nego FROM '.env('DB_CONTRACT').'.tpengadaan
+				LEFT JOIN '.env('DB_CONTRACT').'.tpekerjaan ON tpengadaan.pid = tpekerjaan.pid
+				LEFT JOIN '.env('DB_PLANNING').'.tbl_pekerjaan ON tpekerjaan.pekerjaanID = tbl_pekerjaan.pekerjaanID
+				WHERE
+				tpengadaan.pekerjaanstatus = 7 AND tpengadaan.ta = '.$year;
+		$rsdummy = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+
+		$jenis_belanja[1] = 'Barang/Jasa'; 
+		$jenis_belanja[2] = 'Modal';
+		
+		$jenis_pengadaan[1] = 'Barang'; 
+		$jenis_pengadaan[2] = 'Pekerjaan Konstruksi';
+		$jenis_pengadaan[3] = 'Jasa Konsultansi';
+		$jenis_pengadaan[4] = 'Jasa Lainnya';
+		
+		$metode_pengadaan[1] = 'Lelang Umum'; 
+		$metode_pengadaan[2] = 'Lelang Sederhana'; 
+		$metode_pengadaan[3] = 'Lelang Terbatas';  
+		$metode_pengadaan[4] = 'Seleksi Umum';  
+		$metode_pengadaan[5] = 'Seleksi Sederhana'; 
+		$metode_pengadaan[6] = 'Pemilihan Langsung'; 
+		$metode_pengadaan[7] = 'Penunjukan Langsung';  
+		$metode_pengadaan[8] = 'Pengadaan Langsung';  
+		$metode_pengadaan[9] = 'e-Purchasing'; 
+
+		foreach($rsdummy as $row) {
+			$sirupID = $row->sirupID;
+			$ocid = env('OCID') . $sirupID ;
+
+			$suppliers = array();
+			$data['ocid'] 		= $ocid;
+			$data['uri'] 		= env('LINK_SIRUP').$year."/".$sirupID;
+			$data['title'] 		= $row->namapekerjaan; 
+			$data['kode']		= $row->kode;
+			$data['activity']	= $row->namakegiatan;
+			$data['sirupID'] 	= $sirupID;
+			$data['SKPD']		= "";
+			$data['anggaran']	= "";
+			$data['hps']		= $row->hps;
+			$data['nilai_penawaran']	= "";
+			$data['nilai_nego']			= $row->nilai_nego;
+			$data['suppliers']			= $suppliers;
+
+			$data['procurementMethod']		= "";
+			$data['procurementMethodDetails'] = "";
+			$data['awardCriteria']		= "";
+			$data['dateSigned'] = "";
+			$data['contract']	= array(
+					'startDate' => "",
+					'endDate' => ""
+			);
+			$data['created_at']		= "";
+			$data['updated_at']		= "";
+			array_push($rowdata, $data);
+        }
+
+		$results = $rowdata;
+
+		return response()
     			->json($results)
     			->header('Access-Control-Allow-Origin', '*');
 	}
