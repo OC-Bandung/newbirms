@@ -151,6 +151,16 @@ class ApiBIRMS extends Controller
 
 	public function graph2($year)
 	{
+		$sql = 'SELECT ta, COUNT(*) AS paket FROM '.env('DB_CONTRACT').'.`tlelangumum` GROUP BY ta ORDER BY ta DESC LIMIT 1';
+		$rscheck1 = DB::select($sql);
+
+		$sql = 'SELECT ta, COUNT(*) AS paket FROM '.env('DB_CONTRACT').'.`tpengadaan` WHERE pekerjaanstatus = 7 GROUP BY ta ORDER BY ta DESC LIMIT 1';
+		$rscheck2 = DB::select($sql);
+
+		if (($rscheck1[0]->ta < $year) || ($rscheck2[0]->ta < $year)) {
+			$year = $rscheck2[0]->ta;
+		}
+
 		$sql = 'SELECT
 					`tlelangumum`.`skpdID` AS `skpdID` ,
 					`tbl_skpd`.`nama` AS `nama` ,
@@ -225,6 +235,16 @@ class ApiBIRMS extends Controller
 
 	public function graph3($year) 
 	{
+		$sql = 'SELECT ta, COUNT(*) AS paket FROM '.env('DB_CONTRACT').'.`tlelangumum` GROUP BY ta ORDER BY ta DESC LIMIT 1';
+		$rscheck1 = DB::select($sql);
+
+		$sql = 'SELECT ta, COUNT(*) AS paket FROM '.env('DB_CONTRACT').'.`tpengadaan` WHERE pekerjaanstatus = 7 GROUP BY ta ORDER BY ta DESC LIMIT 1';
+		$rscheck2 = DB::select($sql);
+
+		if (($rscheck1[0]->ta < $year) || ($rscheck2[0]->ta < $year)) {
+			$year = $rscheck2[0]->ta;
+		}
+
 		$sql = 'SELECT
 					ta ,
 					LEFT(tklasifikasi.kode,2) AS kodepengadaan,

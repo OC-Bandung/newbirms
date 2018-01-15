@@ -7,28 +7,58 @@
 @section('content')
 <section>
         <div class="mdc-layout-grid text-center">
-            <div class="mdc-layout-grid__inner">
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
-                    <span class="mdc-typography--display1 f300">  {{ MyGlobals::moneyDisplay($total_nilai_pengadaan) }}  </span>
-                    <p> Pengadaan Barang / Jasa </p>
-                </div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
-                    <span class="mdc-typography--display1 f300">  {{ $total_paket_lelang }}  </span>
-                    <span class="mdc-typography--title"> Paket </span>
-                    <p>Lelang Umum</p>
-                </div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
-                    <span class="mdc-typography--display1 f300">{{ $total_paket_pl }}</span>
-                    <span class="mdc-typography--title"> Paket </span>
-                    <p>Pengadaan Langsung</p>
-                </div>
-                <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
-                    <span class="mdc-typography--display1 f300">  {{ MyGlobals::moneyDisplay($total_nilai_pengumuman_pl) }}  </span>
-                    <p>Pengumuman Pengadaan Barang / Jasa 
-                    
-                    </p>
-                </div>
+          <div class="mdc-layout-grid__inner">
+            <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+                <div class="mdc-typography--title">Tahun Ini</div>
+                <div class="mdc-layout-grid__inner">
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                        <span class="mdc-typography--headline f300">  {{ MyGlobals::moneyDisplay($total_nilai_pengadaan) }}  </span>
+                        <p> Pengadaan Barang / Jasa </p>
+                    </div>
+
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                        <span class="mdc-typography--headline f300">  {{ $total_paket_lelang }}  </span>
+                        <span class="mdc-typography--title"> Paket </span>
+                        <p>Lelang Umum</p>
+                    </div>
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                        <span class="mdc-typography--headline f300">{{ $total_paket_pl }}</span>
+                        <span class="mdc-typography--title"> Paket </span>
+                        <p>Pengadaan Langsung</p>
+                    </div>
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                        <span class="mdc-typography--headline f300">  {{ MyGlobals::moneyDisplay($total_nilai_pengumuman_pl) }}  </span>
+                        <p>Pengumuman Pengadaan Barang / Jasa 
+                        </p>
+                    </div>  
+                </div> 
             </div>
+            <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+                <div class="mdc-typography--title">Tahun Lalu ({{ date("Y")-1 }})</div>
+                <div class="mdc-layout-grid__inner">
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                        <span class="mdc-typography--headline f300">  {{ MyGlobals::moneyDisplay($total_prev_nilai_pengadaan) }}  </span>
+                        <p> Pengadaan Barang / Jasa </p>
+                    </div>
+
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                        <span class="mdc-typography--headline f300">  {{ $total_prev_paket_lelang }}  </span>
+                        <span class="mdc-typography--title"> Paket </span>
+                        <p>Lelang Umum</p>
+                    </div>
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                        <span class="mdc-typography--headline f300">{{ $total_prev_paket_pl }}</span>
+                        <span class="mdc-typography--title"> Paket </span>
+                        <p>Pengadaan Langsung</p>
+                    </div>
+                    <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3">
+                        <span class="mdc-typography--headline f300">  {{ MyGlobals::moneyDisplay($total_prev_nilai_pengumuman_pl) }}  </span>
+                        <p>Pengumuman Pengadaan Barang / Jasa 
+                        </p>
+                    </div>       
+                </div> 
+            </div>
+          </div>
         </div>
     </section>
     <section>

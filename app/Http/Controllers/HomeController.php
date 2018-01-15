@@ -35,7 +35,7 @@ class HomeController extends Controller
 		$rspost = DB::select($sql);
     	/* Article ---- Finish */
 
-    	/* Dashboard Data ---- Start */
+    	/* Dashboard Data ---- Start --- Current Year */
     	$sql = "SELECT SUM(anggaran) AS anggaran, SUM(nilai_nego) AS nilai_nego, SUM(IF (NOT ISNULL(tkontrak.sp_nosurat),nilai_nego,0)) AS realisasikontrak, SUM(IF (NOT ISNULL(tprogress_pembayaran.tgl_surat),nilai_nego,0)) AS realisasikeuangan FROM $dbecontract.tlelangumum
 				LEFT OUTER JOIN $dbecontract.tkontrak ON $dbecontract.tlelangumum.lgid = $dbecontract.tkontrak.lgid
 				LEFT OUTER JOIN $dbecontract.tprogress_pembayaran ON $dbecontract.tlelangumum.lgid = $dbecontract.tprogress_pembayaran.lgid
@@ -67,7 +67,41 @@ class HomeController extends Controller
 		$rsjmlplselesai_select 	= DB::select($sql);
 		$rsjmlplselesai 		= json_decode(json_encode($rsjmlplselesai_select), true);
 
-		/* Dashboard Data ---- End */
+		/* Dashboard Data ---- End --- Current Year*/
+
+		/* Dashboard Data ---- Start --- Previous Year */
+    	$sql = "SELECT SUM(anggaran) AS anggaran, SUM(nilai_nego) AS nilai_nego, SUM(IF (NOT ISNULL(tkontrak.sp_nosurat),nilai_nego,0)) AS realisasikontrak, SUM(IF (NOT ISNULL(tprogress_pembayaran.tgl_surat),nilai_nego,0)) AS realisasikeuangan FROM $dbecontract.tlelangumum
+				LEFT OUTER JOIN $dbecontract.tkontrak ON $dbecontract.tlelangumum.lgid = $dbecontract.tkontrak.lgid
+				LEFT OUTER JOIN $dbecontract.tprogress_pembayaran ON $dbecontract.tlelangumum.lgid = $dbecontract.tprogress_pembayaran.lgid
+				WHERE ta = YEAR(NOW())-1 ";
+		$rspgd_select 			= DB::select($sql);
+		$rspgd_prev 			= json_decode(json_encode($rspgd_select), true);
+
+		$sql = "SELECT SUM(tpengadaan.anggaran) AS anggaran, SUM(tpengadaan.nilai_nego) AS nilai_nego,
+					SUM(IF (NOT ISNULL(tkontrak_penunjukan.spk_nosurat),nilai_nego,0)) AS realisasikontrak,
+					SUM(IF (NOT ISNULL(tprogress_pembayaran.tgl_surat),nilai_nego,0)) AS realisasikeuangan
+				FROM $dbecontract.tpengadaan
+				LEFT OUTER JOIN $dbecontract.tprogress_pembayaran ON $dbecontract.tpengadaan.pgid = $dbecontract.tprogress_pembayaran.pgid
+				LEFT OUTER JOIN $dbecontract.tkontrak_penunjukan ON $dbecontract.tpengadaan.pgid = $dbecontract.tkontrak_penunjukan.pgid
+				WHERE $dbecontract.tpengadaan.ta = YEAR(NOW()) - 1 ";
+		$rspl_select 			= DB::select($sql);
+		$rspl_prev 				= json_decode(json_encode($rspl_select), true);
+
+		$sql = "SELECT count(*) AS jumlah FROM $dbecontract.tlelangumum WHERE tlelangumum.ta =  YEAR(NOW()) - 1";
+		$rsjmllelang_select 	= DB::select($sql);
+		$rsjmllelang_prev 		= json_decode(json_encode($rsjmllelang_select), true);
+
+
+		$sql = "SELECT count(*) AS jumlah FROM $dbecontract.tpengadaan WHERE tpengadaan.ta =  YEAR(NOW()) - 1 ";
+		$rsjmlpl_select 		= DB::select($sql);
+		$rsjmlpl_prev			= json_decode(json_encode($rsjmlpl_select), true);
+
+		$sql = "SELECT SUM(nilai_nego) AS jumlah FROM $dbecontract.tpengadaan_hasillelang
+				LEFT OUTER JOIN $dbecontract.tpengadaan ON $dbecontract.tpengadaan_hasillelang.pgid = $dbecontract.tpengadaan.pgid WHERE $dbecontract.tpengadaan.ta =  YEAR(NOW()) - 1 ";
+		$rsjmlplselesai_select 	= DB::select($sql);
+		$rsjmlplselesai_prev 	= json_decode(json_encode($rsjmlplselesai_select), true);
+
+		/* Dashboard Data ---- End --- Previous Year */
 
 		/* Link ---- Start */
 		$birms_app[0] = array(	'Name' => "e-Musrenbang", 
@@ -233,11 +267,22 @@ class HomeController extends Controller
 		$total_paket_pl 			= number_format($rsjmlpl[0]['jumlah'],0,',','.');
 		$total_nilai_pengumuman_pl 	= $rsjmlplselesai[0]['jumlah'];
 
+		$total_prev_nilai_pengadaan 	= $rspgd_prev[0]['nilai_nego'] + $rspl_prev[0]['nilai_nego'];
+		$total_prev_paket_lelang 		= number_format($rsjmllelang_prev[0]['jumlah'],0,',','.');
+		$total_prev_paket_pl 			= number_format($rsjmlpl_prev[0]['jumlah'],0,',','.');
+		$total_prev_nilai_pengumuman_pl = $rsjmlplselesai_prev[0]['jumlah'];
+
 		$data							= [];
     	$data['total_nilai_pengadaan'] 	= $total_nilai_pengadaan; 
 		$data['total_paket_lelang'] 	= $total_paket_lelang;
 		$data['total_paket_pl'] 		= $total_paket_pl;
 		$data['total_nilai_pengumuman_pl'] = $total_nilai_pengumuman_pl;
+
+		$data['total_prev_nilai_pengadaan'] 	= $total_prev_nilai_pengadaan; 
+		$data['total_prev_paket_lelang'] 	= $total_prev_paket_lelang;
+		$data['total_prev_paket_pl'] 		= $total_prev_paket_pl;
+		$data['total_prev_nilai_pengumuman_pl'] = $total_prev_nilai_pengumuman_pl;
+
 		$data['article']				= $rspost;
 		$data['app']					= $birms_app;
 

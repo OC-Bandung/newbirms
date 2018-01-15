@@ -66,7 +66,7 @@ $(document).ready(function() {
             type: 'column'
          },
          title: {
-             text: 'SKPD Anggaran Terbesar Tahun '+$currYear
+             text: 'SKPD Anggaran Terbesar Tahun Ini / Telah Berjalan'
          },
          subtitle: {
             text: 'Lelang dan Pengadaan Langsung'
@@ -141,7 +141,7 @@ $(document).ready(function() {
             type: 'pie'
          },
          title: {
-            text: 'Pengadaan Langsung '+$currYear
+            text: 'Pengadaan Langsung Tahun Ini / Telah Berjalan'
         },
         subtitle: {
             text: 'Berdasarkan Jenis Pengadaan melalui BIRMS'
