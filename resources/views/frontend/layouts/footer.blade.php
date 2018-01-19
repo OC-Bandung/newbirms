@@ -11,9 +11,8 @@
     <script src="{{ url('js/ui.js') }}"></script>
     <script src="{{ url('js/moment.js') }}"></script>
     <script src="{{ url('js/recent.js') }}"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmGnhhccwog6j_hFmAo8zg1VaYWE_m7Ak&callback=initMap">
-    </script>
     <script src="{{ url('js/map.js') }}"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmGnhhccwog6j_hFmAo8zg1VaYWE_m7Ak&callback=initMap"></script>
     <script src="{{ url('js/graph.js') }}"></script>
 
     <script type="text/javascript">   

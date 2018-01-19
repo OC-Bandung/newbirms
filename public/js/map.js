@@ -67,7 +67,7 @@
         // load the requested variable from the map API
         var xhr = new XMLHttpRequest();
         // based on the variable (value or count, we load a separate json or api endpoint)
-        xhr.open('GET', variable + '.json'); // here this needs to be updated to birms api
+        xhr.open('GET', 'geojson/' + variable + '.json'); // here this needs to be updated to birms api
         xhr.onload = function() {
 
             var mapData = JSON.parse(xhr.responseText);

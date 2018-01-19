@@ -15,24 +15,15 @@
                         <div class="mdc-layout-grid__inner">
                             <div class="mdc-layout-grid__cell--span-4">
                                 <select class="search-select  mdc-select ">
-                                    <option value="default selected">Stage</option>
-                                    <option value="a">Planning</option>
-                                    <option value="b">Tender</option>
-                                    <option value="c">Award</option>
-                                    <option value="d">Contract</option>
-                                    <option value="e">Implementation</option>
+                                    <option value="default selected">Pilih Tahapan</option>
+                                    <option value="1">Perencanaan</option>
+                                    <option value="2">Lelang</option>
+                                    <option value="3">Pemenang</option>
+                                    <option value="4">Kontrak</option>
+                                    <option value="5">Implementasi</option>
                                 </select>
                             </div>
-                            <div class="mdc-layout-grid__cell--span-4">
-                                <select class="search-select mdc-select">
-                                    <option value="default selected">SKPD</option>
-                                    <option value="a">SKPD Name</option>
-                                    <option value="b">SKPD Nama</option>
-                                    <option value="c">Le SKPD</option>
-                                    <option value="d">La SKPD</option>
-                                    <option value="e">The SKPD</option>
-                                </select>
-                            </div>
+                            <!--
                             <div class="mdc-layout-grid__cell--span-4">
                                 <select class="search-select mdc-select">
                                     <option value="default selected">Activitiy</option>
@@ -52,17 +43,25 @@
                                     <option value="d">Pagu Anggaran</option>
                                     
                                 </select>
-                            </div>
+                            </div>-->
                             <div class="mdc-layout-grid__cell--span-4">
                                 <select class="search-select mdc-select">
-                                    <option value="default selected">Category</option>
-                                    <option value="a">Barang</option>
-                                    <option value="b">Pekerjaan Konstruksi</option>
-                                    <option value="c">Jasa Konsultansi</option>
-                                    <option value="d">Jasa Konsultansi</option>
-                                    <option value="e">Other</option>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="01">Konstruksi</option>
+                                    <option value="02">Pengadaan Barang</option>
+                                    <option value="03">Jasa Konsultansi</option>
+                                    <option value="04">Jasa Lainnya</option>
                                 </select>
                             </div>
+                            <div class="mdc-layout-grid__cell--span-8">
+                                <select class="search-select mdc-select">
+                                    <option value="default selected">Pilih SKPD</option>
+                                    @foreach($ref_skpd as $row)
+                                    <option value="{{ $row->unitID }}">{{ $row->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <!--
                             <div class="mdc-layout-grid__cell--span-4">
                                 <select class="search-select mdc-select">
                                     <option value="default selected">Method</option>
@@ -77,19 +76,18 @@
                                     <option value="e">e-Purchasing</option>
                                     <option value="e">Sayembara Kontes</option>
                                 </select>
-                            </div>
+                            </div>-->
                           
                              <div class="search-select mdc-layout-grid__cell--span-12 ">
-                                <label>Value</label>
+                                <label>Nilai Anggaran</label>
                                 <div class="mdc-layout-grid__cell--span-12 padding-top-small">
                                     <input type="text" placeholder="Min"  class="mdc-textfield__input">
-                             
-                                    <input type="text" placeholder="Max "  class="mdc-textfield__input">
+                                    <input type="text" placeholder="Maks "  class="mdc-textfield__input">
                                 </div>
                             </div>
 
                             <div class="search-select mdc-layout-grid__cell--span-12">
-                                <label>Date</label>
+                                <label>Tanggal</label>
                                  <div class="mdc-layout-grid__cell--span-12 padding-top-small">   
                                     <input type="date" class="search-select"> 
                                     <input type="date" class="search-select"> 

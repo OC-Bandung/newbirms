@@ -430,7 +430,27 @@
                     <div id="map"></div>
                 </div>
                 <div class="mdc-layout-grid__cell--span-6">
-                    <nav id="icon-text-tab-bar" class="mdc-tab-bar mdc-tab-bar--icons-with-text">
+                    <div id="map-controls" class="nicebox">
+                        <div>
+                            <select id="map-variable">
+                               <!--  The option value = "xxx" is what decides which json file is loaded -->
+                                <option value="data-count">Value</option>
+                                <option value="data-value">Count</option>
+                            </select>
+                        </div>
+                        <div id="legend">
+                            <div id="map-min">min</div>
+                            <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
+                            <div id="map-max">max</div>
+                        </div>
+                    </div>
+
+
+                    <div id="data-box" class="nicebox">
+                        <label id="data-label" for="data-value"></label>
+                        <span id="data-value"></span>
+                    </div>
+                <!--    <nav id="icon-text-tab-bar" class="mdc-tab-bar mdc-tab-bar--icons-with-text">
                         <a class="mdc-tab mdc-tab--with-icon-and-text mdc-tab--active" href="#recents">
                         <i class="material-icons mdc-tab__icon" aria-hidden="true">fiber_new</i>
                         <span class="mdc-tab__icon-caption">Recent</span>
@@ -481,7 +501,7 @@
                                 </li>
                             </ul>
                         </p>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>

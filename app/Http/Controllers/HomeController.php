@@ -260,7 +260,12 @@ class HomeController extends Controller
 		$rspaketpl_select = DB::select($sql);
 		$rspaketpl 		  = json_decode(json_encode($rspaketpl_select), true);
 
-		/* Chart ---- End */		
+		/* Chart ---- End */
+
+		/* Search Reference ---- Start */
+		$sql = "SELECT skpdID, unitID, satker, nama, singkatan FROM $dbprime.tbl_skpd WHERE isactive = 1 AND isparent = 1 ORDER BY unitID";
+		$rsskpd = DB::select($sql);
+		/* Search Reference ---- End */
 
 		$total_nilai_pengadaan 		= $rspgd[0]['nilai_nego'] + $rspl[0]['nilai_nego'];
 		$total_paket_lelang 		= number_format($rsjmllelang[0]['jumlah'],0,',','.');
@@ -273,6 +278,9 @@ class HomeController extends Controller
 		$total_prev_nilai_pengumuman_pl = $rsjmlplselesai_prev[0]['jumlah'];
 
 		$data							= [];
+
+		$data['ref_skpd']				= $rsskpd;
+
     	$data['total_nilai_pengadaan'] 	= $total_nilai_pengadaan; 
 		$data['total_paket_lelang'] 	= $total_paket_lelang;
 		$data['total_paket_pl'] 		= $total_paket_pl;
