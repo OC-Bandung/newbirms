@@ -67,7 +67,8 @@
         // load the requested variable from the map API
         var xhr = new XMLHttpRequest();
         // based on the variable (value or count, we load a separate json or api endpoint)
-        xhr.open('GET', 'geojson/' + variable + '.json'); // here this needs to be updated to birms api
+        //xhr.open('GET', 'geojson/' + variable + '.json'); // here this needs to be updated to birms api
+        xhr.open('GET', 'api/kecamatan/' + variable + '/2016'); // here this needs to be updated to birms api
         xhr.onload = function() {
 
             var mapData = JSON.parse(xhr.responseText);
@@ -79,7 +80,8 @@
 
              
                 var mapVariable = parseFloat(mapData[i].summary);
-                var KECAMATANId = mapData[i].kechamatan;
+                //var KECAMATANId = mapData[i].kechamatan;
+                var KECAMATANId = mapData[i].kecamatan;
 
                 // keep track of min and max values in order to know how to color
                 if (mapVariable < mapMin) {

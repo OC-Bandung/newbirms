@@ -27,6 +27,10 @@ Route::get('pns/{kewenangan}/{year}', 'ApiBIRMS@get_pns');
 
 Route::get('contract/all','ApiBIRMS@contractAll');
 
+/* Map Packet By Kecamatan */
+Route::get('kecamatan/count/{year}','ApiBIRMS@get_kecamatan_count');
+Route::get('kecamatan/value/{year}','ApiBIRMS@get_kecamatan_value');
+
 /* Data Statistic */
 Route::get('graph/1','ApiBIRMS@graph1');
 Route::get('graph/2/{year}','ApiBIRMS@graph2');

@@ -434,8 +434,8 @@
                         <div>
                             <select id="map-variable">
                                <!--  The option value = "xxx" is what decides which json file is loaded -->
-                                <option value="data-count">Value</option>
-                                <option value="data-value">Count</option>
+                                <option value="count">Pagu Anggaran</option>
+                                <option value="value">Paket Pekerjaan</option>
                             </select>
                         </div>
                         <div id="legend">

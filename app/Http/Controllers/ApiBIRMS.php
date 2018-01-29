@@ -121,6 +121,51 @@ class ApiBIRMS extends Controller
 	  
 	}
 
+	/*--- Start Data Map Packet By Kecamatan  ---*/
+	public function get_kecamatan_count($year) 
+	{
+	    $dbplanning = env('DB_PLANNING');
+	    $dbcontract = env('DB_CONTRACT');
+	    $dbmain 	= env('DB_PRIME');
+
+		$sql = "SELECT
+					UPPER(TRIM(SUBSTRING(nama, POSITION(' ' IN nama), LENGTH(nama)))) AS kecamatan,
+					CONVERT(IFNULL(
+					(SELECT COUNT(*) FROM ".env('DB_CONTRACT').".tpekerjaan WHERE administrative_area_level_3 = kecamatan AND ta = ".$year." GROUP BY administrative_area_level_3)
+					,0), CHAR(50)) AS summary
+				FROM
+					".env('DB_PRIME').".tbl_skpd
+				WHERE
+					nama LIKE 'Kecamatan%'";
+		$results = DB::select($sql);
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');	
+	}
+
+	public function get_kecamatan_value($year)
+	{
+		$dbplanning = env('DB_PLANNING');
+	    $dbcontract = env('DB_CONTRACT');
+	    $dbmain 	= env('DB_PRIME');
+
+		$sql = "SELECT
+					UPPER(TRIM(SUBSTRING(nama, POSITION(' ' IN nama), LENGTH(nama)))) AS kecamatan,
+					CONVERT(IFNULL(
+					(SELECT SUM(anggaran) FROM ".env('DB_CONTRACT').".tpekerjaan WHERE administrative_area_level_3 = kecamatan AND ta = ".$year." GROUP BY administrative_area_level_3)
+					,0), CHAR(50)) AS summary
+				FROM
+					".env('DB_PRIME').".tbl_skpd
+				WHERE
+					nama LIKE 'Kecamatan%'";
+		$results = DB::select($sql);
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
+	}
+
+	/*--- End Data Map Packet By Kecamatan  ---*/
+
 	/*--- Start Data Statistic ---*/
 	public function graph1()
 	{
