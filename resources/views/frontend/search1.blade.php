@@ -9,7 +9,7 @@
         <div class="mdc-layout-grid__inner">
             <div class="mdc-layout-grid__cell--span-8">
                 <h2 class="mdc-typography--display1">Hasil pencarian pengadaan </h2>
-                <p>Terdapat <strong>{{ $totalsearch }}</strong> kontrak</p>
+                <p>Terdapat <strong><span class="totalsearch"></span></strong> kontrak</p>
             </div>
         </div>
     </div>
@@ -42,13 +42,6 @@
                     <div class="mdc-select">
                         <select class="mdc-select__surface" name="skpdID">
                             <option value="" disabled selected>- SKPD -</option>
-                            @foreach($ref_skpd as $row)
-                                @if (app('request')->input('skpdID') == $row->skpdID)
-                                    <option value="{{ $row->skpdID }}" selected>{{ $row->unitID }} - {{ $row->nama }}</option>
-                                @else
-                                    <option value="{{ $row->skpdID }}">{{ $row->unitID }} - {{ $row->nama }}</option>
-                                @endif
-                            @endforeach
                         </select>
                         <div class="mdc-select__bottom-line"></div>
                     </div>
@@ -124,88 +117,9 @@
                     </form>
                 </div>
                 <div class="mdc-layout-grid__cell--span-9">
-                    @foreach($pengadaan as $row) 
-                    <div class="mdc-card procurement-card">
-                        <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">{{ $row->namapekerjaan}}</h1>
-                            <h2 class="mdc-card__subtitle">Pemerintah Kota Bandung - {{ $row->namaskpd}}</h2>
-                            <h3 class="mdc-card__subtitle dark-gray">SirupID: #{{ $row->sirupID }} </h3>
-                        </section>
-                        <section class="mdc-card__supporting-text ">
-                            <div class="procurement-card-container flex">
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-money.png">
-                                    <div class="mdc-typography--subheading1"> Anggaran </div>
-                                    <div> <span class="mdc-typography--title f300"> {{ MyGlobals::moneyDisplay($row->anggaran,0,',','.') }}</span></div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-gov.png">
-                                    <div class="mdc-typography--subheading1"> Sumber Dana </div>
-                                    <div class="mdc-typography--title f300"> {{ $row->sumberdana }} </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-start.png">
-                                    <div class="mdc-typography--subheading1"> Rencana Pengadaan Mulai</div>
-                                    <div class="mdc-typography--title f300"> 
-                                        @if (!empty($row->pilih_start))
-                                            {{ date('d-m-Y', strtotime($row->pilih_start)) }} 
-                                        @else
-                                            &mdash;
-                                        @endif    
-                                    </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-end.png">
-                                    <div class="mdc-typography--subheading1"> Rencana Pengadaan Selesai</div>
-                                    <div class="mdc-typography--title f300">
-                                        @if (!empty($row->pilih_end))
-                                            {{ date('d-m-Y', strtotime($row->pilih_end)) }} 
-                                        @else
-                                            &mdash;
-                                        @endif 
-                                    </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center ">
-                                    <img class="icon-large" src="img/icon-contract-start.png">
-                                    <div class="mdc-typography--subheading1">Pelaksanaan Mulai</div>
-                                    <div class="mdc-typography--title f300">
-                                        @if (!empty($row->laksana_start))
-                                            {{ date('d-m-Y', strtotime($row->laksana_start)) }} 
-                                        @else
-                                            &mdash;
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-contract-end.png">
-                                    <div class="mdc-typography--subheading1">Pelaksanaan Selesai</div>
-                                    <div class="mdc-typography--title f300">
-                                        @if (!empty($row->laksana_end))
-                                            {{ date('d-m-Y', strtotime($row->laksana_end)) }} 
-                                        @else
-                                            &mdash;
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <p>Klasifikasi Pengadaan ini untuk <i> <u> {{ $row->klasifikasi }}</u></i> menggunakan metode <i> <u>{{ $row->metodepengadaan }}</u></i>.</p>
-                            </div>
-                        </section>
-                        <!-- <section class="mdc-card__actions pull-right">
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Apply in Sirup 1
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Download
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">Email</button>
-                        </section>-->
-                    </div>
-                    @endforeach
+                    Insert Here
                     <div class="mdc-card procurement-card text-center">
                         <section class="mdc-card__primary">
-                            {{ $pengadaan->links() }}
                             <button class="mdc-button">view more</button>
                         </section>
                     </div>
@@ -213,4 +127,22 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('footer')
+<script type="text/javascript"> 
+    $.ajax({ 
+    type: 'GET', 
+    url: 'http://localhost/oc-bandung/newbirms_old/public/api/search?q=test&ta=2017', 
+    data: { get_param: 'value' }, 
+    dataType: 'json',
+    success: function (data) { 
+        $.each(data, function(index, element) {
+            $('body').append($('<div>', {
+                text: element.name
+            }));
+        });
+    }
+});
+</script>
 @endsection

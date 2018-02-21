@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use File;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Input;
 
 class HomeController extends Controller
 {
@@ -303,16 +300,6 @@ class HomeController extends Controller
     	return View::make("frontend.home")->with($data);
     }
 
-	public function arrayPaginator($array, $request)
-	{
-	    $page = Input::get('page', 1);
-	    $perPage = 10;
-	    $offset = ($page * $perPage) - $perPage;
-
-	    return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true), count($array), $perPage, $page,
-	        ['path' => $request->url(), 'query' => $request->query()]);
-	}
-
     function post($id)
     {
     	$dbprime = env("DB_PRIME");
@@ -342,27 +329,6 @@ class HomeController extends Controller
     	return View::make("frontend.post")->with($data);
     }
     
-    function search1(Request $request)
-    {
-    	/*$data = [];
-    	$filename = "http://localhost/oc-bandung/newbirms_old/public/api/search?q=test&ta=2017";
-
-    	try
-		{
-		    $contents = File::get($filename);
-		}
-		catch (Illuminate\Filesystem\FileNotFoundException $exception)
-		{
-		    die("File tidak ada");
-		}
-
-		$data = json_decode($json, true);
-
-    	return View::make("frontend.search")->with($data);	
-    	//view('your-view')->with('leads', json_decode($leads, true));*/
-
-    }
-
     function search(Request $request)
     {
     	$dbplanning = env("DB_PLANNING");
@@ -418,7 +384,7 @@ class HomeController extends Controller
 			        $sql = "";
 			        break;        
 			    default:
-			    	$sql = "SELECT
+			    	/*$sql = "SELECT
 								`tbl_pekerjaan`.`kodepekerjaan` ,
 								`tbl_pekerjaan`.`sirupID`,
 								`tbl_metode`.`nama` AS metodepengadaan,
@@ -477,10 +443,8 @@ class HomeController extends Controller
 							if (!empty($max)) {
 								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) "; 
 							}
-			    	$rspengadaan = DB::select($sql);
-			    	$rspengadaan = $this->arrayPaginator($rspengadaan, $request);
-
-			    	/*$rspengadaan = DB::table($dbecontract.'.tpengadaan AS pgd')
+			    	$rspengadaan = DB::select($sql);*/
+			    	$rspengadaan = DB::table($dbecontract.'.tpengadaan AS pgd')
 			    						->addSelect(DB::raw('kodepekerjaan, 
 			    							sirupID, 
 			    							tbl_metode.nama AS metodepengadaan, 
@@ -516,7 +480,7 @@ class HomeController extends Controller
 												    ['pgd.ta', 'LIKE', DB::raw('"%'.$tahun.'%"')]
 												]
 			    							)
-			    						->get();*/
+			    						->get();
 
 			
 			}
@@ -527,5 +491,15 @@ class HomeController extends Controller
     		$data['message'] = 'Silahkan isi kata yang ingin dicari terlebih dahulu';
     	}
     	return View::make("frontend.search")->with($data);	
-    }   
+    }
+
+    function arrayPaginator($array, $request)
+	{
+	    $page = Input::get('page', 1);
+	    $perPage = 10;
+	    $offset = ($page * $perPage) - $perPage;
+
+	    return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true), count($array), $perPage, $page,
+	        ['path' => $request->url(), 'query' => $request->query()]);
+	}
 }

@@ -29,12 +29,15 @@
 
     <!--header-->
     @yield('header')
-
+    
     <!--content-->
     @yield('content')
     
     <!--footer-->
     @include('frontend.layouts.footer')
+
+    <!-- js-->
+    @yield('footer')
 </body>
 
 </html>

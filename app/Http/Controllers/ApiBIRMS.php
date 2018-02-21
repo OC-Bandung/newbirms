@@ -19,7 +19,8 @@ class ApiBIRMS extends Controller
 
 	public function contractsAll()
 	{
-		$results = Sirup::selectRaw('sirupID, CONCAT(\'ocds-afzrfb-\',sirupID) AS ocid, tahun, nama, pagu')
+		$ocid = env('OCID');
+		$results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
     						->orderBy('sirupID')
     						->paginate(15);
 
@@ -129,6 +130,7 @@ class ApiBIRMS extends Controller
 	    $dbmain 	= env('DB_PRIME');
 
 		$sql = "SELECT
+					unitID, 
 					UPPER(TRIM(SUBSTRING(nama, POSITION(' ' IN nama), LENGTH(nama)))) AS kecamatan,
 					CONVERT(IFNULL(
 					(SELECT COUNT(*) FROM ".env('DB_CONTRACT').".tpekerjaan WHERE administrative_area_level_3 = kecamatan AND ta = ".$year." GROUP BY administrative_area_level_3)
@@ -150,6 +152,7 @@ class ApiBIRMS extends Controller
 	    $dbmain 	= env('DB_PRIME');
 
 		$sql = "SELECT
+					unitID,
 					UPPER(TRIM(SUBSTRING(nama, POSITION(' ' IN nama), LENGTH(nama)))) AS kecamatan,
 					CONVERT(IFNULL(
 					(SELECT SUM(anggaran) FROM ".env('DB_CONTRACT').".tpekerjaan WHERE administrative_area_level_3 = kecamatan AND ta = ".$year." GROUP BY administrative_area_level_3)
@@ -361,6 +364,157 @@ class ApiBIRMS extends Controller
 
 	/*--- End Data Statistic ---*/
 
+	public function search(Request $request) {
+		$dbplanning 	= env("DB_PLANNING");
+    	$dbecontract 	= env("DB_CONTRACT");
+    	$dbprime 		= env("DB_PRIME");
+
+		$sql = "SELECT skpdID, unitID, satker, nama, singkatan FROM $dbprime.tbl_skpd WHERE isactive = 1 AND isparent = 1 ORDER BY unitID";
+		$rsskpd = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+		foreach($rsskpd as $row) {
+			array_push($data, array((INT)$row->skpdID, $row->unitID, $row->satker, $row->nama, $row->singkatan));
+		}
+		array_push($rowdata, array("name"=>"ref_skpd", "data"=> $data));
+
+		if (!empty($request)) {
+	    	$q 		= $request->input('q');
+	    	$tahun 	= $request->input('tahun');
+	    	$skpdID = $request->input('skpdID');
+	    	$klasifikasi = $request->input('klasifikasi');
+	    	$tahap 	= $request->input('tahap');
+	    	
+	    	$min 	= $request->input('min');
+	    	$max 	= $request->input('max');
+	    	$startdate = $request->input('startdate');
+	    	$enddate = $request->input('enddate');
+
+		
+	    	switch ($tahap) {
+			    case 1: //Perencanaan
+			        $sql = "";
+			        break;
+			    case 2: //Pengadaan
+			        /*$rspengadaan = DB::table($dbecontract.'.tpengadaan')
+			    						->select('tpengadaan.kode', 'tpengadaan.namakegiatan', 'tpengadaan.namapekerjaan', 'tpengadaan.nilai_nego','sirupID')
+			    						->leftJoin($dbecontract.'.tpekerjaan', 'tpengadaan.pid', '=', 'tpekerjaan.pid')
+										->leftJoin('tbl_pekerjaan', 'tpekerjaan.pekerjaanID', '=', 'tbl_pekerjaan.pekerjaanID')
+			    						->where([
+												    ['tpengadaan.namapekerjaan', 'LIKE', '%makanan%'],
+												    ['nilai_nego', '>=', 100],
+												    ['nilai_nego', '<=', 200],
+												]
+			    							)	
+			    						->get();*/
+			        break;
+			    case 3: //Pemenang
+			        $sql = "";
+			        break;
+			    case 4: //Kontrak
+			        $sql = "";
+			        break;
+			    case 5: //Implementasi
+			        $sql = "";
+			        break;        
+			    default:
+			    	$sql = "SELECT
+								`tbl_pekerjaan`.`kodepekerjaan` ,
+								`tbl_pekerjaan`.`sirupID`,
+								`tbl_metode`.`nama` AS metodepengadaan,
+								`tpengadaan`.`namakegiatan` ,
+								`tpengadaan`.`namapekerjaan` ,
+								`tpengadaan`.`nilai_nego` ,
+								`tpengadaan`.skpdID,
+								`tbl_skpd`.unitID,
+								`tbl_skpd`.nama AS namaskpd,
+								`tpengadaan`.ta,
+								`tpengadaan`.anggaran,
+								`tsumberdana`.sumberdana,
+								`tpengadaan`.klasifikasiID,
+								LEFT(`tklasifikasi`.kode,2) AS kodeklasifikasi,
+								  CASE 
+								     WHEN LEFT(`tklasifikasi`.kode,2) = 1 THEN 'Konstruksi'
+								     WHEN LEFT(`tklasifikasi`.kode,2) = 2 THEN 'Pengadaan Barang'
+								     WHEN LEFT(`tklasifikasi`.kode,2) = 3 THEN 'Jasa Konsultansi'
+								     WHEN LEFT(`tklasifikasi`.kode,2) = 4 THEN 'Jasa Lainnya'
+								     ELSE 'N/A'
+								  END AS klasifikasi,
+								`tbl_pekerjaan`.pilih_start,
+								`tbl_pekerjaan`.pilih_end,
+								`tbl_pekerjaan`.laksana_start,
+								`tbl_pekerjaan`.laksana_end
+							FROM
+								`$dbecontract`.`tpengadaan`
+							LEFT JOIN `$dbecontract`.`tpekerjaan` ON `tpengadaan`.`pid` = `tpekerjaan`.`pid`
+							LEFT JOIN `tbl_pekerjaan` ON `tpekerjaan`.`pekerjaanID` = `tbl_pekerjaan`.`pekerjaanID`
+							LEFT JOIN `tbl_metode` ON `tpekerjaan`.`metodeID` = `tbl_metode`.`metodeID`
+							LEFT JOIN `$dbprime`.`tbl_skpd` ON `tpengadaan`.`skpdID` = `tbl_skpd`.`skpdID`
+							LEFT JOIN `$dbecontract`.`tsumberdana` ON `tpengadaan`.sumberdanaid = `tsumberdana`.sumberdanaid
+							LEFT JOIN `$dbecontract`.`tklasifikasi` ON `tpengadaan`.klasifikasiID = `tklasifikasi`.klasifikasiID
+							WHERE true ";
+
+							if (!empty($q)) {
+								$sql .= " AND `tpengadaan`.`namapekerjaan` LIKE '%$q%' "; 
+							}
+
+							if (!empty($tahun)) {
+								$sql .= " AND `tpengadaan`.ta = $tahun "; 
+							}
+
+							if (!empty($skpdID)) {
+								$sql .= " AND `tpengadaan`.skpdID = $skpdID"; 
+							}
+
+							if (!empty($klasifikasi)) {
+								$sql .= " AND LEFT(`tklasifikasi`.kode,2) = $klasifikasi"; 
+							}
+
+							if (!empty($min)) {
+								$sql .= " AND (`tpengadaan`.anggaran >= $min OR `tpengadaan`.nilai_nego >= $min) "; 
+							}
+
+							if (!empty($max)) {
+								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) "; 
+							}
+			    	$rspengadaan = DB::select($sql);
+			}
+    	} else {
+    		$data['message'] = 'Silahkan isi kata yang ingin dicari terlebih dahulu';
+    	}
+
+    	$data = array();
+		foreach($rspengadaan as $row) {
+			array_push($data, array($row->kodepekerjaan, 
+								(int)$row->sirupID, 
+								$row->metodepengadaan,
+								$row->namakegiatan,
+								$row->namapekerjaan,
+								$row->nilai_nego,
+								$row->skpdID,
+								$row->unitID,
+								$row->namaskpd,
+								$row->ta,
+								$row->anggaran,
+								$row->sumberdana,
+								$row->klasifikasi,
+								$row->pilih_start,
+								$row->pilih_end,
+								$row->laksana_start,
+								$row->laksana_end));
+		}
+		array_push($rowdata, array("name"=>"pengadaan", "data"=> $data));
+
+		//total kontrak
+		array_push($rowdata, array("name"=>"totalsearch", "data"=> count($rspengadaan)));
+		$results = $rowdata;
+		return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
+			
+	}
+	/*--- Recent Data ---*/
 	public function planning($year) {
 		$sql = 'SELECT * FROM '.env('DB_PLANNING').'.tbl_sirup ORDER BY sirupID DESC LIMIT 10';
 		$rsdummy = DB::select($sql);

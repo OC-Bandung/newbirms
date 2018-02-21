@@ -66,9 +66,15 @@
        
         // load the requested variable from the map API
         var xhr = new XMLHttpRequest();
+        
+        var dt = new Date();
+        curryear = dt.getFullYear() - 1;
+
         // based on the variable (value or count, we load a separate json or api endpoint)
         //xhr.open('GET', 'geojson/' + variable + '.json'); // here this needs to be updated to birms api
-        xhr.open('GET', 'api/kecamatan/' + variable + '/2016'); // here this needs to be updated to birms api
+        //console.log(curryear);
+        curryear = 2016;
+        xhr.open('GET', 'api/kecamatan/' + variable + '/'+ curryear); // here this needs to be updated to birms api
         xhr.onload = function() {
 
             var mapData = JSON.parse(xhr.responseText);
@@ -79,8 +85,7 @@
 
 
              
-                var mapVariable = parseFloat(mapData[i].summary);
-                //var KECAMATANId = mapData[i].kechamatan;
+                var mapVariable = parseFloat(mapData[i].summary+1000);
                 var KECAMATANId = mapData[i].kecamatan;
 
                 // keep track of min and max values in order to know how to color
@@ -147,10 +152,13 @@
         var showRow = true;
         if (feature.getProperty('map_variable') == null ||
             isNaN(feature.getProperty('map_variable'))) {
-            showRow = false;
+            color[0] = 0;
+            color[1] = 0;
+            color[2] = 97;    
+            showRow = true;
         }
 
-        var outlineWeight = 0.5,
+        var outlineWeight = 1,
             zIndex = 1;
         if (feature.getProperty('KECAMATAN') === 'hover') {
             outlineWeight = zIndex = 2;
@@ -158,7 +166,7 @@
 
         return {
             strokeWeight: outlineWeight,
-            strokeColor: '#fff',
+            strokeColor: '#000',
             zIndex: zIndex,
             fillColor: 'hsl(' + color[0] + ',' + color[1] + '%,' + color[2] + '%)',
             fillOpacity: 0.75,

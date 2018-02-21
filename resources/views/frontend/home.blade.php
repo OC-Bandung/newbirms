@@ -1,7 +1,180 @@
 @extends('frontend.layouts.main')
 
 @section('header')
-    @extends('frontend.layouts.intro')
+    <svg class="hidden">
+        <defs>
+            <symbol id="icon-arrow" viewBox="0 0 24 24">
+                <title>arrow</title>
+                <polygon points="6.3,12.8 20.9,12.8 20.9,11.2 6.3,11.2 10.2,7.2 9,6 3.1,12 9,18 10.2,16.8 " />
+            </symbol>
+            <symbol id="icon-drop" viewBox="0 0 24 24">
+                <title>drop</title>
+                <path d="M12,21c-3.6,0-6.6-3-6.6-6.6C5.4,11,10.8,4,11.4,3.2C11.6,3.1,11.8,3,12,3s0.4,0.1,0.6,0.3c0.6,0.8,6.1,7.8,6.1,11.2C18.6,18.1,15.6,21,12,21zM12,4.8c-1.8,2.4-5.2,7.4-5.2,9.6c0,2.9,2.3,5.2,5.2,5.2s5.2-2.3,5.2-5.2C17.2,12.2,13.8,7.3,12,4.8z" />
+                <path d="M12,18.2c-0.4,0-0.7-0.3-0.7-0.7s0.3-0.7,0.7-0.7c1.3,0,2.4-1.1,2.4-2.4c0-0.4,0.3-0.7,0.7-0.7c0.4,0,0.7,0.3,0.7,0.7C15.8,16.5,14.1,18.2,12,18.2z" />
+            </symbol>
+            <symbol id="icon-search" viewBox="0 0 24 24">
+                <title>search</title>
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            </symbol>
+            <symbol id="icon-cross" viewBox="0 0 24 24">
+                <title>cross</title>
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </symbol>
+        </defs>
+    </svg>
+    <div class="intro">
+        <!--nav-->
+        @include('frontend.layouts.pages-nav') 
+
+        <!-- Search -->
+        <main class="main-wrap">
+            <div class="search">
+                <button id="btn-search-close" class="btn btn--search-close" aria-label="Close search form">
+                    <i class="material-icons">close</i>
+                </button>
+                <form class="search__form" action="{{ url('search') }}" method="get">
+                    <button class="btn btn--search">
+                        <svg class="icon icon--search">
+                            <use xlink:href="#icon-search"></use>
+                        </svg>
+                    </button>
+                    <input id="search-input" class="search__input" name="q" type="search" placeholder="Cari" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+                    <div class="mdc-layout-grid">
+                        <div class="mdc-layout-grid__inner">
+                            <div class="mdc-layout-grid__cell--span-3">
+                                <div class="search-select mdc-select">
+                                    <select class="mdc-select__surface" name="tahun" id="tahun" placeholder="Tahun">
+                                        <option value="" disabled selected>- Tahun -</option>
+                                        @for ($i = date("Y"); $i >= 2013; $i--)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                    <div class="mdc-select__bottom-line"></div>
+                                </div>
+                            </div>
+                            <div class="mdc-layout-grid__cell--span-9">
+                                <div class="search-select mdc-select">
+                                    <select class="mdc-select__surface" name="skpdID">
+                                        <option value="" disabled selected>- SKPD -</option>
+                                        @foreach($ref_skpd as $row)
+                                        <option value="{{ $row->skpdID }}">{{ $row->unitID }} - {{ $row->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="mdc-select__bottom-line"></div>
+                                </div>
+                            </div>
+                            <div class="mdc-layout-grid__cell--span-4">
+                                <div class="search-select mdc-select">                                
+                                    <select class="mdc-select__surface" name="klasifikasi" id="klasifikasi">
+                                        <option value="" disabled selected>- Klasifikasi -</option>
+                                        <option value="01">Konstruksi</option>
+                                        <option value="02">Pengadaan Barang</option>
+                                        <option value="03">Jasa Konsultansi</option>
+                                        <option value="04">Jasa Lainnya</option>
+                                    </select>
+                                    <div class="mdc-select__bottom-line"></div>
+                                </div>    
+                            </div>
+                            <div class="mdc-layout-grid__cell--span-8">
+                                <div class="search-select">
+                                    <label for="min">Pagu Anggaran / Nilai Kontrak</label>
+                                    <div class="mdc-text-field">
+                                        <div class="mdc-layout-grid__inner">
+                                            <div class="mdc-layout-grid__cell--span-6 padding-top-small">            
+                                                <input type="text" id="min" name="min" class="mdc-text-field__input" placeholder="Min">
+                                                <div class="mdc-text-field__bottom-line"></div>
+                                            </div>
+                                            <div class="mdc-layout-grid__cell--span-6 padding-top-small">            
+                                                <input type="text" id="max" name="max" class="mdc-text-field__input" placeholder="Max">
+                                                <div class="mdc-text-field__bottom-line"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mdc-layout-grid__cell--span-4">
+                                <div class="search-select mdc-select">
+                                    <select class="search-select mdc-select__surface" name="tahap" id="tahap" placeholder="Pilih Tahapan">
+                                        <option value="" disabled selected>- Tahapan -</option>
+                                        <option value="1">Perencanaan</option>
+                                        <option value="2">Pengadaan</option>
+                                        <option value="3">Pemenang</option>
+                                        <option value="4">Kontrak</option>
+                                        <option value="5">Implementasi</option>
+                                    </select><i class="material-icons mdc-text-field__icon" tabindex="0">warning</i>
+                                    <div class="mdc-select__bottom-line"></div>
+                                </div>     
+                            </div>
+                            <div class="mdc-layout-grid__cell--span-8">
+                                <div class="search-select">
+                                    <label for="startdate">Tanggal <i class="material-icons mdc-text-field__icon" tabindex="0">warning</i></label>
+                                    <div class="mdc-text-field">
+                                        <div class="mdc-layout-grid__inner">
+                                            <div class="mdc-layout-grid__cell--span-6 padding-top-small">   
+                                                <input type="date" id="enddate" name="enddate" class="mdc-text-field__input"> 
+                                                <div class="mdc-text-field__bottom-line"></div>
+                                            </div>
+                                            <div class="mdc-layout-grid__cell--span-6 padding-top-small">   
+                                                <input type="date" id="enddate" name="enddate" class="mdc-text-field__input"> 
+                                                <div class="mdc-text-field__bottom-line"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--
+                            <div class="mdc-layout-grid__cell--span-4">
+                                <select class="search-select mdc-select">
+                                    <option value="default selected">Activitiy</option>
+                                    <option value="a">L'activitiy</option>
+                                    <option value="b">The Activitiy</option>
+                                    <option value="c">Uno Activitiy</option>
+                                    <option value="d">Activitiy Name</option>
+                                    <option value="e">Activitiy Nama</option>
+                                </select>
+                            </div>
+                            <div class="mdc-layout-grid__cell--span-4">
+                                <select class="search-select mdc-select">
+                                    <option value="default selected">Award Criteria</option>
+                                    <option value="a">Sistem Gugur</option>
+                                    <option value="b">Kualitas dan Biaya</option>
+                                    <option value="c">Biaya Terendah</option>
+                                    <option value="d">Pagu Anggaran</option>
+                                    
+                                </select>
+                            </div>-->
+                            
+                            
+                            <!--
+                            <div class="mdc-layout-grid__cell--span-4">
+                                <select class="search-select mdc-select">
+                                    <option value="default selected">Method</option>
+                                    <option value="a">Lelang Umum</option>
+                                    <option value="b">Lelang Sederhana</option>
+                                    <option value="c">Lelang Terbatas</option>
+                                    <option value="d">Seleksi Umum </option>
+                                    <option value="d">Seleksi Sederhana </option>
+                                    <option value="e">Pemilihan Langsung</option>
+                                    <option value="e">Penunjukan Langsung</option>
+                                    <option value="e">Pengadaan Langsung</option>
+                                    <option value="e">e-Purchasing</option>
+                                    <option value="e">Sayembara Kontes</option>
+                                </select>
+                            </div>-->
+                            
+
+                           <div class="search-select mdc-layout-grid__cell--span-12 pull-right">
+                              <button class="mdc-button mdc-button--stroked mdc-button--compact" type="submit" name="cari">Cari</button>
+                              <button class="mdc-button mdc-button--stroked mdc-button--compact" onClick="close();" >Tutup</button>
+                           </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+        <!-- /search -->
+    </div>            
 @endsection
 
 @section('content')
@@ -87,421 +260,6 @@
                         </div>
 
                     </section>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section>
-        <div class="mdc-layout-grid procurement-grid">
-            <div class="mdc-layout-grid__inner">
-                <div class="mdc-layout-grid__cell--span-12">
-                    <h3 class="mdc-typography--display1">@lang('homepage.procurement_title')</h3>
-                </div>
-                <div class="mdc-layout-grid__cell--span-3 ">
-                    <ul id="load_recent-procurement" class="mdc-list mdc-list--two-line sticky">
-                        <li id="load_planning" class="mdc-list-item list-planning active">
-                            <span class="mdc-list-item__text">
-                                <a href="#"> Planning</a>
-                      <span class="mdc-list-item__text__secondary">see what's in our pipeline</span>
-                            </span>
-                        </li>
-                        <li id="load_tender" class="mdc-list-item  list-tender  ">
-                            <span class="mdc-list-item__text">
-                       <a href="#">Tender</a>
-                      <span class="mdc-list-item__text__secondary">prepare to bid</span>
-                            </span>
-                        </li>
-                        <li id="load_award" class="mdc-list-item list-award">
-                            <span class="mdc-list-item__text">
-                       <a href="#">Award</a>
-                      <span class="mdc-list-item__text__secondary">see who was awarded</span>
-                            </span>
-                        </li>
-                        <li id="load_contract" class="mdc-list-item   list-contract">
-                            <span class="mdc-list-item__text">
-                       <a href="#">Contract</a>
-                      <span class="mdc-list-item__text__secondary">view contract information</span>
-                            </span>
-                        </li>
-                        <li id="load_implementation" class="mdc-list-item list-implementation">
-                            <span class="mdc-list-item__text">
-                       <a href="#">Implementation</a>
-                      <span class="mdc-list-item__text__secondary">watch the progress</span>
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="mdc-layout-grid__cell--span-9">
-                    <div>
-                        <span id="recent_procurement_title" class="mdc-typography--display1 f300"></span>
-                        <i class="material-icons">sort</i>
-                        <select class="mdc-select">
-                            <option value="Sort By" default selected>Sort by</option>
-                            <option value="grains">Amount</option>
-                            <option value="vegetables">Dates</option>
-                            <option value="dairy">Recently updated</option>
-                            <option value="meat">Procuring Entity</option>
-                            <option value="fats">Budget source</option>
-                        </select>
-                    </div>
-                    <div id="recent-from-api">
-                    </div>
-                   <!--  <div class="mdc-card procurement-card">
-                        <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Belanja Modal Peralatan dan Mesin Pengadaan Mebelair</h1>
-                            <h2 class="mdc-card__subtitle">Kota Bandung - RUMAH SAKIT KHUSUS IBU DAN ANAK</h2>
-                            <h3 class="mdc-card__subtitle dark-gray">SirupID: #3662192 </h3>
-                        </section>
-                        <section class="mdc-card__supporting-text ">
-                            <div class="procurement-card-container flex">
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-money.png">
-                                    <div class="mdc-typography--subheading1"> Pagu </div>
-                                    <div> <span class="mdc-typography--title f300"> 2.8 </span> M</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-gov.png">
-                                    <div class="mdc-typography--subheading1"> Budget </div>
-                                    <div class="mdc-typography--title f300"> BLUD </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-start.png">
-                                    <div class="mdc-typography--subheading1"> Tender start </div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2017 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-end.png">
-                                    <div class="mdc-typography--subheading1"> Tender end</div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2018 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center ">
-                                    <img class="icon-large" src="img/icon-contract-start.png">
-                                    <div class="mdc-typography--subheading1">Contract start</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-contract-end.png">
-                                    <div class="mdc-typography--subheading1">Contract end</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                            </div>
-                            <div>
-                                <p>This contract is for <i> <u> Goods and Services</u></i> and will procured as <i> <u>Seleksi Sederhana</u></i>. You have <span class="mdc-typography--subheading1"> 10 days </span> to submit a bid. </p>
-                            </div>
-                        </section>
-                        <section class="mdc-card__actions pull-right">
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Apply in Sirup
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Download
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">Email</button>
-                        </section>
-                    </div>
-                    <div class="mdc-card procurement-card even">
-                        <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Perawatan dan Pengoperasian Bus TMB Koridor 2 (Cicaheum-Cibeureum)</h1>
-                            <h2 class="mdc-card__subtitle">Kota Bandung - DINAS KESEHATAN</h2>
-                            <h3 class="mdc-card__subtitle dark-gray">SirupID: #3662192</h3>
-                        </section>
-                        <section class="mdc-card__supporting-text ">
-                            <div class="procurement-card-container flex">
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-money.png">
-                                    <div class="mdc-typography--subheading1"> Pagu </div>
-                                    <div> <span class="mdc-typography--title f300"> 5.3 </span> M</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-gov.png">
-                                    <div class="mdc-typography--subheading1"> Budget </div>
-                                    <div class="mdc-typography--title f300"> APBD </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-start.png">
-                                    <div class="mdc-typography--subheading1"> Tender start </div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2012 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-end.png">
-                                    <div class="mdc-typography--subheading1"> Tender end</div>
-                                    <div class="mdc-typography--title f300"> 01-January-2018 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center ">
-                                    <img class="icon-large" src="img/icon-contract-start.png">
-                                    <div class="mdc-typography--subheading1">Contract start</div>
-                                    <div class="mdc-typography--title f300">02-June-1978</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-contract-end.png">
-                                    <div class="mdc-typography--subheading1">Contract end</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                            </div>
-                            <div>
-                                <p>This contract is for <i> <u> works</u></i> and will procured as <i> <u>Seleksi Sederhana</u></i>. You have <span class="mdc-typography--subheading1"> xx days </span> to submit a bid. </p>
-                            </div>
-                        </section>
-                        <section class="mdc-card__actions pull-right">
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Apply in Sirup
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Download
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">Email</button>
-                        </section>
-                    </div>
-                    <div class="mdc-card procurement-card">
-                        <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Belanja Bahan Makanan Dan Minuman Pasien Bulan</h1>
-                            <h2 class="mdc-card__subtitle">Kota Bandung - DINAS PEMUDA DAN OLAH RAGA</h2>
-                            <h3 class="mdc-card__subtitle dark-gray">SirupID: #3662192</h3>
-                        </section>
-                        <section class="mdc-card__supporting-text ">
-                            <div class="procurement-card-container flex">
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-money.png">
-                                    <div class="mdc-typography--subheading1"> Pagu </div>
-                                    <div> <span class="mdc-typography--title f300"> 2.8 </span> M</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-gov.png">
-                                    <div class="mdc-typography--subheading1"> Budget </div>
-                                    <div class="mdc-typography--title f300"> BLUD </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-start.png">
-                                    <div class="mdc-typography--subheading1"> Tender start </div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2017 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-end.png">
-                                    <div class="mdc-typography--subheading1"> Tender end</div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2018 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center ">
-                                    <img class="icon-large" src="img/icon-contract-start.png">
-                                    <div class="mdc-typography--subheading1">Contract start</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-contract-end.png">
-                                    <div class="mdc-typography--subheading1">Contract end</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                            </div>
-                            <div>
-                                <p>This contract is for <i> <u> a consultancy</u></i> and will procured as <i> <u>Seleksi Sederhana</u></i>. You have <span class="mdc-typography--subheading1"> 10 days </span> to submit a bid. </p>
-                            </div>
-                        </section>
-                        <section class="mdc-card__actions pull-right">
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Apply in Sirup
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Download
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">Email</button>
-                        </section>
-                    </div>
-                    <div class="mdc-card procurement-card even">
-                        <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Belanja Makanan dan Minuman Kegiatan Puslat Paskibra</h1>
-                            <h2 class="mdc-card__subtitle">Kota Bandung - DINAS PEMUDA DAN OLAH RAGA</h2>
-                            <h3 class="mdc-card__subtitle dark-gray">SirupID: #3662192</h3>
-                        </section>
-                        <section class="mdc-card__supporting-text ">
-                            <div class="procurement-card-container flex">
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-money.png">
-                                    <div class="mdc-typography--subheading1"> Pagu </div>
-                                    <div> <span class="mdc-typography--title f300"> 2.8 </span> M</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-gov.png">
-                                    <div class="mdc-typography--subheading1"> Budget </div>
-                                    <div class="mdc-typography--title f300"> BLUD </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-start.png">
-                                    <div class="mdc-typography--subheading1"> Tender start </div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2017 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-end.png">
-                                    <div class="mdc-typography--subheading1"> Tender end</div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2018 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center ">
-                                    <img class="icon-large" src="img/icon-contract-start.png">
-                                    <div class="mdc-typography--subheading1">Contract start</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-contract-end.png">
-                                    <div class="mdc-typography--subheading1">Contract end</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                            </div>
-                            <div>
-                                <p>This contract is for <i> <u> Goods and Services</u></i> and will procured as <i> <u>Seleksi Sederhana</u></i>. You have <span class="mdc-typography--subheading1"> 10 days </span> to submit a bid. </p>
-                            </div>
-                        </section>
-                        <section class="mdc-card__actions pull-right">
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Apply in Sirup
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Download
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">Email</button>
-                        </section>
-                    </div>
-                    <div class="mdc-card procurement-card">
-                        <section class="mdc-card__primary">
-                            <h1 class="mdc-card__title mdc-card__title--large f300">Belanja Makanan dan Minuman Kegiatan Puslat Paskibra</h1>
-                            <h2 class="mdc-card__subtitle">Kota Bandung - DINAS PEMUDA DAN OLAH RAGA</h2>
-                            <h3 class="mdc-card__subtitle dark-gray">SirupID: #3662192</h3>
-                        </section>
-                        <section class="mdc-card__supporting-text ">
-                            <div class="procurement-card-container flex">
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-money.png">
-                                    <div class="mdc-typography--subheading1"> Pagu </div>
-                                    <div> <span class="mdc-typography--title f300"> 2.8 </span> M</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-gov.png">
-                                    <div class="mdc-typography--subheading1"> Budget </div>
-                                    <div class="mdc-typography--title f300"> BLUD </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-start.png">
-                                    <div class="mdc-typography--subheading1"> Tender start </div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2017 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-tender-end.png">
-                                    <div class="mdc-typography--subheading1"> Tender end</div>
-                                    <div class="mdc-typography--title f300"> 01-Feb-2018 </div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center ">
-                                    <img class="icon-large" src="img/icon-contract-start.png">
-                                    <div class="mdc-typography--subheading1">Contract start</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                                <div class="procurement-card-details padding-small text-center">
-                                    <img class="icon-large" src="img/icon-contract-end.png">
-                                    <div class="mdc-typography--subheading1">Contract end</div>
-                                    <div class="mdc-typography--title f300">02 March 1978</div>
-                                </div>
-                            </div>
-                            <div>
-                                <p>This contract is for <i> <u> Goods and Services</u></i> and will procured as <i> <u>Seleksi Sederhana</u></i>. You have <span class="mdc-typography--subheading1"> 10 days </span> to submit a bid. </p>
-                            </div>
-                        </section>
-                        <section class="mdc-card__actions pull-right">
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Apply in Sirup
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">
-                                Download
-                            </button>
-                            <button class="mdc-button mdc-button--compact mdc-card__action">Email</button>
-                        </section>
-                    </div> -->
-                    <div class="mdc-card procurement-card text-center">
-                        <section class="mdc-card__primary">
-                            <button class="mdc-button">view more</button>
-                        </section>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section>
-        <div class="mdc-layout-grid">
-            <div class="mdc-layout-grid__inner">
-                <div class="mdc-layout-grid__cell--span-12">
-                    <div class="mdc-typography--display1">@lang('homepage.procurement_map_title')</div>
-                </div>
-                <div class="mdc-layout-grid__cell--span-6">
-                    <div id="map"></div>
-                </div>
-                <div class="mdc-layout-grid__cell--span-6">
-                    <div id="map-controls" class="nicebox">
-                        <div>
-                            <select id="map-variable">
-                               <!--  The option value = "xxx" is what decides which json file is loaded -->
-                                <option value="count">Pagu Anggaran</option>
-                                <option value="value">Paket Pekerjaan</option>
-                            </select>
-                        </div>
-                        <div id="legend">
-                            <div id="map-min">min</div>
-                            <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
-                            <div id="map-max">max</div>
-                        </div>
-                    </div>
-
-
-                    <div id="data-box" class="nicebox">
-                        <label id="data-label" for="data-value"></label>
-                        <span id="data-value"></span>
-                    </div>
-                <!--    <nav id="icon-text-tab-bar" class="mdc-tab-bar mdc-tab-bar--icons-with-text">
-                        <a class="mdc-tab mdc-tab--with-icon-and-text mdc-tab--active" href="#recents">
-                        <i class="material-icons mdc-tab__icon" aria-hidden="true">fiber_new</i>
-                        <span class="mdc-tab__icon-caption">Recent</span>
-                      </a>
-                        <a class="mdc-tab mdc-tab--with-icon-and-text" href="#byvalue">
-                        <i class="material-icons mdc-tab__icon" aria-hidden="true">attach_money</i>
-                        <span class="mdc-tab__icon-caption">Value</span>
-                      </a>
-                        <span class="mdc-tab-bar__indicator"></span>
-                    </nav>
-                    <div class="panels">
-                        <p class="panel active" id="recents" role="tabpanel" aria-hidden="true">
-                            <ul class="map-list mdc-list mdc-list--two-line">
-                                <li class="mdc-list-item">
-                                    <span class="mdc-list-item__text">
-                                  <span>02.09.2017</span>
-                                    <span>Belanja Modal Peralatan Dan Mesin-Pengadaan Meubeleir</span>
-                                    <span class="mdc-list-item__text__secondary">KECAMATAN ASTANAANYAR</span>
-                                    </span>
-                                </li>
-                                <li class="mdc-list-item">
-                                    <span class="mdc-list-item__text">
-                                 <span>02.08.2017</span>
-                                    <span>Belanja Pengadaan Modal Dan Mesin-alat studio/Proyektor</span>
-                                    <span class="mdc-list-item__text__secondary">KECAMATAN ASTANAANYAR</span>
-                                    </span>
-                                </li>
-                                <li class="mdc-list-item">
-                                    <span class="mdc-list-item__text">
-                                 <span>02.10.2017</span>
-                                    <span> Belanja Modal Peralatan Dan Mesin-Pengadaan Komputer</span>
-                                    <span class="mdc-list-item__text__secondary">KECAMATAN ASTANAANYAR</span>
-                                    </span>
-                                </li>
-                                <li class="mdc-list-item">
-                                    <span class="mdc-list-item__text">
-                                  <span>02.10.2017</span>
-                                    <span>Belanja Pemeliharaan Bangunan</span>
-                                    <span class="mdc-list-item__text__secondary">KECAMATAN ASTANAANYAR</span>
-                                    </span>
-                                </li>
-                                <li class="mdc-list-item">
-                                    <span class="mdc-list-item__text">
-                                  <span>02.10.2017</span>
-                                    <span>Belanja Pemeliharaan Ruangan Pelayanan</span>
-                                    <span class="mdc-list-item__text__secondary">KECAMATAN ASTANAANYAR</span>
-                                    </span>
-                                </li>
-                            </ul>
-                        </p>
-                    </div>-->
                 </div>
             </div>
         </div>
@@ -720,10 +478,160 @@
                     </div>
                 </div>
             </div>
-
-            
         </div>
-        
+    </section>
+    <section>
+        <div class="mdc-layout-grid procurement-grid">
+            <div class="mdc-layout-grid__inner">
+                <div class="mdc-layout-grid__cell--span-12">
+                    <h3 class="mdc-typography--display1">@lang('homepage.procurement_title')</h3>
+                </div>
+                <div class="mdc-layout-grid__cell--span-3 ">
+                    <ul id="load_recent-procurement" class="mdc-list mdc-list--two-line sticky">
+                        <li id="load_perencanaan" class="mdc-list-item list-planning active">
+                            <span class="mdc-list-item__text">
+                                <a href="#">@lang('homepage.planning_title')</a>
+                                <span class="mdc-list-item__secondary-text">@lang('homepage.planning_shortdesc')</span>
+                            </span>
+                        </li>
+                        <li id="load_pengadaan" class="mdc-list-item  list-tender  ">
+                            <span class="mdc-list-item__text">
+                                <a href="#">@lang('homepage.tender_title')</a>
+                                <span class="mdc-list-item__secondary-text">@lang('homepage.tender_shortdesc')</span>
+                            </span>
+                        </li>
+                        <li id="load_pemenang" class="mdc-list-item list-award">
+                            <span class="mdc-list-item__text">
+                                <a href="#">@lang('homepage.award_title')</a>
+                                <span class="mdc-list-item__secondary-text">@lang('homepage.award_shortdesc')</span>
+                            </span>
+                        </li>
+                        <li id="load_kontrak" class="mdc-list-item   list-contract">
+                            <span class="mdc-list-item__text">
+                                <a href="#">@lang('homepage.contract_title')</a>
+                                <span class="mdc-list-item__secondary-text">@lang('homepage.contract_shortdesc')</span>
+                            </span>
+                        </li>
+                        <li id="load_implementasi" class="mdc-list-item list-implementation">
+                            <span class="mdc-list-item__text">
+                                <a href="#">@lang('homepage.implementation_title')</a>
+                                <span class="mdc-list-item__secondary-text">@lang('homepage.implementation_shortdesc')</span>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="mdc-layout-grid__cell--span-9">
+                    <div>
+                        <span id="recent_procurement_title" class="mdc-typography--display1 f300"></span>
+                        <i class="material-icons">sort</i>
+                        <!--<select class="mdc-select">
+                            <option value="Sort By" default selected>Sort by</option>
+                            <option value="grains">Amount</option>
+                            <option value="vegetables">Dates</option>
+                            <option value="dairy">Recently updated</option>
+                            <option value="meat">Procuring Entity</option>
+                            <option value="fats">Budget source</option>
+                        </select>-->
+                    </div>
+                    <div id="recent-from-api">
+                    </div>
+                    <div class="mdc-card procurement-card text-center">
+                        <section class="mdc-card__primary">
+                            <button class="mdc-button">view more</button>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="mdc-layout-grid">
+            <div class="mdc-layout-grid__inner">
+                <div class="mdc-layout-grid__cell--span-12">
+                    <div class="mdc-typography--display1">@lang('homepage.procurement_map_title')</div>
+                </div>
+                <div class="mdc-layout-grid__cell--span-6">
+                    <div id="map-controls" class="nicebox">
+                        <div id="filter">
+                            <label class="mdc-typography--subheading1">@lang('homepage.show_contract_by')</label>
+                            <span>
+                                <select class="mdc-select" id="map-variable">
+                                    <option value="count">Jumlah Paket Pekerjaan</option>
+                                    <option value="value">Pagu Anggaran</option>
+                                </select>
+                            </span>
+                        </div>
+                        <div id="legend">
+                            <div id="map-min">Min</div>
+                            <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
+                            <div id="map-max">Maks</div>
+                        </div>
+                    </div>
+                    <div id="map"></div>
+                </div> 
+                <div class="mdc-layout-grid__cell--span-6">
+                    <div id="data-box">
+                        <label id="data-label" for="data-value"></label>
+                        <span id="data-value"></span>
+                    </div>    
+                </div>   
+
+                
+                <!--    <nav id="icon-text-tab-bar" class="mdc-tab-bar mdc-tab-bar--icons-with-text">
+                        <a class="mdc-tab mdc-tab--with-icon-and-text mdc-tab--active" href="#recents">
+                        <i class="material-icons mdc-tab__icon" aria-hidden="true">fiber_new</i>
+                        <span class="mdc-tab__icon-caption">Recent</span>
+                      </a>
+                        <a class="mdc-tab mdc-tab--with-icon-and-text" href="#byvalue">
+                        <i class="material-icons mdc-tab__icon" aria-hidden="true">attach_money</i>
+                        <span class="mdc-tab__icon-caption">Value</span>
+                      </a>
+                        <span class="mdc-tab-bar__indicator"></span>
+                    </nav>
+                    <div class="panels">
+                        <p class="panel active" id="recents" role="tabpanel" aria-hidden="true">
+                            <ul class="map-list mdc-list mdc-list--two-line">
+                                <li class="mdc-list-item">
+                                    <span class="mdc-list-item__text">
+                                  <span>02.09.2017</span>
+                                    <span>Belanja Modal Peralatan Dan Mesin-Pengadaan Meubeleir</span>
+                                    <span class="mdc-list-item__secondary-text">KECAMATAN ASTANAANYAR</span>
+                                    </span>
+                                </li>
+                                <li class="mdc-list-item">
+                                    <span class="mdc-list-item__text">
+                                 <span>02.08.2017</span>
+                                    <span>Belanja Pengadaan Modal Dan Mesin-alat studio/Proyektor</span>
+                                    <span class="mdc-list-item__secondary-text">KECAMATAN ASTANAANYAR</span>
+                                    </span>
+                                </li>
+                                <li class="mdc-list-item">
+                                    <span class="mdc-list-item__text">
+                                 <span>02.10.2017</span>
+                                    <span> Belanja Modal Peralatan Dan Mesin-Pengadaan Komputer</span>
+                                    <span class="mdc-list-item__secondary-text">KECAMATAN ASTANAANYAR</span>
+                                    </span>
+                                </li>
+                                <li class="mdc-list-item">
+                                    <span class="mdc-list-item__text">
+                                  <span>02.10.2017</span>
+                                    <span>Belanja Pemeliharaan Bangunan</span>
+                                    <span class="mdc-list-item__secondary-text">KECAMATAN ASTANAANYAR</span>
+                                    </span>
+                                </li>
+                                <li class="mdc-list-item">
+                                    <span class="mdc-list-item__text">
+                                  <span>02.10.2017</span>
+                                    <span>Belanja Pemeliharaan Ruangan Pelayanan</span>
+                                    <span class="mdc-list-item__secondary-text">KECAMATAN ASTANAANYAR</span>
+                                    </span>
+                                </li>
+                            </ul>
+                        </p>
+                    </div>-->
+                </div>
+            </div>
+        </div>
     </section>
     <section>
         <div class="mdc-layout-grid">
