@@ -5,9 +5,13 @@ body {
 	 
 }
 
-body {
-	font-family: 'Roboto', sans-serif;
+body , div[class*="mdc-typography--title"]  {
+	font-family: 'Montserrat', sans-serif;
 	 
+}
+
+p {
+	font-family: 'Roboto', sans-serif;
 }
 
 footer {
@@ -30,15 +34,25 @@ select.homepage-chart {
 	width: 150px;
 }
 
+
 ul.map-list li {
 	margin-bottom: 20px;
 }
+
+.bg-white-transparent {
+	background-color: rgba(255,255,255, 0.85);
+}
+
 .hidden {
 	visibility: none;
 }
 .stat-settings {
 	height: 300px;
- 	
+}
+
+.absolute-bottom {
+	position: absolute;
+	bottom: 0;
 }
 
 .mdc-grid-tile__secondary {
@@ -128,11 +142,20 @@ ul.map-list li {
 	 
 }
  
+.inline-left {
+	display: inline;
+	float: left;
+}
+
 .pull-right {
 	float: right;
 }
 .icon-large{
 	height: 36px;
+}
+
+.icon-medium{
+	height: 25px;
 }
 
 .icon-large-label {
@@ -258,6 +281,11 @@ ul {
 	padding-bottom: 10px;
 }
 
+.padding-right-xs{
+	padding-right: 5px;
+}
+
+
 .padding-right-small {
 	padding-right: 10px;
 }
@@ -265,6 +293,21 @@ ul {
 .padding-right-large {
 	padding-right: 25px;
 }
+
+.padding-bottom-large {
+	padding-bottom: 25px;
+}
+
+.padding-top-large {
+	padding-top: 25px;
+}
+
+
+.margin-top-large {
+	margin-top: 25px;
+}
+
+
 
 .nudge-to-boundary {
   margin-left: -5px;

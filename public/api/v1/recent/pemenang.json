@@ -8,7 +8,7 @@
     "SKPD": "DINAS KESEHATAN",
     "budget": {
       "description": "APBD",
-      "amount": {
+      "value": {
         "amount": 920,
         "currency": "IDR"
       },
@@ -38,7 +38,7 @@
     "SKPD": "Batununggal",
     "budget": {
       "description": "APBD",
-      "amount": {
+      "value": {
         "amount": 100000000,
         "currency": "IDR"
       },
@@ -68,7 +68,7 @@
     "SKPD": "DINAS KESEHATAN",
     "budget": {
       "description": "APBD",
-      "amount": {
+      "value": {
         "amount": 207033000,
         "currency": "IDR"
       },
@@ -98,7 +98,7 @@
     "SKPD": "DINAS KESEHATAN",
     "budget": {
       "description": "BLUD",
-      "amount": {
+      "value": {
         "amount": 40000000,
         "currency": "IDR"
       },
@@ -128,7 +128,7 @@
     "SKPD": "DINAS KESEHATAN",
     "budget": {
       "description": "APBD",
-      "amount": {
+      "value": {
         "amount": 200000000,
         "currency": "IDR"
       },
@@ -158,7 +158,7 @@
     "SKPD": "RUMAH SAKIT KHUSUS IBU DAN ANAK",
     "budget": {
       "description": "APBD",
-      "amount": {
+      "value": {
         "amount": 50000000,
         "currency": "IDR"
       },
@@ -188,7 +188,7 @@
     "SKPD": "DINAS KESEHATAN",
     "budget": {
       "description": "APBD",
-      "amount": {
+      "value": {
         "amount": 3600000,
         "currency": "IDR"
       },
