@@ -35,8 +35,18 @@ select.homepage-chart {
 }
 
 
+
 ul.map-list li {
 	margin-bottom: 20px;
+}
+
+img.desaturate {
+	filter: grayscale(100%);
+}
+
+
+.vertical-align-top {
+	vertical-align: top;
 }
 
 .bg-white-transparent {
@@ -69,8 +79,14 @@ ul.map-list li {
 
 }
 
+
 .stat-settings-button button {
 	display: block;
+}
+
+.h30 {
+	height:30px;
+	 
 }
 
 .sticky {
@@ -79,6 +95,23 @@ ul.map-list li {
     position: sticky;
 
 }
+
+
+.open-data {
+	background-color: #fefefe;
+}
+
+.open-data-badges {
+	 position: absolute;
+	 width: 100%;
+	 top:200px;
+}
+
+.img-responsive {
+	width: 100%;
+	height: auto;
+}
+
 .even {
   background-color: #f8f8f8;
 }
@@ -319,10 +352,291 @@ ul {
  	 margin-right: -15px;
 }
 
+
 .search-header {
     background-color: #7ccdbd;
     padding-left: 25px;
     opacity: 1;
 
     width: 100%;
+}
+
+.homepage-mid-banner {
+	width:100%; 
+	background-color:teal; 
+	height:400px;
+	color: white;
+}
+
+#graph-people {
+	float: right;
+	width: 200px;
+}
+
+#infographic-two-way-communication {
+	position: relative;
+	margin-left: 12%;
+	margin-right: 12%;
+}
+#infographic-two-way-communication .hide-for-large-up {
+	width: 80%;
+	margin: 0 auto;
+}
+#infographic-two-way-communication #graph-gov {
+	float: left;
+	width: 200px;
+}
+#infographic-two-way-communication #graph-people {
+	float: right;
+	width: 200px;
+}
+#infographic-two-way-communication #graph-arrow-bottom, #infographic-two-way-communication #graph-arrow-top {
+	width: 120px;
+	height: 40px;
+	background-color: #ffffff;
+	position: absolute;
+}
+#infographic-two-way-communication #graph-arrow-top {
+	top: 50px;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-name: moving-r2l;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+	-moz-animation-duration: 2s;
+	-moz-animation-name: moving-r2l;
+	-moz-animation-iteration-count: infinite;
+	-moz-animation-timing-function: linear;
+	-o-animation-duration: 2s;
+	-o-animation-name: moving-r2l;
+	-o-animation-iteration-count: infinite;
+	-o-animation-timing-function: linear;
+	animation-duration: 2s;
+	animation-name: moving-r2l;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+#infographic-two-way-communication #graph-arrow-bottom {
+	top: 120px;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-name: moving-l2r;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+	-moz-animation-duration: 2s;
+	-moz-animation-name: moving-l2r;
+	-moz-animation-iteration-count: infinite;
+	-moz-animation-timing-function: linear;
+	-o-animation-duration: 2s;
+	-o-animation-name: moving-l2r;
+	-o-animation-iteration-count: infinite;
+	-o-animation-timing-function: linear;
+	animation-duration: 2s;
+	animation-name: moving-l2r;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+#infographic-two-way-communication #graph-arrow-bottom::after {
+	content: "";
+	width: 0;
+	height: 0;
+	border-left: 20px solid #ffffff;
+	border-top: 20px solid transparent;
+	border-bottom: 20px solid transparent;
+	position: absolute;
+	right: -20px;
+}
+#infographic-two-way-communication #graph-arrow-bottom::before {
+	content: "";
+	width: 0;
+	height: 0;
+	border-left: 20px solid teal;
+	border-top: 20px solid transparent;
+	border-bottom: 20px solid transparent;
+	position: absolute;
+	left: 0;
+	z-index: 1;
+}
+#infographic-two-way-communication #graph-arrow-top::after {
+	content: "";
+	width: 0;
+	height: 0;
+	border-right: 20px solid #ffffff;
+	border-top: 20px solid transparent;
+	border-bottom: 20px solid transparent;
+	position: absolute;
+	left: -20px;
+}
+#infographic-two-way-communication #graph-arrow-top::before {
+	content: "";
+	width: 0;
+	height: 0;
+	border-right: 20px solid teal;
+	border-top: 20px solid transparent;
+	border-bottom: 20px solid transparent;
+	position: absolute;
+	right: 0;
+	z-index: 1;
+}
+#animated-two-way-graph {
+	width: 100%;
+}
+@-webkit-keyframes moving-r2l {
+	from {
+		left: 700px;
+		width: 0px;
+	}
+	29% {
+		left: 580px;
+		width: 120px;
+	}
+	71% {
+		left: 240px;
+		width: 120px;
+	}
+	to {
+		left: 240px;
+		width: 0;
+	}
+}
+@-webkit-keyframes moving-l2r {
+	from {
+		left: 240px;
+		width: 0px;
+	}
+	29% {
+		left: 240px;
+		width: 120px;
+	}
+	71% {
+		left: 580px;
+		width: 120px;
+	}
+	to {
+		left: 700px;
+		width: 0;
+	}
+}
+@-moz-keyframes moving-r2l {
+	from {
+		left: 700px;
+		width: 0px;
+	}
+	29% {
+		left: 580px;
+		width: 120px;
+	}
+	71% {
+		left: 240px;
+		width: 120px;
+	}
+	to {
+		left: 240px;
+		width: 0;
+	}
+}
+@-moz-keyframes moving-l2r {
+	from {
+		left: 240px;
+		width: 0px;
+	}
+	29% {
+		left: 240px;
+		width: 120px;
+	}
+	71% {
+		left: 580px;
+		width: 120px;
+	}
+	to {
+		left: 700px;
+		width: 0;
+	}
+}
+@-o-keyframes moving-r2l {
+	from {
+		left: 700px;
+		width: 0px;
+	}
+	29% {
+		left: 580px;
+		width: 120px;
+	}
+	71% {
+		left: 240px;
+		width: 120px;
+	}
+	to {
+		left: 240px;
+		width: 0;
+	}
+}
+@-o-keyframes moving-l2r {
+	from {
+		left: 240px;
+		width: 0px;
+	}
+	29% {
+		left: 240px;
+		width: 120px;
+	}
+	71% {
+		left: 580px;
+		width: 120px;
+	}
+	to {
+		left: 700px;
+		width: 0;
+	}
+}
+@keyframes moving-r2l {
+	from {
+		left: 700px;
+		width: 0px;
+	}
+	29% {
+		left: 580px;
+		width: 120px;
+	}
+	71% {
+		left: 240px;
+		width: 120px;
+	}
+	to {
+		left: 240px;
+		width: 0;
+	}
+}
+@keyframes moving-l2r {
+	from {
+		left: 240px;
+		width: 0px;
+	}
+	29% {
+		left: 240px;
+		width: 120px;
+	}
+	71% {
+		left: 580px;
+		width: 120px;
+	}
+	to {
+		left: 700px;
+		width: 0;
+	}
+}
+
+.hide-for-large-up {
+	display: none;
+}
+
+
+ul.regular-list  {
+	list-style-type: square !important;
+}
+
+ul.regular-list li  {
+	padding-bottom: 10px;
+}
+
+ul.regular-list li a {
+	text-decoration: underline;
 }

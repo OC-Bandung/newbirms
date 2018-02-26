@@ -2,7 +2,7 @@
         <div class="mdc-layout-grid">
             <div class="mdc-layout-grid__inner f300">
                 <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-4">
-                    <div class="mdc-typography--headline">
+                    <div class="mdc-typography--headline f300">
                       @lang('homepage.welcome_title')
                     </div>
                     @lang('homepage.welcome_text')

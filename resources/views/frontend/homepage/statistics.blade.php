@@ -1,6 +1,6 @@
 <section class="mdc-layout-grid  bg-white-transparent">
 
-        <div class="Montserrat">
+        <div>
           <div class="mdc-layout-grid__inner">
             <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
                 <div class="mdc-layout-grid__inner">

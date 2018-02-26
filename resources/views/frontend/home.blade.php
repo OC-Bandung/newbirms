@@ -25,7 +25,10 @@
 
     @include('frontend.homepage.recent-procurement')
 
+    @include ('frontend.homepage.open-data')
+
     @include ('frontend.homepage.blog')
+
 
     @include ('frontend.homepage.contact')
 

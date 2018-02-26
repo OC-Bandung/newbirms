@@ -2,7 +2,7 @@
         <div class="mdc-layout-grid">
             <div class="mdc-layout-grid__inner">
                 <div class="mdc-layout-grid__cell--span-12">
-                    <div class="mdc-typography--headline">@lang('homepage.procurement_map_title')
+                    <div class="mdc-typography--headline f300">@lang('homepage.procurement_map_title')
                     </div>
                     <div class="mdc-typography--body1">
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod

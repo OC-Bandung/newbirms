@@ -2,7 +2,7 @@
         <div class="mdc-layout-grid procurement-grid">
             <div class="mdc-layout-grid__inner">
                 <div class="mdc-layout-grid__cell--span-12">
-                    <div class="mdc-typography--headline">@lang('homepage.procurement_title')</div>
+                    <div class="mdc-typography--headline f300">@lang('homepage.procurement_title')</div>
                 </div>
                 <div class="mdc-layout-grid__cell--span-3 ">
                     <ul id="load_recent-procurement" class="mdc-list mdc-list--two-line sticky">
@@ -40,9 +40,14 @@
                 </div>
                 <div class="mdc-layout-grid__cell--span-9">
                     <div class="">
-                        <span id="recent_procurement_title" class="mdc-typography--headline f300"></span>
+                        <span id="recent_procurement_title" class="mdc-typography--headline f300"></span> 
                          <div class="pull-right"> 
+
+                            <a id="open-data-planning" target="_blank" href="https://birms.bandung.go.id/beta/api/v1/recent/perencanaan.json"><i class="material-icons">code</i> <span class="mdc-typography--caption vertical-align-top">json</span></a> 
+                            
                             <a href="#"><i class="material-icons">sort</i></a>  Sort by: Recent
+
+
                         </div>
                     </div>
                     <div id="recent-from-api">

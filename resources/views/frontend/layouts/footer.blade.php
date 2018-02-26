@@ -20,3 +20,4 @@
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmGnhhccwog6j_hFmAo8zg1VaYWE_m7Ak&callback=initMap"></script>
 
     <script src="{{ url('js/graph.js') }}"></script>
+    <script src="{{ url('js/open-data.js') }}"></script>
