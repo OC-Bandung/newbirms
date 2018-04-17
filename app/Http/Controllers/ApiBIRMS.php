@@ -13,7 +13,7 @@ class ApiBIRMS extends Controller
 {
     public function contractsPerYear($year)
 	{
-		$results = Sirup::where("tahun", $year)->limit(5)->get(); 
+		$results = Sirup::where("tahun", $year)->paginate(15); 
     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	}
 
@@ -117,7 +117,7 @@ class ApiBIRMS extends Controller
 				LEFT OUTER JOIN $dbmain.tbl_user ON tr_sk_user.usrID = $dbmain.tbl_user.usrID
 				LEFT OUTER JOIN $dbmain.tbl_skpd ON tbl_sk.skpdID = $dbmain.tbl_skpd.skpdID
 				LIMIT 10';
-		$results = DB::select($sql);
+		$results = DB::select($sql)->paginate(15);
     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	  
 	}

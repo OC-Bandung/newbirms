@@ -640,3 +640,16 @@ ul.regular-list li  {
 ul.regular-list li a {
 	text-decoration: underline;
 }
+
+.main-menu, .main-menu a {
+	width: 50%;
+	font-weight: 900;
+	color: white;
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+.main-menu div.active {
+	border-bottom: 3px solid white;
+	padding-bottom: 5px;
+}

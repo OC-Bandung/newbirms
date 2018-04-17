@@ -74,8 +74,8 @@
         //xhr.open('GET', 'geojson/' + variable + '.json'); // here this needs to be updated to birms api
         //console.log(curryear);
         curryear = 2016;
-        //xhr.open('GET', 'https://birms.bandung.go.id/beta/api/kecamatan/value/2017'); // here this needs to be updated to birms api
-        xhr.open('GET', 'api/kecamatan/' + variable + '/'+ curryear); // here this needs to be updated to birms api
+        xhr.open('GET', 'https://birms.bandung.go.id/beta/api/kecamatan/value/2017'); // here this needs to be updated to birms api
+        //xhr.open('GET', 'api/kecamatan/' + variable + '/'+ curryear); // here this needs to be updated to birms api
         xhr.onload = function() {
 
             var mapData = JSON.parse(xhr.responseText);
