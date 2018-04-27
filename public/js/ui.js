@@ -10,3 +10,15 @@ $("#load_recent-procurement li").click(function(e){
     $(this).addClass("active");
   }
 });
+
+
+$(".main-menu div a").click(function(e){
+ 
+  // If this isn't already active
+  if (!$(this).hasClass("active")) {
+    // Remove the class from anything that is active
+    $(".main-menu div.active").removeClass("active");
+    // And make this active
+    $(this).parent().addClass("active");
+  }
+});

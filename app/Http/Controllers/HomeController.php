@@ -34,7 +34,7 @@ class HomeController extends Controller
 				FROM $dbprime.tbl_post 
 					LEFT OUTER JOIN $dbprime.tbl_postcontent ON $dbprime.tbl_post.pst_id = $dbprime.tbl_postcontent.pst_id
 					LEFT OUTER JOIN $dbprime.tbl_content ON $dbprime.tbl_postcontent.con_id = $dbprime.tbl_content.con_id
-				WHERE poststatus = 2 AND $dbprime.tbl_content.filename <> '' ORDER BY $dbprime.tbl_post.created DESC LIMIT 10";
+				WHERE poststatus = 2 AND $dbprime.tbl_content.filename <> '' ORDER BY $dbprime.tbl_post.created DESC LIMIT 3";
 		$rspost = DB::select($sql);
     	/* Article ---- Finish */
 

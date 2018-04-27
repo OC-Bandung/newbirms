@@ -74,12 +74,12 @@
         //xhr.open('GET', 'geojson/' + variable + '.json'); // here this needs to be updated to birms api
         //console.log(curryear);
         curryear = 2016;
-        xhr.open('GET', 'api/kecamatan/' + variable + '/'+ curryear); // here this needs to be updated to birms api
+        xhr.open('GET', 'https://birms.bandung.go.id/beta/api/kecamatan/value/2017'); // here this needs to be updated to birms api
+        //xhr.open('GET', 'api/kecamatan/' + variable + '/'+ curryear); // here this needs to be updated to birms api
         xhr.onload = function() {
 
             var mapData = JSON.parse(xhr.responseText);
-            console.log(mapData);
-
+           
             // mapData.shift(); // the first row contains column names
             for (i=0; i<mapData.length; i++) {
 
@@ -180,6 +180,8 @@
      * @param {?google.maps.MouseEvent} e
      */
     function mouseInToRegion(e) {
+ 
+        document.getElementById('data-value').textContent = " "
         // set the hover KECAMATAN so the setStyle function can change the border
         e.feature.setProperty('KECAMATAN', 'hover');
 
@@ -193,6 +195,9 @@
         document.getElementById('data-caret').style.display = 'block';
         //move the indicator or caret on the green/blue scale
         document.getElementById('data-caret').style.paddingLeft = percent + '%';
+
+        $('.pie::before').css('transform',  "rotate(" + Math.random() + " turn)");
+
     }
 
     /**

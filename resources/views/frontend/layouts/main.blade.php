@@ -13,10 +13,14 @@
     <meta name="description" content="{{ !empty($description) ? $description : " " }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+   
+   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+
+   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+
     <link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
     <link rel=stylesheet href="{{ url('css/normalize.css') }}">
-    <link rel=stylesheet href="{{ url('css/menu.css') }}">
     <link rel=stylesheet href="{{ url('css/search.css') }}">
     <link rel=stylesheet href="{{ url('css/homepage-slider.css') }}">
     <link rel=stylesheet href="{{ url('css/map.css') }}">
