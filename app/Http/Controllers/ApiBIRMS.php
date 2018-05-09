@@ -362,6 +362,56 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
+	public function graph_csv1()
+	{
+		$sql = 'SELECT tahun, (nilaikontrak/1000000000) AS nilaikontrak FROM '.env('DB_CONTRACT').'.vlelang_bypaket ORDER BY tahun ASC';
+		$rs1 = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+		foreach($rs1 as $row) {
+			array_push($data, array($row->tahun, (float)$row->nilaikontrak));
+		}
+		array_push($rowdata, array("name"=>"Lelang", "data"=> $data));
+
+		$sql = 'SELECT tahun, (nilaikontrak/1000000000) AS nilaikontrak FROM '.env('DB_CONTRACT').'.vpl_bypaket ORDER BY tahun ASC';
+		$rs1 = DB::select($sql);
+
+		$data = array();
+		foreach($rs1 as $row) {
+			array_push($data, array($row->tahun, (float)$row->nilaikontrak));
+		}
+		array_push($rowdata, array("name"=>"Pengadaan Langsung", "data"=> $data));
+		$results = $rowdata;
+
+		$fp = fopen('lelang.csv', 'w');
+
+		foreach ($results as $fields) {
+			//print_r($fields);
+			//echo "<br>";
+		    fputcsv($fp, implode(',', $fields));
+		}
+
+		fclose($fp);	
+
+		//return dd($results);
+	}
+
+	public function graph_csv2()
+	{
+		return "CSV SKPD";
+	}
+
+	public function graph_csv3()
+	{
+		return "CSV Non Competitive";
+	}
+
+	public function graph_csv4()
+	{
+		return "CSV Total Procurement";
+	
+	}	
 	/*--- End Data Statistic ---*/
 
 	public function search(Request $request) {

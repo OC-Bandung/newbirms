@@ -34,7 +34,7 @@ class HomeController extends Controller
 				FROM $dbprime.tbl_post 
 					LEFT OUTER JOIN $dbprime.tbl_postcontent ON $dbprime.tbl_post.pst_id = $dbprime.tbl_postcontent.pst_id
 					LEFT OUTER JOIN $dbprime.tbl_content ON $dbprime.tbl_postcontent.con_id = $dbprime.tbl_content.con_id
-				WHERE poststatus = 2 AND $dbprime.tbl_content.filename <> '' ORDER BY $dbprime.tbl_post.created DESC LIMIT 3";
+				WHERE poststatus = 2 AND $dbprime.tbl_content.filename <> '' ORDER BY $dbprime.tbl_post.created DESC LIMIT 10";
 		$rspost = DB::select($sql);
     	/* Article ---- Finish */
 
@@ -478,8 +478,6 @@ class HomeController extends Controller
 								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) "; 
 							}
 			    	$rspengadaan = DB::select($sql);
-			    	$rspengadaan = $this->arrayPaginator($rspengadaan, $request);
-
 			    	/*$rspengadaan = DB::table($dbecontract.'.tpengadaan AS pgd')
 			    						->addSelect(DB::raw('kodepekerjaan, 
 			    							sirupID, 
@@ -517,12 +515,11 @@ class HomeController extends Controller
 												]
 			    							)
 			    						->get();*/
-
-			
 			}
-	    	$data['pengadaan'] 	 = $rspengadaan;
-	    	//$data['pengadaan'] 	 = $rspengadaan->toArray();
-	    	$data['totalsearch'] = count($rspengadaan);
+			$data['totalsearch'] = count($rspengadaan);
+
+			$rspengadaan		= $this->arrayPaginator($rspengadaan, $request);
+	    	$data['pengadaan']	= $rspengadaan;
     	} else {
     		$data['message'] = 'Silahkan isi kata yang ingin dicari terlebih dahulu';
     	}

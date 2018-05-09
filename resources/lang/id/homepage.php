@@ -18,6 +18,7 @@ return [
 	'procurement_map_title' =>'Peta Pengadaan',
 	'show_contract_by' => 'Tampilkan kontrak berdasarkan',
 	'statistic_title' => 'Statistik Pengadaan',
+	'statistic_description' => 'Data Statistik Pengadaan Pemerintah Kota Bandung Baik Lelang maupun Non Lelang Dalam Bentuk Grafik Maupun File .CSV yang dapat di unduh',
 	'news_title' => 'Berita dan Artikel',
 	'contact_title' => 'Hubungi kami',
 	'contact_text' => '<p><strong>BIRMS</strong> adalah Sebuah <i><strong>Sistem Pengelolaan Sumber Daya Pemerintahan Terintegrasi Pertama yang diakui di Indonesia dan Dunia</strong></i>. Untuk informasi silahkan hubungi kami dengan mengisikan data dibawah ini</p>',
