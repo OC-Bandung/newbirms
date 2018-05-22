@@ -11,30 +11,21 @@ use App\Http\Controllers\Controller;
 
 class ApiBIRMS extends Controller
 {
+    public function contractsAll()
+    {
+        $ocid = env('OCID');
+        $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
+                            ->orderBy('sirupID')
+                            ->paginate(15);
+    }
+
     public function contractsPerYear($year)
-	{
-		$results = Sirup::where("tahun", $year)->paginate(15); 
-    	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-	}
+    {
+        $results = Sirup::where("tahun", $year)->paginate(100);
+        return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+    }
 
-	public function contractsAll()
-	{
-		$ocid = env('OCID');
-		$results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
-    						->orderBy('sirupID')
-    						->paginate(15);
-
-// <<<<<<< master
-// =======
-// 		// return response()->json($results['data']['sirupID']);
-// 		// array('ocid' => $results->sirupID, 'nama' => $results->nama)
-
-
-// >>>>>>> master
-//     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-	}
-
-	/* get_pns function
+    /* get_pns function
 	pns/{kewenangan}:{year}
 		kewenangan attribut
 		pa => 'Pengguna Anggaran'
@@ -281,7 +272,7 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function graph3($year) 
+	public function graph3($year)
 	{
 		$sql = 'SELECT ta, COUNT(*) AS paket FROM '.env('DB_CONTRACT').'.`tlelangumum` GROUP BY ta ORDER BY ta DESC LIMIT 1';
 		$rscheck1 = DB::select($sql);
