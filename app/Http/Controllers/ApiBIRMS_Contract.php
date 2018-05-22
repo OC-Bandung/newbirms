@@ -8,50 +8,87 @@ use Illuminate\Support\Facades\DB;
 
 class ApiBIRMS_contract extends Controller
 {
-     
+    function get_contract($ocid) {
 
-	function get_contract($ocid) {
-	     //////////////////////  
-        // settings    //
-        //////////////////////
+/*------------------------------*/
+/* Settings
+/*------------------------------*/
 
-        $dbplanning = '2016_birms_eproject_planning';
-	    $dbcontract = '2016_birms_econtract';
-	    $dbmain 	= '2016_birms_prime';
+        $dbplanning = env('DB_PLANNING');
+        $dbcontract = env('DB_CONTRACT');
+        $dbmain     = env('DB_PRIME');
 
-        //////////////////////  
-        // general //
-        //////////////////////
+/*------------------------------*/
+/* General
+/*------------------------------*/
 
         $id = '1';
         $date = '20100101';
         $tag = 'planning';
-        $initiationType = 'tender';
  
-      
-
-	    $sirup_id = '3662192';
-        $pgid = '14252';
-
-	
+        $pieces = explode("-", $ocid);
+ 	    $sirup_id = $pieces[2];
+        $pgid = '';
  
- 		//////////////////////	
- 		// planning stage 	//
- 		//////////////////////
-
+/*------------------------------*/
+/* Planning Stage
+/*------------------------------*/
     	   
         $sql_intro = "select * from tbl_sirup where sirupID = '". $sirup_id ."' ";
 
         $results = DB::select($sql_intro);
         $results = $results[0];
-         
-        $ocid = env('OCID') . $results->sirupID ;
+        
+        $date = $results->tanggal_awal_pengadaan;
+        $ocid = env('OCID') . $results->sirupID;
     	$contract_name =  $results->nama;
-        $city = $results->kldi ;
+        $city = $results->kldi;
         $unit = $results->satuan_kerja;
 
-    	$planning_value = array('amount' =>  $results->pagu, 'currency'=> env('CURRENCY') );
+        $metode = $results->metode_pengadaan;
+        switch ($metode) {
+            case 1:
+                $initiationType = 'Lelang Umum';
+            break;
+            case 2:
+                $initiationType = 'Lelang Sederhana';
+            break;
+            case 3:
+                $initiationType = 'Lelang Terbatas';
+            break;
+            case 4:
+                $initiationType = 'Seleksi Umum';
+            break;
+            case 5:
+                $initiationType = 'Seleksi Sederhana';
+            break;
+            case 6:
+                $initiationType = 'Pemilihan Langsung';
+            break;
+            case 7:
+                $initiationType = 'Penunjukan Langsung';
+            break;
+            case 8:
+                $initiationType = 'Pengadaan Langsung';
+            break;
+            case 9:
+                $initiationType = 'e-Purchasing';
+            break;
+            case 10:
+                $initiationType = 'Sayembara';
+            break;
+            case 11:
+                $initiationType = 'Kontes';
+            break;
+            case 12:
+                $initiationType = 'Lelang Cepat';
+            break;
+            default:
+                $initiationType = '';
+        }
 
+
+    	$planning_value = array('amount' =>  $results->pagu, 'currency'=> env('CURRENCY') );
 
     	///compiling all stages together
     	$planning_stage = array('contract_name' =>  $contract_name,
@@ -59,21 +96,63 @@ class ApiBIRMS_contract extends Controller
                                 'unit' => $unit,
                                 'planning_value' => $planning_value );
 
-    	////////////////////// 
-        //   selection stage  //
-        //////////////////////
-        $sql_selection = "select * from 2016_birms_econtract.tpengadaan_pemenang where pgid = '". $pgid ."' ";
+/*------------------------------*/
+/* Award Stage
+/*------------------------------*/     
+        
+        if (($metode >= 6) && ($metode <= 9)) { //Non Lelang (Non Competitive)
+            $sql_selection = "SELECT
+                                $dbplanning.tbl_pekerjaan.pekerjaanID,
+                                $dbplanning.tbl_pekerjaan.sirupID,
+                                $dbcontract.tpekerjaan.pid,
+                                $dbcontract.tpengadaan.pgid,
+                                $dbcontract.tpengadaan.ta,
+                                $dbplanning.tbl_pekerjaan.kodepekerjaan,
+                                $dbplanning.tbl_pekerjaan.namapekerjaan,
+                                $dbplanning.tbl_pekerjaan.anggaran,
+                                $dbcontract.tpekerjaan.hps,
+                                IF($dbcontract.tpengadaan.nilai_nego<>0,$dbcontract.tpengadaan.nilai_nego, $dbcontract.tpengadaan_pemenang.nilai) AS nilai,
+                                $dbcontract.tpengadaan_pemenang.perusahaannama,
+                                $dbcontract.tpengadaan_pemenang.perusahaanalamat,
+                                $dbcontract.tpengadaan_pemenang.perusahaannpwp,
+                                $dbcontract.tpekerjaan.lokasi,
+                                $dbcontract.tpekerjaan.saltid,
+                                $dbcontract.tpekerjaan.lat,
+                                $dbcontract.tpekerjaan.lng,
+                                $dbcontract.tpekerjaan.place_id,
+                                $dbcontract.tpekerjaan.formatted_address,
+                                $dbcontract.tpekerjaan.administrative_area_level_3
+                                FROM
+                                $dbplanning.tbl_pekerjaan
+                                LEFT JOIN $dbcontract.tpekerjaan
+                                ON $dbplanning.tbl_pekerjaan.pekerjaanID = $dbcontract.tpekerjaan.pekerjaanID 
+                                LEFT JOIN $dbcontract.tpengadaan
+                                ON $dbcontract.tpengadaan.pid = $dbcontract.tpekerjaan.pid 
+                                LEFT JOIN $dbcontract.tpengadaan_pemenang
+                                ON $dbcontract.tpengadaan_pemenang.pgid = $dbcontract.tpengadaan.pgid
+                                WHERE
+                                sirupID = ".$sirup_id." AND $dbplanning.tbl_pekerjaan.namapekerjaan = '".$contract_name."'";
 
-        $results = DB::select($sql_selection);
-        $results = $results[0];
+            $results = DB::select($sql_selection);
+            $results = $results[0];
 
-        $winning_bidder = $results->perusahaannama;
-        $award_amount = $results->nilai;
+            $winning_bidder = $results->perusahaannama;
+            $award_amount = $results->nilai;
+            $pgid = $results->pgid;
 
+            $list_of_items_sql = "select * from $dbcontract.tpengadaan_rincian where pgid = '". $pgid ."' ";
+            $items = DB::select($list_of_items_sql);
 
-        $list_of_items_sql = "select * from  2016_birms_econtract.tpengadaan_rincian where pgid = '". $pgid ."' ";
-        $items = DB::select($list_of_items_sql);
+        } else { //Lelang (Competitive)*/
+            $sql_selection = "select * from $dbcontract.tlelangumum where sirupID = '". $sirup_id ."' ";
+            $results = DB::select($sql_selection);
+            $results = $results[0];
 
+            $winning_bidder = $results->pemenang;
+            $award_amount = $results->nilai_nego;
+
+            $items = "";
+        }
 
         //build the award stage
         $award_stage = array('winning_bidder' => $winning_bidder ,
@@ -81,17 +160,21 @@ class ApiBIRMS_contract extends Controller
                              'items' => $items);
 
 
-      
-
+/*------------------------------*/
+/* Release
+/*------------------------------*/    
     	$release  = array(  'ocid' => $ocid ,
     						'id' => $id,
     						'date' => $date,
     						'tag' => $tag,
-    						'initiationType' => 'tender',
-    						'planning' => $planning_stage ,
-                            'award' => $award_stage
-    						
+    						'initiationType' => $initiationType,
+    						'planning' => $planning_stage,
+                            'initiation' => '',
+                            'award' => $award_stage,
+                            'contract' => '',
+                            'implementation' => ''
     					  );
+
     	return response()->json($release)->header('Access-Control-Allow-Origin', '*');
 
     	  // return response()->json($results)->header('Access-Control-Allow-Origin', '*');

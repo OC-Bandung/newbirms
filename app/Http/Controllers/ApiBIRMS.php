@@ -12,30 +12,21 @@ use NestedJsonFlattener\Flattener\Flattener;
 
 class ApiBIRMS extends Controller
 {
+    public function contractsAll()
+    {
+        $ocid = env('OCID');
+        $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
+                            ->orderBy('sirupID')
+                            ->paginate(15);
+    }
+
     public function contractsPerYear($year)
-	{
-		$results = Sirup::where("tahun", $year)->paginate(15); 
-    	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-	}
+    {
+        $results = Sirup::where("tahun", $year)->paginate(100); 
+        return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+    }
 
-	public function contractsAll()
-	{
-		$ocid = env('OCID');
-		$results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
-    						->orderBy('sirupID')
-    						->paginate(15);
-
-// <<<<<<< master
-// =======
-// 		// return response()->json($results['data']['sirupID']);
-// 		// array('ocid' => $results->sirupID, 'nama' => $results->nama)
-
-
-// >>>>>>> master
-//     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-	}
-
-	/* get_pns function
+    /* get_pns function
 	pns/{kewenangan}:{year}
 		kewenangan attribut
 		pa => 'Pengguna Anggaran'
@@ -395,7 +386,36 @@ class ApiBIRMS extends Controller
      */
 	public function graph_csv1()
 	{
-        return $this->download_nested_array_csv( 'lelang',$this->graph1_array());
+        $sql = 'SELECT tahun, (nilaikontrak/1000000000) AS nilaikontrak FROM '.env('DB_CONTRACT').'.vlelang_bypaket ORDER BY tahun ASC';
+        $rs1 = DB::select($sql);
+
+        $rowdata = array();
+        $data = array();
+        
+        foreach($rs1 as $row) {
+            array_push($data, array($row->tahun));
+        }
+        array_push($rowdata, array("name"=>"Year", "data"=> $data));
+
+        $data = array();
+        foreach($rs1 as $row) {
+            array_push($data, array((float)$row->nilaikontrak));
+        }
+        array_push($rowdata, array("name"=>"Lelang", "data"=> $data));
+
+        $sql = 'SELECT tahun, (nilaikontrak/1000000000) AS nilaikontrak FROM '.env('DB_CONTRACT').'.vpl_bypaket ORDER BY tahun ASC';
+        $rs1 = DB::select($sql);
+
+        $data = array();
+        foreach($rs1 as $row) {
+            array_push($data, array((float)$row->nilaikontrak));
+        }
+        array_push($rowdata, array("name"=>"Pengadaan Langsung", "data"=> $data));
+        $results = $rowdata;
+
+        //return $results;
+        //return $this->download_nested_array_csv('lelang',$results);
+        return $this->download_nested_array_csv('lelang',$this->graph1_array());
 	}
 
 	public function graph_csv2()
