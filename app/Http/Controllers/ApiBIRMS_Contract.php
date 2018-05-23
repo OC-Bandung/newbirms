@@ -100,7 +100,11 @@ class ApiBIRMS_contract extends Controller
 /* Award Stage
 /*------------------------------*/     
         
-        if (($metode >= 6) && ($metode <= 9)) { //Non Lelang (Non Competitive)
+        $winning_bidder = "0";
+        $award_amount = "0";
+        $items = "0";
+
+        if (($metode == 6) || ($metode == 7) || ($metode == 8) || ($metode == 9)) { //Non Lelang (Non Competitive)
             $sql_selection = "SELECT
                                 $dbplanning.tbl_pekerjaan.pekerjaanID,
                                 $dbplanning.tbl_pekerjaan.sirupID,
@@ -134,24 +138,29 @@ class ApiBIRMS_contract extends Controller
                                 sirupID = ".$sirup_id." AND $dbplanning.tbl_pekerjaan.namapekerjaan = '".$contract_name."'";
 
             $results = DB::select($sql_selection);
-            $results = $results[0];
+            
+            if (!empty($results)) { 
+                $results = $results[0];    
 
-            $winning_bidder = $results->perusahaannama;
-            $award_amount = $results->nilai;
-            $pgid = $results->pgid;
+                $winning_bidder = $results->perusahaannama;
+                $award_amount = $results->nilai;
+                $pgid = $results->pgid;
 
-            $list_of_items_sql = "select * from $dbcontract.tpengadaan_rincian where pgid = '". $pgid ."' ";
-            $items = DB::select($list_of_items_sql);
-
-        } else { //Lelang (Competitive)*/
+                $list_of_items_sql = "select * from $dbcontract.tpengadaan_rincian where pgid = '". $pgid ."' ";
+                $items = DB::select($list_of_items_sql);
+            }
+            
+        } else { //Lelang (Competitive)
             $sql_selection = "select * from $dbcontract.tlelangumum where sirupID = '". $sirup_id ."' ";
             $results = DB::select($sql_selection);
-            $results = $results[0];
 
-            $winning_bidder = $results->pemenang;
-            $award_amount = $results->nilai_nego;
+			if (!empty($results)) { 
+                $results = $results[0];
 
-            $items = "";
+                $winning_bidder = $results->pemenang;
+                $award_amount = $results->nilai_nego;
+				$items = "";
+            } 
         }
 
         //build the award stage
