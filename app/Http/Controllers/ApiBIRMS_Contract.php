@@ -104,7 +104,7 @@ class ApiBIRMS_contract extends Controller
         $award_amount = "0";
         $items = "0";
 
-        if (($metode == 6) || ($metode == 7) || ($metode == 8) || ($metode == 9)) { //Non Lelang (Non Competitive)
+        if ($results->pagu <= 200000000) { //Non Lelang (Non Competitive)
             $sql_selection = "SELECT
                                 $dbplanning.tbl_pekerjaan.pekerjaanID,
                                 $dbplanning.tbl_pekerjaan.sirupID,
