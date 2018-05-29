@@ -22,6 +22,7 @@ Route::get('contracts/year/{year}', 'ApiBIRMS@contractsPerYear');
 
 
 Route::get('contract/{ocid}', 'ApiBIRMS_Contract@get_contract');
+Route::get('newcontract/{ocid}', 'ApiBIRMS_Contract@getNewContract');
 
 Route::get('pns/{kewenangan}/{year}', 'ApiBIRMS@get_pns');
 

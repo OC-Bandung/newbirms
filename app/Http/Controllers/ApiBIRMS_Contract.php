@@ -2,15 +2,155 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Sirup;
+use DateTime;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Dto\Dto;
+
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use stdClass;
+
+
+class OcdsRelease extends Dto
+{
+    /**
+     * Receives a response factory from laravel and returns this object as json.
+     * We do not use the response()->json here since the Dto knows how to print itself as json and converts
+     * structures stored internally to json compliant (scalars as 1 index arrays).
+     * @param $response
+     * @return mixed
+     */
+    function getJsonResponse(ResponseFactory $response)
+    {
+        return $response->make($this->toJson())->header('Content-Type', 'application/json');
+    }
+}
+
 
 class ApiBIRMS_contract extends Controller
 {
+
+
+    /**
+     * Gets the ocds schema loaded from local storage.
+     * Ensures additional properties are set to false, to fail if unknown properties are used
+     * @return schema
+     */
+    function getOcdsSchema()
+    {
+        $schema = json_decode(Storage::disk('public')->get('release-schema.json'), true);
+        $schema['additionalProperties'] = false;
+        return $schema;
+    }
+
+    /**
+     * Gets the planning section of Release
+     * @param $ocid
+     */
+    function getPlanning($results)
+    {
+        $planning = new stdClass();
+        $budget = new stdClass();
+        $planning->budget = $budget;
+        $amount = new stdClass();
+        $budget->amount = $amount;
+        $amount->amount = (double)$results->pagu;
+        $amount->currency = env('CURRENCY');
+        return $planning;
+    }
+
+    /**
+     * You should return here only initiaion type allowed by ocds. Example 'tender'. This is NOT an open code-type,
+     * so you cannot use any string you like here.
+     * Schema will not allow you to return anything else.
+     * @param $results
+     * @return string
+     */
+    function getInitiationType($results)
+    {
+        return 'tender'; //currently ocds supports tender
+        //TODO: please fix this, you are not allowed to return these types internal types as ocds
+        $metode = $results->metode_pengadaan;
+        switch ($metode) {
+            case 1:
+                $initiationType = 'Lelang Umum';
+                break;
+            case 2:
+                $initiationType = 'Lelang Sederhana';
+                break;
+            case 3:
+                $initiationType = 'Lelang Terbatas';
+                break;
+            case 4:
+                $initiationType = 'Seleksi Umum';
+                break;
+            case 5:
+                $initiationType = 'Seleksi Sederhana';
+                break;
+            case 6:
+                $initiationType = 'Pemilihan Langsung';
+                break;
+            case 7:
+                $initiationType = 'Penunjukan Langsung';
+                break;
+            case 8:
+                $initiationType = 'Pengadaan Langsung';
+                break;
+            case 9:
+                $initiationType = 'e-Purchasing';
+                break;
+            case 10:
+                $initiationType = 'Sayembara';
+                break;
+            case 11:
+                $initiationType = 'Kontes';
+                break;
+            case 12:
+                $initiationType = 'Lelang Cepat';
+                break;
+            default:
+                $initiationType = '';
+        }
+        return $initiationType;
+    }
+
+    /**
+     * Converts string dates in bandung db into JSON compliant string using DATE_ATOM format
+     * @param $date
+     * @return string
+     */
+    function getOcdsDateFromString($date)
+    {
+        return DateTime::createFromFormat('Y-m-d', $date)->format(DATE_ATOM);
+    }
+
+    function getNewContract($ocid)
+    {
+        $r = new stdClass();
+        $r->ocid = $ocid;
+
+        $pieces = explode("-", $ocid);
+        $sirup_id = $pieces[2];
+        $sql_intro = "select * from tbl_sirup where sirupID = '" . $sirup_id . "' ";
+        $results = DB::select($sql_intro);
+        $results = $results[0];
+
+        $r->id = $sirup_id;
+        $r->tag = ['planning'];
+        $r->initiationType = $this->getInitiationType($results);
+        $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
+        $r->planning = $this->getPlanning($results);
+
+        //this creates real OCDS release object and runs basic schema validation
+        $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
+        return $validatedRelease->getJsonResponse(response());
+    }
+
+
     function get_contract($ocid) {
 
-/*------------------------------*/
+
+            /*------------------------------*/
 /* Settings
 /*------------------------------*/
 
@@ -23,69 +163,68 @@ class ApiBIRMS_contract extends Controller
 /*------------------------------*/
 
         $id = '1';
-        $date = '20100101';
         $tag = 'planning';
- 
+
         $pieces = explode("-", $ocid);
  	    $sirup_id = $pieces[2];
         $pgid = '';
- 
+
 /*------------------------------*/
 /* Planning Stage
 /*------------------------------*/
-    	   
+
         $sql_intro = "select * from tbl_sirup where sirupID = '". $sirup_id ."' ";
 
         $results = DB::select($sql_intro);
         $results = $results[0];
-        
+
         $date = $results->tanggal_awal_pengadaan;
         $ocid = env('OCID') . $results->sirupID;
     	$contract_name =  $results->nama;
         $city = $results->kldi;
         $unit = $results->satuan_kerja;
 
-        $metode = $results->metode_pengadaan;
-        switch ($metode) {
-            case 1:
-                $initiationType = 'Lelang Umum';
-            break;
-            case 2:
-                $initiationType = 'Lelang Sederhana';
-            break;
-            case 3:
-                $initiationType = 'Lelang Terbatas';
-            break;
-            case 4:
-                $initiationType = 'Seleksi Umum';
-            break;
-            case 5:
-                $initiationType = 'Seleksi Sederhana';
-            break;
-            case 6:
-                $initiationType = 'Pemilihan Langsung';
-            break;
-            case 7:
-                $initiationType = 'Penunjukan Langsung';
-            break;
-            case 8:
-                $initiationType = 'Pengadaan Langsung';
-            break;
-            case 9:
-                $initiationType = 'e-Purchasing';
-            break;
-            case 10:
-                $initiationType = 'Sayembara';
-            break;
-            case 11:
-                $initiationType = 'Kontes';
-            break;
-            case 12:
-                $initiationType = 'Lelang Cepat';
-            break;
-            default:
-                $initiationType = '';
-        }
+            $metode = $results->metode_pengadaan;
+            switch ($metode) {
+                case 1:
+                    $initiationType = 'Lelang Umum';
+                break;
+                case 2:
+                    $initiationType = 'Lelang Sederhana';
+                break;
+                case 3:
+                    $initiationType = 'Lelang Terbatas';
+                break;
+                case 4:
+                    $initiationType = 'Seleksi Umum';
+                break;
+                case 5:
+                    $initiationType = 'Seleksi Sederhana';
+                break;
+                case 6:
+                    $initiationType = 'Pemilihan Langsung';
+                break;
+                case 7:
+                    $initiationType = 'Penunjukan Langsung';
+                break;
+                case 8:
+                    $initiationType = 'Pengadaan Langsung';
+                break;
+                case 9:
+                    $initiationType = 'e-Purchasing';
+                break;
+                case 10:
+                    $initiationType = 'Sayembara';
+                break;
+                case 11:
+                    $initiationType = 'Kontes';
+                break;
+                case 12:
+                    $initiationType = 'Lelang Cepat';
+                break;
+                default:
+                    $initiationType = '';
+            }
 
 
     	$planning_value = array('amount' =>  $results->pagu, 'currency'=> env('CURRENCY') );
@@ -98,8 +237,8 @@ class ApiBIRMS_contract extends Controller
 
 /*------------------------------*/
 /* Award Stage
-/*------------------------------*/     
-        
+/*------------------------------*/
+
         $winning_bidder = "0";
         $award_amount = "0";
         $items = "0";
@@ -138,9 +277,9 @@ class ApiBIRMS_contract extends Controller
                                 sirupID = ".$sirup_id." AND $dbplanning.tbl_pekerjaan.namapekerjaan = '".$contract_name."'";
 
             $results = DB::select($sql_selection);
-            
-            if (!empty($results)) { 
-                $results = $results[0];    
+
+            if (!empty($results)) {
+                $results = $results[0];
 
                 $winning_bidder = $results->perusahaannama;
                 $award_amount = $results->nilai;
@@ -149,29 +288,29 @@ class ApiBIRMS_contract extends Controller
                 $list_of_items_sql = "select * from $dbcontract.tpengadaan_rincian where pgid = '". $pgid ."' ";
                 $items = DB::select($list_of_items_sql);
             }
-            
+
         } else { //Lelang (Competitive)
             $sql_selection = "select * from $dbcontract.tlelangumum where sirupID = '". $sirup_id ."' ";
             $results = DB::select($sql_selection);
 
-			if (!empty($results)) { 
+			if (!empty($results)) {
                 $results = $results[0];
 
                 $winning_bidder = $results->pemenang;
                 $award_amount = $results->nilai_nego;
 				$items = "";
-            } 
+            }
         }
 
         //build the award stage
         $award_stage = array('winning_bidder' => $winning_bidder ,
-                             'award_amount' => $award_amount , 
+                             'award_amount' => $award_amount ,
                              'items' => $items);
 
 
 /*------------------------------*/
 /* Release
-/*------------------------------*/    
+/*------------------------------*/
     	$release  = array(  'ocid' => $ocid ,
     						'id' => $id,
     						'date' => $date,
@@ -187,6 +326,6 @@ class ApiBIRMS_contract extends Controller
     	return response()->json($release)->header('Access-Control-Allow-Origin', '*');
 
     	  // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-	  
+
 	}
 }
