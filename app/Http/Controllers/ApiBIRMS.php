@@ -19,6 +19,7 @@ class ApiBIRMS extends Controller
                             ->orderBy('sirupID')
                             ->paginate(15);
     }
+<<<<<<< HEAD
 
     public function contractsPerYear($year)
     {
@@ -26,6 +27,15 @@ class ApiBIRMS extends Controller
         return response()->json($results)->header('Access-Control-Allow-Origin', '*');
     }
 
+=======
+
+    public function contractsPerYear($year)
+    {
+        $results = Sirup::where("tahun", $year)->paginate(100);
+        return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+    }
+
+>>>>>>> d66e4ac41726cdab00c44a6c5057e97c89982339
     /* get_pns function
 	pns/{kewenangan}:{year}
 		kewenangan attribut
@@ -282,7 +292,10 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d66e4ac41726cdab00c44a6c5057e97c89982339
 	public function graph3($year)
 	{
 		$sql = 'SELECT ta, COUNT(*) AS paket FROM '.env('DB_CONTRACT').'.`tlelangumum` GROUP BY ta ORDER BY ta DESC LIMIT 1';

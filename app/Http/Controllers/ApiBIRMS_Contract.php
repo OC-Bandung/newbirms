@@ -22,7 +22,6 @@ class ApiBIRMS_contract extends Controller
 /* General
 /*------------------------------*/
 
-        $id = '1';
         $date = '20100101';
         $tag = 'planning';
  
@@ -41,7 +40,8 @@ class ApiBIRMS_contract extends Controller
         
         $date = $results->tanggal_awal_pengadaan;
         $ocid = env('OCID') . $results->sirupID;
-    	$contract_name =  $results->nama;
+        $id = $ocid .'-01-'.$tag;
+    	$contract_name = $results->nama;
         $city = $results->kldi;
         $unit = $results->satuan_kerja;
 
@@ -87,14 +87,25 @@ class ApiBIRMS_contract extends Controller
                 $initiationType = '';
         }
 
+        $contactPoint = array('name'=>$results->satuan_kerja);
+
+        $buyer = array( 'name' =>  $results->kldi,
+                        'contactPoint' => $contactPoint );    
+
 
     	$planning_value = array('amount' =>  $results->pagu, 'currency'=> env('CURRENCY') );
 
-    	///compiling all stages together
-    	$planning_stage = array('contract_name' =>  $contract_name,
-    							'city' => $city,
-                                'unit' => $unit,
-                                'planning_value' => $planning_value );
+        $amount = array('amount'=> $results->pagu,
+                        'currency'=>'IDR');
+
+        $budget = array('id' => $ocid,
+                        'description' => $results->sumber_dana_string,
+                        'amount'=>$amount);
+    	
+        ///compiling all stages together
+    	$planning_stage = array('rationale' => null,
+    							'budget' => $budget,
+                                'uri'=> env('LINK_SIRUP18').$sirup_id);
 
 /*------------------------------*/
 /* Award Stage
@@ -104,7 +115,7 @@ class ApiBIRMS_contract extends Controller
         $award_amount = "0";
         $items = "0";
 
-        if (($metode == 6) || ($metode == 7) || ($metode == 8) || ($metode == 9)) { //Non Lelang (Non Competitive)
+        if ($results->pagu <= 200000000) { //Non Lelang (Non Competitive)
             $sql_selection = "SELECT
                                 $dbplanning.tbl_pekerjaan.pekerjaanID,
                                 $dbplanning.tbl_pekerjaan.sirupID,
@@ -172,11 +183,14 @@ class ApiBIRMS_contract extends Controller
 /*------------------------------*/
 /* Release
 /*------------------------------*/    
-    	$release  = array(  'ocid' => $ocid ,
+    	$release  = array(  
+                            'language'=>'id',
+                            'ocid' => $ocid ,
     						'id' => $id,
     						'date' => $date,
     						'tag' => $tag,
     						'initiationType' => $initiationType,
+                            'buyer'=> $buyer,
     						'planning' => $planning_stage,
                             'initiation' => '',
                             'award' => $award_stage,
