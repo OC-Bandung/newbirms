@@ -39,7 +39,11 @@ class ApiBIRMS_contract extends Controller
     function getOcdsSchema()
     {
         $schema = json_decode(Storage::disk('public')->get('release-schema.json'), true);
+        //ensure no extra properties allowed in root entity
         $schema['additionalProperties'] = false;
+        //ensure no extra properties allowed in any definitions within root entity
+        foreach ($schema['definitions'] as &$definition)
+            $definition['additionalProperties'] = false;
         return $schema;
     }
 
