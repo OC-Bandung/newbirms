@@ -137,6 +137,11 @@ class ApiBIRMS_contract extends Controller
         $sirup_id = $pieces[2];
         $sql_intro = "select * from tbl_sirup where sirupID = '" . $sirup_id . "' ";
         $results = DB::select($sql_intro);
+
+        if (sizeof($results) == 0) {
+            abort(404, 'Cannot find contract with ocid='.$ocid);
+        }
+
         $results = $results[0];
 
         $r->id = $sirup_id;
