@@ -63,6 +63,41 @@ class ApiBIRMS_contract extends Controller
         return $planning;
     }
 
+    function getPeriod($startDate, $endDate)
+    {
+        $period = new stdClass();
+        $period->startDate = $this->getOcdsDateFromString($startDate);
+        $period->endDate = $this->getOcdsDateFromString($endDate);
+        return $period;
+    }
+
+    function getTender($results)
+    {
+        $tender = new stdClass();
+        $tender->id = $results->sirupID;
+        $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
+        $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
+        return $tender;
+    }
+
+    function getProcurementMethod($internalProcurementMethodId)
+    {
+        if (in_array($internalProcurementMethodId, [1, 2, 9, 10, 11, 12]))
+            return "open";
+
+        if ($internalProcurementMethodId == 3)
+            return "limited";
+
+        if (in_array($internalProcurementMethodId, [4, 5]))
+            return "selective";
+
+        if (in_array($internalProcurementMethodId, [6, 7, 8]))
+            return "direct";
+
+        abort(404, 'Cannot convert ' . $internalProcurementMethodId . ' to any OCDS procurementMethod!');
+        return null;
+    }
+
     /**
      * You should return here only initiaion type allowed by ocds. Example 'tender'. This is NOT an open code-type,
      * so you cannot use any string you like here.
@@ -149,6 +184,7 @@ class ApiBIRMS_contract extends Controller
         $r->initiationType = $this->getInitiationType($results);
         $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
         $r->planning = $this->getPlanning($results);
+        $r->tender=$this->getTender($results);
 
         //this creates real OCDS release object and runs basic schema validation
         $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
