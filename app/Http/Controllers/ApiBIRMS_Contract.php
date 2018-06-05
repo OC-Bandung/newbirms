@@ -95,6 +95,7 @@ class ApiBIRMS_contract extends Controller
         $tender->id = $results->sirupID;
         $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
+        $tender->contractPeriod=$this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
         return $tender;
     }
