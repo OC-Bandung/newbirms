@@ -108,7 +108,7 @@ class ApiBIRMS_contract extends Controller
             return "limited";
 
         if (in_array($internalProcurementMethodId, [4, 5]))
-            return "selective";
+            return "open";
 
         if (in_array($internalProcurementMethodId, [6, 7, 8]))
             return "direct";
