@@ -59,6 +59,55 @@ class ApiBIRMS_contract extends Controller
         return $planning;
     }
 
+    function getOrganizationByName($name)
+    {
+        $db = env('DB_PRIME');
+        $sql = "select * from " . $db . ".tbl_skpd where nama = '" . $name . "'";
+        $results = DB::select($sql);
+        if (sizeof($results) == 0) {
+            abort(404, 'No organization found by name ' . $name);
+        }
+
+        $row = $results[0];
+
+        $org = new stdClass();
+        $org->id = $row->unitID;
+        $org->name = $row->nama;
+
+        $id= new stdClass();
+        $id->id= $row->unitID;
+        $id->legalName=$row->nama;
+        $org->identifier=$id;
+
+        return $org;
+    }
+
+    function getOrganizationReferenceByName($name, $role, &$parties)
+    {
+        //first check if organization is within parties array
+        foreach ($parties as &$o) {
+            if (strcasecmp($o->name, $name)==0) {
+                global $org;
+                $org = $o;
+            }
+        }
+
+        //if not found, read new organization from org table
+        if (!isset($org)) {
+            $org = $this->getOrganizationByName($name);
+            $org->roles = [$role];
+            array_push($parties, $org);
+        } else {
+            //if found
+            //check if the role currently used was already added, if not add it
+            if (!in_array($role, $org->roles)) {
+                array_push($org->roles, $role);
+            }
+        }
+
+        return $this->getOrganizationReferenceFromOrg($org);
+    }
+
     function getMainProcurementCategory($results)
     {
         if ($results->jenis_belanja == 1)
@@ -66,7 +115,7 @@ class ApiBIRMS_contract extends Controller
         if ($results->jenis_belanja == 2) {
             return "services";
         }
-        abort(404, 'No main procurement category can be mapped for  code '.$results->jenis_belanja);
+        abort(404, 'No main procurement category can be mapped for  code ' . $results->jenis_belanja);
     }
 
     function getBudget($results)
@@ -81,6 +130,14 @@ class ApiBIRMS_contract extends Controller
         return $budget;
     }
 
+    function getOrganizationReferenceFromOrg($org)
+    {
+        $reference = new stdClass();
+        $reference->id = $org->id;
+        $reference->name = $org->name;
+        return $reference;
+    }
+
     function getPeriod($startDate, $endDate)
     {
         $period = new stdClass();
@@ -89,14 +146,15 @@ class ApiBIRMS_contract extends Controller
         return $period;
     }
 
-    function getTender($results)
+    function getTender($results, &$parties)
     {
         $tender = new stdClass();
         $tender->id = $results->sirupID;
         $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
-        $tender->contractPeriod=$this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
+        $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
+        $tender->procuringEntity = $this->getOrganizationReferenceByName($results->satuan_kerja, "procuringEntity", $parties);
         return $tender;
     }
 
@@ -200,11 +258,14 @@ class ApiBIRMS_contract extends Controller
         $results = $results[0];
 
         $r->id = $sirup_id;
+        $r->parties = [];
         $r->tag = ['planning'];
         $r->initiationType = $this->getInitiationType($results);
         $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
         $r->planning = $this->getPlanning($results);
-        $r->tender = $this->getTender($results);
+        $r->tender = $this->getTender($results, $r->parties);
+        $r->buyer = $this->getOrganizationReferenceByName($results->satuan_kerja, "buyer", $r->parties);
+
 
         //this creates real OCDS release object and runs basic schema validation
         $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
