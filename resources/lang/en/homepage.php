@@ -18,6 +18,7 @@ return [
 	'procurement_map_title' =>'Procurement Map',
 	'show_contract_by' => 'Show Contract By',
 	'statistic_title' => 'Key Statistics',
+	'statistic_description' => 'Key Statistics Procument Bandung City By Competitive and Non Competitive, and .CSV Format can be downloaded',
 	'news_title' => 'News and Articles',
 	'contact_title' => 'Hubungi kami',
 	'contact_text' => '<p>BIRMS adalah Sebuah Sistem Pengelolaan Sumber Daya Pemerintahan Terintegrasi Pertama yang diakui di Indonesia dan Dunia. Untuk informasi silahkan hubungi kami dengan mengisikan data dibawah ini</p>',

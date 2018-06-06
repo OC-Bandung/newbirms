@@ -41,5 +41,10 @@ Route::get('graph/2/{year}','ApiBIRMS@graph2');
 Route::get('graph/3/{year}','ApiBIRMS@graph3');
 Route::get('graph/4','ApiBIRMS@graph4');
 
+Route::get('graph/csv/1','ApiBIRMS@graph_csv1');
+Route::get('graph/csv/2/{year}','ApiBIRMS@graph_csv2');
+Route::get('graph/csv/3/{year}','ApiBIRMS@graph_csv3');
+Route::get('graph/csv/4','ApiBIRMS@graph_csv4');
+
 Route::get('recent/planning/{year}','ApiBIRMS@planning');
 Route::get('recent/contract/{year}','ApiBIRMS@contract');
