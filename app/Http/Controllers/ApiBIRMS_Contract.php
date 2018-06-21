@@ -146,6 +146,64 @@ class ApiBIRMS_contract extends Controller
         return $period;
     }
 
+    function getNumberOfTenderers($sirupID)
+    {
+        $db = env('DB_CONTRACT');
+        $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
+        $results = DB::select($sql);
+        if (sizeof($results) == 0) {
+            abort(404, 'No procurement found by sirupID ' . $sirupID);
+        }
+        $row = $results[0];
+
+        $bidder = (int)$row->jumlah_peserta;
+        return $bidder;
+    }
+
+    function getTenderMilestones($sirupID)
+    {
+        $db = env('DB_CONTRACT');
+        $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
+        $results = DB::select($sql);  
+        if (sizeof($results) == 0) {
+            abort(404, 'No procurement found by sirupID ' . $sirupID);
+        }
+        $row = $results[0];
+        $lls_id = $row->lls_id;
+
+        $milestones = array($this->getTenderMilestone($lls_id));
+
+        return $milestones;
+    }
+    
+    function getTenderMilestone($lls_id) 
+    {
+        $db = env('DB_CONTRACT');
+        $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status FROM " . $db . ".lpse_jadwal
+        LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
+        WHERE lls_id = " . $lls_id ." ORDER BY akt_urut";
+        $results = DB::select($sql);
+
+        if (sizeof($results) == 0) {
+            abort(404, 'No milestone found by lelang ID ' . $lls_id);
+        }
+
+        $milestones = new stdClass();
+        foreach($results as $row) {
+            $milestone = new stdClass();            
+            $milestone->id = $row->dtj_id;
+            $milestone->title = $row->akt_jenis;
+            $milestone->description = $row->dtj_keterangan;
+            //$milestone->duedate = $row->dtj_tglakhir;
+            //$milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal);
+            //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate);
+            //$milestone->status = $row->akt_status; 
+        }
+        $milestones = $milestone;
+
+        return $milestones;
+    }
+
     function getTender($results, &$parties)
     {
         $tender = new stdClass();
@@ -155,6 +213,12 @@ class ApiBIRMS_contract extends Controller
         $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
         $tender->procuringEntity = $this->getOrganizationReferenceByName($results->satuan_kerja, "procuringEntity", $parties);
+        $tender->numberOfTenderers = $this->getNumberOfTenderers($results->sirupID);
+        $tender->milestones = $this->getTenderMilestones($results->sirupID);
+        /*$tender->milestones = array(array('id' => 1,
+                                    'title' => 'title',
+                                    'description' => 'description'));*/
+        
         return $tender;
     }
 
