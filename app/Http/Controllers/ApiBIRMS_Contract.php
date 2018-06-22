@@ -59,16 +59,18 @@ class ApiBIRMS_contract extends Controller
         return $planning;
     }
 
-    function getContactPoint($row) {
-        $cp=new stdClass();
-        $cp->email=$row->email;
-        $cp->telephone=$row->telepon;
+    function getContactPoint($row)
+    {
+        $cp = new stdClass();
+        $cp->email = $row->email;
+        $cp->telephone = $row->telepon;
         return $cp;
     }
 
-    function getAddress($row) {
-        $a=new stdClass();
-        $a->streetAddress=$row->alamat;
+    function getAddress($row)
+    {
+        $a = new stdClass();
+        $a->streetAddress = $row->alamat;
         return $a;
     }
 
@@ -86,13 +88,13 @@ class ApiBIRMS_contract extends Controller
         $org = new stdClass();
         $org->id = $row->unitID;
         $org->name = $row->nama;
-        $org->address= $this->getAddress($row);
-        $org->contactPoint= $this->getContactPoint($row);
+        $org->address = $this->getAddress($row);
+        $org->contactPoint = $this->getContactPoint($row);
 
-        $id= new stdClass();
-        $id->id= $row->unitID;
-        $id->legalName=$row->nama;
-        $org->identifier=$id;
+        $id = new stdClass();
+        $id->id = $row->unitID;
+        $id->legalName = $row->nama;
+        $org->identifier = $id;
 
         return $org;
     }
@@ -101,7 +103,7 @@ class ApiBIRMS_contract extends Controller
     {
         //first check if organization is within parties array
         foreach ($parties as &$o) {
-            if (strcasecmp($o->name, $name)==0) {
+            if (strcasecmp($o->name, $name) == 0) {
                 global $org;
                 $org = $o;
             }
@@ -189,7 +191,7 @@ class ApiBIRMS_contract extends Controller
         $db = env('DB_CONTRACT');
         $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status FROM " . $db . ".lpse_jadwal
         LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
-        WHERE lls_id = " . $lls_id ." ORDER BY akt_urut";
+        WHERE lls_id = " . $lls_id . " ORDER BY akt_urut";
         $results = DB::select($sql);
 
         if (sizeof($results) == 0) {
@@ -197,7 +199,7 @@ class ApiBIRMS_contract extends Controller
         }
 
         $milestones = [];
-        foreach($results as $row) {
+        foreach ($results as $row) {
             array_push($milestones, $this->getTenderMilestone($row));
         }
 
@@ -206,14 +208,16 @@ class ApiBIRMS_contract extends Controller
 
     function getTenderMilestone($row)
     {
+        $milestoneDateFormat='Y-m-d H:i:s';
         $milestone = new stdClass();
         $milestone->id = $row->dtj_id;
         $milestone->title = $row->akt_jenis;
         $milestone->description = $row->dtj_keterangan;
-        //$milestone->duedate = $row->dtj_tglakhir;
-        //$milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal);
-        //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate);
-        //$milestone->status = $row->akt_status;
+        $milestone->dueDate = $this->getOcdsDateFromString($row->dtj_tglakhir, $milestoneDateFormat);
+        $milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal, $milestoneDateFormat);
+        $milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
+        //$milestone->status = $row->akt_status; //TODO: titan we need a mapping here between akt_status and milestone
+        //status http://standard.open-contracting.org/1.1/en/schema/codelists/#milestone-status
         return $milestone;
     }
 
@@ -231,7 +235,7 @@ class ApiBIRMS_contract extends Controller
         /*$tender->milestones = array(array('id' => 1,
                                     'title' => 'title',
                                     'description' => 'description'));*/
-        
+
         return $tender;
     }
 
@@ -311,11 +315,12 @@ class ApiBIRMS_contract extends Controller
     /**
      * Converts string dates in bandung db into JSON compliant string using DATE_ATOM format
      * @param $date
+     * @param $format the format for the input date, default is 'Y-m-d'
      * @return string
      */
-    function getOcdsDateFromString($date)
+    function getOcdsDateFromString($date, $format = 'Y-m-d')
     {
-        return DateTime::createFromFormat('Y-m-d', $date)->format(DATE_ATOM);
+        return DateTime::createFromFormat($format, $date)->format(DATE_ATOM);
     }
 
     function getNewContract($ocid)
