@@ -135,13 +135,18 @@ class ApiBIRMS_contract extends Controller
         abort(404, 'No main procurement category can be mapped for  code ' . $results->jenis_belanja);
     }
 
+    function getAmount($amount)
+    {
+        $a = new stdClass();
+        $a->amount = (double)$amount;
+        $a->currency = env('CURRENCY');
+        return $a;
+    }
+
     function getBudget($results)
     {
         $budget = new stdClass();
-        $amount = new stdClass();
-        $amount->amount = (double)$results->pagu;
-        $amount->currency = env('CURRENCY');
-        $budget->amount = $amount;
+        $budget->amount = $this->getAmount($results->pagu);
         $budget->description = $results->sumber_dana_string;
         $budget->project = $results->nama;
         return $budget;
@@ -206,9 +211,36 @@ class ApiBIRMS_contract extends Controller
         return $milestones;
     }
 
+
+    function getCompetitiveAward($row, &$parties)
+    {
+        $a = new stdClass();
+        $a->id = $row->lgid;
+        $a->title = $row->namapekerjaan;
+        $a->date = $this->getOcdsDateFromString($row->tanggalpengumuman);
+        $a->status = "active";
+        $a->value = $this->getAmount($row->nilai_nego);
+        //$a->suppliers = [$this->getOrganizationReferenceByName($row->pemenang, "supplier", $parties)];
+        return $a;
+    }
+
+    function getCompetitiveAwards($sirupID, &$parties)
+    {
+        $db = env('DB_CONTRACT');
+        $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
+        $results = DB::select($sql);
+
+        $awards = [];
+        foreach ($results as $row) {
+            array_push($awards, $this->getCompetitiveAward($row, $parties));
+        }
+
+        return $awards;
+    }
+
     function getTenderMilestone($row)
     {
-        $milestoneDateFormat='Y-m-d H:i:s';
+        $milestoneDateFormat = 'Y-m-d H:i:s';
         $milestone = new stdClass();
         $milestone->id = $row->akt_id;
         $milestone->title = $row->akt_jenis;
@@ -347,6 +379,7 @@ class ApiBIRMS_contract extends Controller
         $r->planning = $this->getPlanning($results);
         $r->tender = $this->getTender($results, $r->parties);
         $r->buyer = $this->getOrganizationReferenceByName($results->satuan_kerja, "buyer", $r->parties);
+        $r->awards = $this->getCompetitiveAwards($sirup_id, $r->parties);
 
 
         //this creates real OCDS release object and runs basic schema validation
