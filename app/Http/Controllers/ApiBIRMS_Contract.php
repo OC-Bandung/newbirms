@@ -189,7 +189,7 @@ class ApiBIRMS_contract extends Controller
         $lls_id = $row->lls_id;
 
         $db = env('DB_CONTRACT');
-        $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status FROM " . $db . ".lpse_jadwal
+        $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
         LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
         WHERE lls_id = " . $lls_id . " ORDER BY akt_urut";
         $results = DB::select($sql);
@@ -210,7 +210,7 @@ class ApiBIRMS_contract extends Controller
     {
         $milestoneDateFormat='Y-m-d H:i:s';
         $milestone = new stdClass();
-        $milestone->id = $row->dtj_id;
+        $milestone->id = $row->akt_id;
         $milestone->title = $row->akt_jenis;
         $milestone->description = $row->dtj_keterangan;
         $milestone->dueDate = $this->getOcdsDateFromString($row->dtj_tglakhir, $milestoneDateFormat);
