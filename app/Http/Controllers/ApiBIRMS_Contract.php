@@ -164,20 +164,13 @@ class ApiBIRMS_contract extends Controller
     {
         $db = env('DB_CONTRACT');
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
-        $results = DB::select($sql);  
+        $results = DB::select($sql);
         if (sizeof($results) == 0) {
             abort(404, 'No procurement found by sirupID ' . $sirupID);
         }
         $row = $results[0];
         $lls_id = $row->lls_id;
 
-        $milestones = array($this->getTenderMilestone($lls_id));
-
-        return $milestones;
-    }
-    
-    function getTenderMilestone($lls_id) 
-    {
         $db = env('DB_CONTRACT');
         $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status FROM " . $db . ".lpse_jadwal
         LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
@@ -188,20 +181,25 @@ class ApiBIRMS_contract extends Controller
             abort(404, 'No milestone found by lelang ID ' . $lls_id);
         }
 
-        $milestones = new stdClass();
+        $milestones = [];
         foreach($results as $row) {
-            $milestone = new stdClass();            
-            $milestone->id = $row->dtj_id;
-            $milestone->title = $row->akt_jenis;
-            $milestone->description = $row->dtj_keterangan;
-            //$milestone->duedate = $row->dtj_tglakhir;
-            //$milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal);
-            //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate);
-            //$milestone->status = $row->akt_status; 
+            array_push($milestones, $this->getTenderMilestone($row));
         }
-        $milestones = $milestone;
 
         return $milestones;
+    }
+
+    function getTenderMilestone($row)
+    {
+        $milestone = new stdClass();
+        $milestone->id = $row->dtj_id;
+        $milestone->title = $row->akt_jenis;
+        $milestone->description = $row->dtj_keterangan;
+        //$milestone->duedate = $row->dtj_tglakhir;
+        //$milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal);
+        //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate);
+        //$milestone->status = $row->akt_status;
+        return $milestone;
     }
 
     function getTender($results, &$parties)
