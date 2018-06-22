@@ -59,6 +59,19 @@ class ApiBIRMS_contract extends Controller
         return $planning;
     }
 
+    function getContactPoint($row) {
+        $cp=new stdClass();
+        $cp->email=$row->email;
+        $cp->telephone=$row->telepon;
+        return $cp;
+    }
+
+    function getAddress($row) {
+        $a=new stdClass();
+        $a->streetAddress=$row->alamat;
+        return $a;
+    }
+
     function getOrganizationByName($name)
     {
         $db = env('DB_PRIME');
@@ -73,6 +86,8 @@ class ApiBIRMS_contract extends Controller
         $org = new stdClass();
         $org->id = $row->unitID;
         $org->name = $row->nama;
+        $org->address= $this->getAddress($row);
+        $org->contactPoint= $this->getContactPoint($row);
 
         $id= new stdClass();
         $id->id= $row->unitID;
