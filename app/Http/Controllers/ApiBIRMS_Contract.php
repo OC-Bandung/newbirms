@@ -185,6 +185,7 @@ class ApiBIRMS_contract extends Controller
     function getTenderMilestones($sirupID)
     {
         $db = env('DB_CONTRACT');
+        $milestoneDateFormat = 'Y-m-d H:i:s';
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
         $results = DB::select($sql);
         if (sizeof($results) == 0) {
@@ -238,6 +239,24 @@ class ApiBIRMS_contract extends Controller
         return $awards;
     }
 
+    function getMilestoneStatus($dueDate, $dateMet)
+    {
+        $now = date('Y-m-d H:i:s');
+        $milestoneStatus = new stdClass();
+        if ($dateMet > $now) {
+            $milestonestatusCode = "notMet";
+        } else if ($dateMet <= $now) {
+            $milestonestatusCode = "met";
+        }
+
+        if ($dueDate <= $now) {
+            $milestonestatusCode = "scheduled";
+        }
+        $milestoneStatus->Status = $milestonestatusCode;
+
+        return $milestonestatusCode;
+    }
+
     function getTenderMilestone($row)
     {
         $milestoneDateFormat = 'Y-m-d H:i:s';
@@ -248,6 +267,7 @@ class ApiBIRMS_contract extends Controller
         $milestone->dueDate = $this->getOcdsDateFromString($row->dtj_tglakhir, $milestoneDateFormat);
         $milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal, $milestoneDateFormat);
         $milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
+        $milestone->status = $this->getMilestoneStatus($row->dtj_tglakhir, $row->dtj_tglawal);
         //$milestone->status = $row->akt_status; //TODO: titan we need a mapping here between akt_status and milestone
         //status http://standard.open-contracting.org/1.1/en/schema/codelists/#milestone-status
         return $milestone;
@@ -264,10 +284,6 @@ class ApiBIRMS_contract extends Controller
         $tender->procuringEntity = $this->getOrganizationReferenceByName($results->satuan_kerja, "procuringEntity", $parties);
         $tender->numberOfTenderers = $this->getNumberOfTenderers($results->sirupID);
         $tender->milestones = $this->getTenderMilestones($results->sirupID);
-        /*$tender->milestones = array(array('id' => 1,
-                                    'title' => 'title',
-                                    'description' => 'description'));*/
-
         return $tender;
     }
 
