@@ -1,7 +1,8 @@
 <?php
 
+namespace App\Dto;
+
 use Dto\ServiceContainer;
-use Dto\Validators\Types\CustomDtoArrayValidator;
 
 
 /**
@@ -9,16 +10,19 @@ use Dto\Validators\Types\CustomDtoArrayValidator;
  * User: mihai
  * Date: 6/26/18
  * Time: 5:51 PM
+ * Custom service container to override arrayValidator with a CustomDtoArrayValidator
+ * All the rest of the init method settings are imported from
  */
 
 class CustomDtoServiceContainer extends ServiceContainer {
 
 
     protected function init() {
+        //invoke supermethod
         parent::init();
 
         $this->container['arrayValidator'] = function () {
-            return new CustomDtoarrayValidator($this);
+            return new CustomDtoArrayValidator($this);
         };
 
     }

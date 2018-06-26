@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Dto\CustomDtoServiceContainer;
 use DateTime;
 use Dto\JsonSchemaRegulator;
 use Dto\ServiceContainer;
@@ -27,18 +28,18 @@ class OcdsRelease extends Dto
         return $response->make($this->toJson())->header('Content-Type', 'application/json');
     }
 
+    /**
+     * We override the getDefaultRegulator to provide a different service provider
+     * @param mixed $regulator
+     * @return JsonSchemaRegulator|\Dto\RegulatorInterface|mixed
+     */
     protected function getDefaultRegulator($regulator)
     {
-        $serviceContainer = new ServiceContainer();
-
-
         if (is_null($regulator)) {
-            return new JsonSchemaRegulator(, get_called_class());
+            return new JsonSchemaRegulator(new CustomDtoServiceContainer(), get_called_class());
         }
-
         return $regulator;
     }
-
 }
 
 
