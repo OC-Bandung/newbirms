@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use DateTime;
+use Dto\JsonSchemaRegulator;
+use Dto\ServiceContainer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Dto\Dto;
 
@@ -24,6 +26,19 @@ class OcdsRelease extends Dto
     {
         return $response->make($this->toJson())->header('Content-Type', 'application/json');
     }
+
+    protected function getDefaultRegulator($regulator)
+    {
+        $serviceContainer = new ServiceContainer();
+
+
+        if (is_null($regulator)) {
+            return new JsonSchemaRegulator(, get_called_class());
+        }
+
+        return $regulator;
+    }
+
 }
 
 
@@ -74,32 +89,34 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
-    function getOrganizationByName($name)
+    function getOrganizationByName($name, $orgObj = null)
     {
         $db = env('DB_PRIME');
         $sql = "select * from " . $db . ".tbl_skpd where nama = '" . $name . "'";
         $results = DB::select($sql);
-        if (sizeof($results) == 0) {
+        if (sizeof($results) == 0 && $orgObj == null) {
             abort(404, 'No organization found by name ' . $name);
         }
 
-        $row = $results[0];
+        if (sizeof($results) > 0) {
+            $row = $results[0];
+            $org = new stdClass();
+            $org->id = $row->unitID;
+            $org->name = $row->nama;
+            $org->address = $this->getAddress($row);
+            $org->contactPoint = $this->getContactPoint($row);
 
-        $org = new stdClass();
-        $org->id = $row->unitID;
-        $org->name = $row->nama;
-        $org->address = $this->getAddress($row);
-        $org->contactPoint = $this->getContactPoint($row);
+            $id = new stdClass();
+            $id->id = $row->unitID;
+            $id->legalName = $row->nama;
+            $org->identifier = $id;
+            return $org;
+        }
 
-        $id = new stdClass();
-        $id->id = $row->unitID;
-        $id->legalName = $row->nama;
-        $org->identifier = $id;
-
-        return $org;
+        return $orgObj;
     }
 
-    function getOrganizationReferenceByName($name, $role, &$parties)
+    function getOrganizationReferenceByName($name, $role, &$parties, $orgObj = null)
     {
         //first check if organization is within parties array
         foreach ($parties as &$o) {
@@ -111,7 +128,7 @@ class ApiBIRMS_contract extends Controller
 
         //if not found, read new organization from org table
         if (!isset($org)) {
-            $org = $this->getOrganizationByName($name);
+            $org = $this->getOrganizationByName($name, $orgObj);
             $org->roles = [$role];
             array_push($parties, $org);
         } else {
@@ -155,7 +172,9 @@ class ApiBIRMS_contract extends Controller
     function getOrganizationReferenceFromOrg($org)
     {
         $reference = new stdClass();
-        $reference->id = $org->id;
+        if(isset($org->id)) {
+            $reference->id = $org->id;
+        }
         $reference->name = $org->name;
         return $reference;
     }
@@ -221,7 +240,17 @@ class ApiBIRMS_contract extends Controller
         $a->date = $this->getOcdsDateFromString($row->tanggalpengumuman);
         $a->status = "active";
         $a->value = $this->getAmount($row->nilai_nego);
-        //$a->suppliers = [$this->getOrganizationReferenceByName($row->pemenang, "supplier", $parties)];
+
+        $supl = new stdClass();
+        $supl->name=$row->pemenang;
+        $orgId=new stdClass();
+        $orgId->legalName=$row->pemenang;
+        $supl->identifier=$orgId;
+        $addr=new stdClass();
+        $addr->streetAddress=$row->pemenangalamat;
+        $supl->address=$addr;
+
+        $a->suppliers = [$this->getOrganizationReferenceByName($row->pemenang, "supplier", $parties,$supl)];
         return $a;
     }
 
@@ -266,7 +295,7 @@ class ApiBIRMS_contract extends Controller
         $milestone->description = $row->dtj_keterangan;
         $milestone->dueDate = $this->getOcdsDateFromString($row->dtj_tglakhir, $milestoneDateFormat);
         $milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal, $milestoneDateFormat);
-        $milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
+        //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
         $milestone->status = $this->getMilestoneStatus($row->dtj_tglakhir, $row->dtj_tglawal);
         //$milestone->status = $row->akt_status; //TODO: titan we need a mapping here between akt_status and milestone
         //status http://standard.open-contracting.org/1.1/en/schema/codelists/#milestone-status
