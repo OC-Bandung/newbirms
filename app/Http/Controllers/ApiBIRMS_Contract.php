@@ -255,6 +255,13 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
+
+    function getNonCompetitiveAwards($sirupID, &$parties) {
+        //TODO: please write query to get to noncompetitive awards here
+    }
+
+
+
     function getCompetitiveAwards($sirupID, &$parties)
     {
         $db = env('DB_CONTRACT');
