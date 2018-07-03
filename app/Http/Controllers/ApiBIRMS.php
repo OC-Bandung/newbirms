@@ -21,8 +21,33 @@ class ApiBIRMS extends Controller
 
     public function contractsPerYear($year)
     {
-        $results = Sirup::where("tahun", $year)->paginate(100);
-        return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+		//$results = Sirup::where("tahun", $year)->paginate(100);
+		$ocid = env('OCID');
+
+		$dbplanning = env('DB_PLANNING');
+		
+		$sql = 'SELECT
+		CONCAT("'.env('OCID').'","s-",tahun,"-",sirupID) AS ocid,
+		tahun AS year,
+		nama AS title,
+		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
+		pagu AS value
+	FROM
+	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' 
+	UNION 
+	SELECT
+		CONCAT("'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
+		'.$year.' AS year,
+		namapekerjaan AS title,
+		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","b-",'.$year.',"-",sirupID) AS uri,
+		anggaran AS value
+	FROM
+	'.$dbplanning.'.tbl_pekerjaan 
+	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0';
+		$results = DB::select($sql);
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
     }
 
     /* get_pns function
