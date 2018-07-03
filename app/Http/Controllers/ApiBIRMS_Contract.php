@@ -92,13 +92,22 @@ class ApiBIRMS_contract extends Controller
 
     function getOrganizationByName($year, $name, $orgObj = null)
     {
+        $dbeproc = env('DB_EPROC');
+
         if ($year <= 2016) {
             $db = env('DB_PRIME_PREV');
         } else {
             $db = env('DB_PRIME');
         }
 
-        $sql = "SELECT * FROM " . $db . ".tbl_skpd WHERE nama = '" . $name . "' ";
+        if ($orgObj == 'supplier') { 
+            $sql = "SELECT * FROM " .$dbeproc. ".tperusahaan WHERE nama = '".$name."' ";
+            //TODO : @mihai its something wrong in get Organization... cause 
+            // We have 2 tables for government organization we get from tbl_skpd and 
+            // Supplier we get from tperusahaan
+        } else {
+            $sql = "SELECT * FROM " . $db . ".tbl_skpd WHERE nama = '" . $name . "' ";
+        }
         $results = DB::select($sql);
         if (sizeof($results) == 0 && $orgObj == null) {
             abort(404, 'No organization found by name ' . $name);
@@ -199,11 +208,12 @@ class ApiBIRMS_contract extends Controller
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
         $results = DB::select($sql);
         if (sizeof($results) == 0) {
-            abort(404, 'No procurement found by sirupID ' . $sirupID);
+            //abort(404, 'No procurement found by sirupID ' . $sirupID);
+            $bidder = 0;
+        } else {
+            $row = $results[0];
+            $bidder = (int)$row->jumlah_peserta;
         }
-        $row = $results[0];
-
-        $bidder = (int)$row->jumlah_peserta;
         return $bidder;
     }
 
@@ -214,29 +224,29 @@ class ApiBIRMS_contract extends Controller
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
         $results = DB::select($sql);
         if (sizeof($results) == 0) {
-            abort(404, 'No procurement found by sirupID ' . $sirupID);
+            //abort(404, 'No procurement found by sirupID ' . $sirupID);
+            $milestones = [];
+        } else {
+            $row = $results[0];
+            $lls_id = $row->lls_id;
+
+            $db = env('DB_CONTRACT');
+            $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
+            LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
+            WHERE lls_id = " . $lls_id . " ORDER BY akt_urut";
+            $results = DB::select($sql);
+
+            if (sizeof($results) == 0) {
+                abort(404, 'No milestone found by lelang ID ' . $lls_id);
+            }
+
+            $milestones = [];
+            foreach ($results as $row) {
+                array_push($milestones, $this->getTenderMilestone($row));
+            }
         }
-        $row = $results[0];
-        $lls_id = $row->lls_id;
-
-        $db = env('DB_CONTRACT');
-        $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
-        LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
-        WHERE lls_id = " . $lls_id . " ORDER BY akt_urut";
-        $results = DB::select($sql);
-
-        if (sizeof($results) == 0) {
-            abort(404, 'No milestone found by lelang ID ' . $lls_id);
-        }
-
-        $milestones = [];
-        foreach ($results as $row) {
-            array_push($milestones, $this->getTenderMilestone($row));
-        }
-
         return $milestones;
     }
-
 
     function getCompetitiveAward($year, $row, &$parties)
     {
@@ -256,13 +266,8 @@ class ApiBIRMS_contract extends Controller
         $addr->streetAddress=$row->pemenangalamat;
         $supl->address=$addr;
 
-        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties,$supl)];
+        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $supl)];
         return $a;
-    }
-
-
-    function getNonCompetitiveAwards($sirupID, &$parties) {
-        //TODO: please write query to get to noncompetitive awards here
     }
 
     function getCompetitiveAwards($year, $sirupID, &$parties)
@@ -274,6 +279,64 @@ class ApiBIRMS_contract extends Controller
         $awards = [];
         foreach ($results as $row) {
             array_push($awards, $this->getCompetitiveAward($year, $row, $parties));
+        }
+
+        return $awards;
+    }
+
+    function getNonCompetitiveAward($year, $row, &$parties)
+    {
+        $a = new stdClass();
+        $a->id = $row->pekerjaanID;
+        $a->title = $row->namapekerjaan;
+        if ($row->pilih_start) {
+            $a->date = $this->getOcdsDateFromString($row->pilih_start);
+        } else {
+            $a->date = $this->getOcdsDateFromString('0000-00-00');
+        }
+        $a->status = "active";
+        $a->value = $this->getAmount($row->nilai_nego);
+
+        $supl = new stdClass();
+        $supl->name=$row->pemenang;
+        $orgId=new stdClass();
+        $orgId->legalName=$row->pemenang;
+        $supl->identifier=$orgId;
+        $addr=new stdClass();
+        $addr->streetAddress=$row->pemenangalamat;
+        $supl->address=$addr;
+
+        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $supl)];
+        return $a;
+    }
+
+    function getNonCompetitiveAwards($year, $pekerjaanID, &$parties) {
+        //TODO: please write query to get to noncompetitive awards here
+        $dbplanning = env('DB_PLANNING');
+        $dbcontract = env('DB_CONTRACT');
+
+        $sql = "SELECT
+        tbl_pekerjaan.pekerjaanID ,
+        tbl_pekerjaan.namapekerjaan ,
+        tbl_pekerjaan.anggaran ,
+        pilih_start ,
+        tpekerjaan.tanggalrencana ,
+        tpekerjaan.hps ,
+        nilai_nego,
+        tpengadaan_pemenang.perusahaanid,
+        tpengadaan_pemenang.perusahaannama AS pemenang,
+        tpengadaan_pemenang.perusahaanalamat AS pemenangalamat,
+        tpengadaan_pemenang.perusahaannpwp
+    FROM
+        ".$dbplanning.".tbl_pekerjaan
+    LEFT JOIN ".$dbcontract.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = ".$dbcontract.".tpekerjaan.pekerjaanID
+    LEFT JOIN ".$dbcontract.".tpengadaan ON tpekerjaan.pid = tpengadaan.pid
+    LEFT JOIN ".$dbcontract.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid WHERE tbl_pekerjaan.pekerjaanID = " . $pekerjaanID . " ";
+        $results = DB::select($sql);
+
+        $awards = [];
+        foreach ($results as $row) {
+            array_push($awards, $this->getNonCompetitiveAward($year, $row, $parties));
         }
 
         return $awards;
@@ -422,12 +485,59 @@ class ApiBIRMS_contract extends Controller
         $sirup_id  = $pieces[4];
         
         $dbplanning = env('DB_PLANNING');
+        $dbprime = env('DB_PRIME');
 
-        if ($source = 's') {
+        if ($source == 's') {
             $sql_intro = "SELECT * FROM ".$dbplanning.".tbl_sirup WHERE sirupID = '" . $sirup_id . "'";
         } else {
-            $sql_intro = "SELECT * FROM ".$dbplanning.".tbl_pekerjaan WHERE pekerjaanID = '". $sirup_id."'";    
+            $sql_intro = "SELECT
+            tbl_pekerjaan.pekerjaanID AS sirupID,
+            ".$year." AS tahun ,
+            namapekerjaan AS nama ,
+            anggaran AS pagu ,
+            tbl_sumberdana.sumberdana AS sumber_dana_string ,
+            1 AS jenis_belanja ,
+            tbl_metode.jenisID AS jenis_pengadaan ,
+            (
+                CASE
+                WHEN tbl_metode.nama = 'Belanja Sendiri' THEN
+                    9
+                WHEN tbl_metode.nama = 'Kontes / Sayembara' THEN
+                    10
+                WHEN tbl_metode.nama = 'Pelelangan Sederhana' THEN
+                    2
+                WHEN tbl_metode.nama = 'Pelelangan Umum' THEN
+                    1
+                WHEN tbl_metode.nama = 'Pembelian Secara Elektronik' THEN
+                    9
+                WHEN tbl_metode.nama = 'Pemilihan Langsung' THEN
+                    6
+                WHEN tbl_metode.nama = 'Pengadaan Langsung' THEN
+                    8
+                WHEN tbl_metode.nama = 'Penunjukan Langsung' THEN
+                    7
+                ELSE
+                    0
+                END
+            ) AS metode_pengadaan ,
+            2 AS jenis ,
+            pilih_start AS tanggal_awal_pengadaan ,
+            pilih_end AS tanggal_akhir_pengadaan ,
+            laksana_start AS tanggal_awal_pekerjaan ,
+            laksana_end AS tanggal_akhir_pekerjaan ,
+            satker AS id_satker ,
+            'Kota Bandung' AS kldi ,
+            tbl_skpd.nama AS satuan_kerja ,
+            tbl_skpd.alamat AS lokasi ,
+            IF (tbl_metode.nama = 'Swakelola' , 1 , 0) AS isswakelola
+        FROM
+            ".$dbplanning.".tbl_pekerjaan
+        LEFT JOIN ".$dbplanning.".tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
+        LEFT JOIN ".$dbprime.".tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+        LEFT JOIN ".$dbplanning.".tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+        WHERE tbl_pekerjaan.pekerjaanID = '". $sirup_id."'";    
         }
+        //die($sql_intro);
         $results = DB::select($sql_intro);
 
         if (sizeof($results) == 0) {
@@ -440,13 +550,23 @@ class ApiBIRMS_contract extends Controller
         $r->parties = [];
         $r->tag = ['planning'];
         $r->initiationType = $this->getInitiationType($results);
-        $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
+        if ($source == 's') {
+            $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
+        } else {
+            if (isset($results->pilihstart)) {
+                $r->date = $this->getOcdsDateFromString($results->pilih_start);
+            } else {
+                $r->date = $this->getOcdsDateFromString('0000-00-00');
+            }
+        }
         $r->planning = $this->getPlanning($results);
-        //$r->tender = $this->getTender($year, $results, $r->parties);
+        $r->tender = $this->getTender($year, $results, $r->parties);
         $r->buyer = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "buyer", $r->parties);
-        $r->awards = $this->getCompetitiveAwards($year,$sirup_id, $r->parties);
-
-
+        if ($source == 's') {
+            $r->awards = $this->getCompetitiveAwards($year, $sirup_id, $r->parties);
+        } else {
+            $r->awards = $this->getNonCompetitiveAwards($year, $sirup_id, $r->parties);
+        }
         //this creates real OCDS release object and runs basic schema validation
         $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
         return $validatedRelease->getJsonResponse(response());
