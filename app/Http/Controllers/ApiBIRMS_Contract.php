@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Dto\CustomDtoServiceContainer;
 use DateTime;
+use Dto\JsonSchemaRegulator;
+use Dto\ServiceContainer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Dto\Dto;
 
@@ -23,6 +26,19 @@ class OcdsRelease extends Dto
     function getJsonResponse(ResponseFactory $response)
     {
         return $response->make($this->toJson())->header('Content-Type', 'application/json');
+    }
+
+    /**
+     * We override the getDefaultRegulator to provide a different service provider
+     * @param mixed $regulator
+     * @return JsonSchemaRegulator|\Dto\RegulatorInterface|mixed
+     */
+    protected function getDefaultRegulator($regulator)
+    {
+        if (is_null($regulator)) {
+            return new JsonSchemaRegulator(new CustomDtoServiceContainer(), get_called_class());
+        }
+        return $regulator;
     }
 }
 
@@ -74,32 +90,39 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
-    function getOrganizationByName($name)
+    function getOrganizationByName($year, $name, $orgObj = null)
     {
-        $db = env('DB_PRIME');
+        if ($year <= 2016) {
+            $db = env('DB_PRIME_PREV');
+        } else {
+            $db = env('DB_PRIME');
+        }
+
         $sql = "select * from " . $db . ".tbl_skpd where nama = '" . $name . "'";
         $results = DB::select($sql);
-        if (sizeof($results) == 0) {
+        if (sizeof($results) == 0 && $orgObj == null) {
             abort(404, 'No organization found by name ' . $name);
         }
 
-        $row = $results[0];
+        if (sizeof($results) > 0) {
+            $row = $results[0];
+            $org = new stdClass();
+            $org->id = $row->unitID;
+            $org->name = $row->nama;
+            $org->address = $this->getAddress($row);
+            $org->contactPoint = $this->getContactPoint($row);
 
-        $org = new stdClass();
-        $org->id = $row->unitID;
-        $org->name = $row->nama;
-        $org->address = $this->getAddress($row);
-        $org->contactPoint = $this->getContactPoint($row);
+            $id = new stdClass();
+            $id->id = $row->unitID;
+            $id->legalName = $row->nama;
+            $org->identifier = $id;
+            return $org;
+        }
 
-        $id = new stdClass();
-        $id->id = $row->unitID;
-        $id->legalName = $row->nama;
-        $org->identifier = $id;
-
-        return $org;
+        return $orgObj;
     }
 
-    function getOrganizationReferenceByName($name, $role, &$parties)
+    function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj = null)
     {
         //first check if organization is within parties array
         foreach ($parties as &$o) {
@@ -111,7 +134,7 @@ class ApiBIRMS_contract extends Controller
 
         //if not found, read new organization from org table
         if (!isset($org)) {
-            $org = $this->getOrganizationByName($name);
+            $org = $this->getOrganizationByName($year, $name, $orgObj);
             $org->roles = [$role];
             array_push($parties, $org);
         } else {
@@ -155,7 +178,9 @@ class ApiBIRMS_contract extends Controller
     function getOrganizationReferenceFromOrg($org)
     {
         $reference = new stdClass();
-        $reference->id = $org->id;
+        if(isset($org->id)) {
+            $reference->id = $org->id;
+        }
         $reference->name = $org->name;
         return $reference;
     }
@@ -185,6 +210,7 @@ class ApiBIRMS_contract extends Controller
     function getTenderMilestones($sirupID)
     {
         $db = env('DB_CONTRACT');
+        $milestoneDateFormat = 'Y-m-d H:i:s';
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
         $results = DB::select($sql);
         if (sizeof($results) == 0) {
@@ -212,7 +238,7 @@ class ApiBIRMS_contract extends Controller
     }
 
 
-    function getCompetitiveAward($row, &$parties)
+    function getCompetitiveAward($year, $row, &$parties)
     {
         $a = new stdClass();
         $a->id = $row->lgid;
@@ -220,11 +246,26 @@ class ApiBIRMS_contract extends Controller
         $a->date = $this->getOcdsDateFromString($row->tanggalpengumuman);
         $a->status = "active";
         $a->value = $this->getAmount($row->nilai_nego);
-        //$a->suppliers = [$this->getOrganizationReferenceByName($row->pemenang, "supplier", $parties)];
+
+        $supl = new stdClass();
+        $supl->name=$row->pemenang;
+        $orgId=new stdClass();
+        $orgId->legalName=$row->pemenang;
+        $supl->identifier=$orgId;
+        $addr=new stdClass();
+        $addr->streetAddress=$row->pemenangalamat;
+        $supl->address=$addr;
+
+        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties,$supl)];
         return $a;
     }
 
-    function getCompetitiveAwards($sirupID, &$parties)
+
+    function getNonCompetitiveAwards($sirupID, &$parties) {
+        //TODO: please write query to get to noncompetitive awards here
+    }
+
+    function getCompetitiveAwards($year, $sirupID, &$parties)
     {
         $db = env('DB_CONTRACT');
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
@@ -232,10 +273,28 @@ class ApiBIRMS_contract extends Controller
 
         $awards = [];
         foreach ($results as $row) {
-            array_push($awards, $this->getCompetitiveAward($row, $parties));
+            array_push($awards, $this->getCompetitiveAward($year, $row, $parties));
         }
 
         return $awards;
+    }
+
+    function getMilestoneStatus($dueDate, $dateMet)
+    {
+        $now = date('Y-m-d H:i:s');
+        $milestoneStatus = new stdClass();
+        if ($dateMet > $now) {
+            $milestonestatusCode = "notMet";
+        } else if ($dateMet <= $now) {
+            $milestonestatusCode = "met";
+        }
+
+        if ($dueDate <= $now) {
+            $milestonestatusCode = "scheduled";
+        }
+        $milestoneStatus->Status = $milestonestatusCode;
+
+        return $milestonestatusCode;
     }
 
     function getTenderMilestone($row)
@@ -247,13 +306,14 @@ class ApiBIRMS_contract extends Controller
         $milestone->description = $row->dtj_keterangan;
         $milestone->dueDate = $this->getOcdsDateFromString($row->dtj_tglakhir, $milestoneDateFormat);
         $milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal, $milestoneDateFormat);
-        $milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
+        //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
+        $milestone->status = $this->getMilestoneStatus($row->dtj_tglakhir, $row->dtj_tglawal);
         //$milestone->status = $row->akt_status; //TODO: titan we need a mapping here between akt_status and milestone
         //status http://standard.open-contracting.org/1.1/en/schema/codelists/#milestone-status
         return $milestone;
     }
 
-    function getTender($results, &$parties)
+    function getTender($year, $results, &$parties)
     {
         $tender = new stdClass();
         $tender->id = $results->sirupID;
@@ -261,13 +321,9 @@ class ApiBIRMS_contract extends Controller
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
         $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
-        $tender->procuringEntity = $this->getOrganizationReferenceByName($results->satuan_kerja, "procuringEntity", $parties);
+        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties);
         $tender->numberOfTenderers = $this->getNumberOfTenderers($results->sirupID);
         $tender->milestones = $this->getTenderMilestones($results->sirupID);
-        /*$tender->milestones = array(array('id' => 1,
-                                    'title' => 'title',
-                                    'description' => 'description'));*/
-
         return $tender;
     }
 
@@ -361,8 +417,17 @@ class ApiBIRMS_contract extends Controller
         $r->ocid = $ocid;
 
         $pieces = explode("-", $ocid);
-        $sirup_id = $pieces[2];
-        $sql_intro = "select * from tbl_sirup where sirupID = '" . $sirup_id . "' ";
+        $source    = $pieces[2]; // s = sirup.lkpp.go.id. b = birms.bandung.go.id
+        $year      = $pieces[3];
+        $sirup_id  = $pieces[4];
+        
+        $dbplanning = env('DB_PLANNING');
+
+        if ($source = 's') {
+            $sql_intro = "SELECT * FROM ".$dbplanning.".tbl_sirup WHERE sirupID = '" . $sirup_id . "'";
+        } else {
+            $sql_intro = "SELECT * FROM ".$dbplanning.".tbl_pekerjaan WHERE pekerjaanID = '". $sirup_id."'";    
+        }
         $results = DB::select($sql_intro);
 
         if (sizeof($results) == 0) {
@@ -377,9 +442,9 @@ class ApiBIRMS_contract extends Controller
         $r->initiationType = $this->getInitiationType($results);
         $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
         $r->planning = $this->getPlanning($results);
-        $r->tender = $this->getTender($results, $r->parties);
-        $r->buyer = $this->getOrganizationReferenceByName($results->satuan_kerja, "buyer", $r->parties);
-        $r->awards = $this->getCompetitiveAwards($sirup_id, $r->parties);
+        //$r->tender = $this->getTender($year, $results, $r->parties);
+        $r->buyer = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "buyer", $r->parties);
+        $r->awards = $this->getCompetitiveAwards($year,$sirup_id, $r->parties);
 
 
         //this creates real OCDS release object and runs basic schema validation

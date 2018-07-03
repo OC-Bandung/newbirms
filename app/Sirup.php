@@ -21,7 +21,7 @@ public function getYearAttribute(){
 }
 
 public function getURIAttribute(){
-    return   env('API_ENDPOINT') . "/contract/" . env('OCID') . $this->attributes['sirupID'];
+    return   env('API_ENDPOINT') . "/newcontract/" . env('OCID') . $this->attributes['sirupID'];
 }
 
 public function getTitleAttribute(){
