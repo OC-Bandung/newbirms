@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Sirup;
 use App\Paketlng;
 use App\Paketpl;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Input;
 
 class ApiBIRMS extends Controller
 {
@@ -16,7 +18,27 @@ class ApiBIRMS extends Controller
         $ocid = env('OCID');
         $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
                             ->orderBy('sirupID')
-                            ->paginate(15);
+                            ->paginate(env('JSON_RESULTS_PER_PAGE', 40));
+    }
+
+    /**
+     * Creates paginator from a simple array coming from DB::select
+     * https://stackoverflow.com/a/44090541
+     * Use url parameter per_page to increase page number
+     *
+     * @param $array
+     * @param $request
+     * @return LengthAwarePaginator
+     */
+    public function arrayPaginator($array, $request)
+    {
+        $page = Input::get('page', 1);
+        $perPage = Input::get('per_page', env('JSON_RESULTS_PER_PAGE', 40));
+        $offset = ($page * $perPage) - $perPage;
+
+        return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true),
+            count($array), $perPage, $page,
+            ['path' => $request->url(), 'query' => $request->query()]);
     }
 
     public function contractsPerYear($year)
@@ -44,7 +66,8 @@ class ApiBIRMS extends Controller
 	FROM
 	'.$dbplanning.'.tbl_pekerjaan 
 	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0';
-		$results = DB::select($sql);
+
+        $results = $this->arrayPaginator(DB::select($sql), request());
     	return response()
     			->json($results)
     			->header('Access-Control-Allow-Origin', '*');
@@ -133,7 +156,7 @@ class ApiBIRMS extends Controller
 				LEFT OUTER JOIN $dbmain.tbl_user ON tr_sk_user.usrID = $dbmain.tbl_user.usrID
 				LEFT OUTER JOIN $dbmain.tbl_skpd ON tbl_sk.skpdID = $dbmain.tbl_skpd.skpdID
 				LIMIT 10';
-		$results = DB::select($sql)->paginate(15);
+		$results = DB::select($sql)->paginate(env('JSON_RESULTS_PER_PAGE', 40));
     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	  
 	}
