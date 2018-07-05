@@ -61,11 +61,11 @@ class ApiBIRMS extends Controller
 		CONCAT("'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
 		'.$year.' AS year,
 		namapekerjaan AS title,
-		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","b-",'.$year.',"-",sirupID) AS uri,
+		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS uri,
 		anggaran AS value
 	FROM
 	'.$dbplanning.'.tbl_pekerjaan 
-	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0';
+	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1';
 
         $results = $this->arrayPaginator(DB::select($sql), request());
     	return response()
