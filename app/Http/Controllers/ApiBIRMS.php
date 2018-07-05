@@ -55,7 +55,7 @@ class ApiBIRMS extends Controller
 		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
 		pagu AS value
 	FROM
-	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' 
+	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND pagu <> 0 
 	UNION 
 	SELECT
 		CONCAT("'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
