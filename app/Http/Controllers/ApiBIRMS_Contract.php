@@ -25,7 +25,7 @@ class OcdsRelease extends Dto
      */
     function getJsonResponse(ResponseFactory $response)
     {
-        return $response->make($this->toJson())->header('Content-Type', 'application/json');
+        return $response->make($this->toJson(true))->header('Content-Type', 'application/json');
     }
 
     /**
