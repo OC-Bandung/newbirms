@@ -194,6 +194,13 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
+    function getUnit($unit)
+    {
+        $a = new stdClass();
+        $a->unit = $unit;
+        return $a;
+    }
+
     function getBudget($results)
     {
         $budget = new stdClass();
@@ -517,6 +524,91 @@ class ApiBIRMS_contract extends Controller
         return null;
     }
 
+    function getNonCompetitiveContracts($year, $pekerjaanID, &$parties) {
+        $db  = env('DB_CONTRACT');
+        $sql = "SELECT
+                    tpekerjaan.pid,
+                    tkontrak_penunjukan.id ,
+                    CONCAT(REPLACE(tpekerjaan.tanggalrencana, '-' ,''), '.', tpekerjaan.pid, '.', tpekerjaan.saltid) AS awardid,
+                    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(tpekerjaan.namapekerjaan ,'&mdash;' , 1), '&mdash;' ,- 1)) AS namapekerjaan,
+                    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(tpekerjaan.namapekerjaan ,'&mdash;' , 2), '&mdash;' ,- 1)) AS deskripsi,
+                    tkontrak_penunjukan.spk_nosurat,
+                    tkontrak_penunjukan.spk_tgl_surat,
+                    tkontrak_penunjukan.spk_tgl_slskontrak,
+                    tpengadaan.nilai_nego
+                FROM
+                    " .$db. ".tpekerjaan
+                LEFT JOIN " .$db. ".tpengadaan ON tpengadaan.pid = tpekerjaan.pid
+                LEFT JOIN " .$db. ".tkontrak_penunjukan ON tkontrak_penunjukan.pgid = tpengadaan.pgid
+                WHERE
+                    pekerjaanid = " .$pekerjaanID. " ";
+        $results = DB::select($sql);
+
+        $contracts = [];
+        foreach ($results as $row) {
+            array_push($contracts, $this->getNonCompetitiveContract($year, $row, $parties));
+        }
+
+        return $contracts;    
+    }
+
+    function getNonCompetitiveContract($year, $row, &$parties)
+    {
+        $ContractDateFormat = 'Y-m-d H:i:s';
+
+        $a = new stdClass();
+        $a->id = $row->pid;
+        $a->awardID  = $row->awardid;
+        $a->title = $row->namapekerjaan;
+        $a->title = $row->deskripsi;
+        if (($row->spk_nosurat != "") && ($row->spk_tgl_surat != "0000-00-00")) {
+            $a->status = "active";
+        } else {
+            $a->status = "pending";
+        }
+        
+        $a->period = array(
+            'startDate' => $this->getOcdsDateFromString($row->spk_tgl_surat, $ContractDateFormat),
+            'endDate' => $this->getOcdsDateFromString($row->spk_tgl_slskontrak, $ContractDateFormat)
+            );
+        $a->value = $this->getAmount($row->nilai_nego);
+        $a->items = $this->getNonCompetitiveItems($row->pid);
+        $a->dateSigned = $this->getOcdsDateFromString($row->spk_tgl_surat, $ContractDateFormat);
+        return $a;
+    }
+
+    function getNonCompetitiveItems($pid) {
+        $db = env('DB_CONTRACT');
+        $sql = "SELECT 
+                    tpengadaan_rincian.ID,
+                    nama,
+                    (SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 1), '|' ,-1) *
+                     SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 2), '|' ,-1)) AS volume,
+                     satuan 
+                FROM " . $db . ".tpengadaan_rincian 
+                LEFT JOIN " . $db . ".tpenawaran_rincian ON tpengadaan_rincian.ID = tpenawaran_rincian.pengadaan_rincian_id
+                WHERE pid = " . $pid . " AND nilai_akhir <> 0";
+        $results = DB::select($sql);
+
+        $items = [];
+        foreach ($results as $row) {
+            array_push($items, $this->getItem($row));
+        }
+
+        return $items;
+    }
+
+    function getItem($row)
+    {
+        $a = new stdClass();
+        $a->id = $row->ID;
+        $a->description = $row->nama;
+        $a->quantity = $row->volume;
+        $a->unit = $this->getUnit($row->satuan);
+
+        return $a;
+    }
+    
     /**
      * You should return here only initiaion type allowed by ocds. Example 'tender'. This is NOT an open code-type,
      * so you cannot use any string you like here.
@@ -682,8 +774,9 @@ class ApiBIRMS_contract extends Controller
             $r->awards = $this->getCompetitiveAwards($year, $sirup_id, $r->parties);
         } else {
             $r->awards = $this->getNonCompetitiveAwards($year, $sirup_id, $r->parties);
+            $r->contracts = $this->getNonCompetitiveContracts($year, $sirup_id, $r->parties);
         }
-        //this creates real OCDS release object and runs basic schema validation
+                //this creates real OCDS release object and runs basic schema validation
         $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
         return $validatedRelease->getJsonResponse(response());
     }
