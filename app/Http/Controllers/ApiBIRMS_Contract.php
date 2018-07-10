@@ -345,7 +345,7 @@ class ApiBIRMS_contract extends Controller
         $addr->streetAddress=$row->perusahaanalamat;
         $supl->address=$addr;
 
-        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplier", $parties, 'supplier')];
+        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplier", $parties, $orgId)];
         return $a;
     }
 
