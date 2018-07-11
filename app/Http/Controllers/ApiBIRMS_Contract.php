@@ -97,23 +97,24 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
-    function getOrganizationByName($year, $name, $orgObj = null)
+    function getOrganizationByName($year, $name, $role = null)
     {
-        $dbeproc = env('DB_EPROC');
-
         if ($year <= 2016) {
             $db = env('DB_PRIME_PREV');
         } else {
             $db = env('DB_PRIME');
         }
+        $dbeproc = env('DB_EPROC');
 
-        if ($orgObj == 'supplier') { 
-            $sql = "SELECT * FROM " .$dbeproc. ".tperusahaan WHERE namaperusahaan = '".$name."' ";
+        if ($role == "supplier") { 
+            $sql = "SELECT * FROM " . $dbeproc . ".tperusahaan WHERE UCASE(namaperusahaan) = UCASE('".$name."') ";
         } else {
-            $sql = "SELECT * FROM " . $db . ".tbl_skpd WHERE nama = '" . $name . "' ";
+            $sql = "SELECT * FROM " . $db . ".tbl_skpd WHERE UCASE(nama) = UCASE('" . $name . "')";
         }
+        die($sql);
         $results = DB::select($sql);
-        if (sizeof($results) == 0 && $orgObj == null) {
+        
+        if (sizeof($results) == 0) {
             abort(404, 'No organization found by name ' . $name);
         }
 
@@ -121,7 +122,7 @@ class ApiBIRMS_contract extends Controller
             $row = $results[0];
 
             $org = new stdClass();
-            if ($orgObj == 'supplier') { 
+            if ($role == "supplier") { 
                 $org->id = $row->npwp;
                 $org->name = $row->namaperusahaan;
                 $org->address = $this->getAddressPerusahaan($row);
@@ -162,7 +163,7 @@ class ApiBIRMS_contract extends Controller
 
         //if not found, read new organization from org table
         if (!isset($org)) {
-            $org = $this->getOrganizationByName($year, $name, $orgObj);
+            $org = $this->getOrganizationByName($year, $name, $role);
             $org->roles = [$role];
             array_push($parties, $org);
         } else {
@@ -371,7 +372,7 @@ class ApiBIRMS_contract extends Controller
             $addr->streetAddress=$row->pemenangalamat;
             $supl->address=$addr;
 
-            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $supl)];
+            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $orgId)];
         } else {
             $a->status = "pending";
         }
