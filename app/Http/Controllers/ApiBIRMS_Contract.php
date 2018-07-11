@@ -99,6 +99,7 @@ class ApiBIRMS_contract extends Controller
 
     function getOrganizationByName($year, $name, $role = null)
     {
+        $name=preg_replace('/\s+/', ' ', $name);
         if ($year <= 2016) {
             $db = env('DB_PRIME_PREV');
         } else {
@@ -111,7 +112,6 @@ class ApiBIRMS_contract extends Controller
         } else {
             $sql = "SELECT * FROM " . $db . ".tbl_skpd WHERE UCASE(nama) = UCASE('" . $name . "')";
         }
-        die($sql);
         $results = DB::select($sql);
         
         if (sizeof($results) == 0) {
