@@ -55,8 +55,9 @@ class ContractsListTest extends TestCase
             $o->ocid=$ocid;
             $o->url=$url;
             $o->result="Error";
-            Storage::disk('public')->append($fileName, json_encode( $o, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
+            Storage::disk('public')->append($fileName,
+                json_encode( $o, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            Storage::disk('public')->append($fileName, ',');
         }
     }
 }
