@@ -116,9 +116,7 @@ class ApiBIRMS_contract extends Controller
         
         if (sizeof($results) == 0) {
             abort(404, 'No organization found by name ' . $name);
-        }
-
-        if (sizeof($results) > 0) {
+        } else {
             $row = $results[0];
 
             $org = new stdClass();
@@ -132,7 +130,6 @@ class ApiBIRMS_contract extends Controller
                 $id->id = $row->npwp;
                 $id->legalName = $row->namaperusahaan;
                 $org->identifier = $id;
-
             } else {
                 $org->id = $row->unitID;
                 $org->name = $row->nama;
@@ -144,11 +141,8 @@ class ApiBIRMS_contract extends Controller
                 $id->legalName = $row->nama;
                 $org->identifier = $id;
             }
-
             return $org;
         }
-
-        return $orgObj;
     }
 
     function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj = null)
