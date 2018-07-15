@@ -99,16 +99,26 @@ class ApiBIRMS_contract extends Controller
 
     function getOrganizationByName($year, $name, $role = null)
     {
-        $name=preg_replace('/\s+/', ' ', $name);
+        $name = preg_replace('/\s+/', ' ', $name);
+
         if ($year <= 2016) {
             $db = env('DB_PRIME_PREV');
         } else {
             $db = env('DB_PRIME');
         }
         $dbeproc = env('DB_EPROC');
+        $dbecontract = env('DB_CONTRACT');
 
-        if ($role == "supplier") { 
+        if ($role == "supplierNonCompetitive") { 
             $sql = "SELECT * FROM " . $dbeproc . ".tperusahaan WHERE UCASE(namaperusahaan) = UCASE('".$name."') ";
+        } else if ($role == "supplierCompetitive") { 
+            if (strpos($name, ".") === false) {
+                $findname = $name;
+            } else {
+                $pieces   = explode(".", $name);
+                $findname = TRIM($pieces[1]);
+            }
+            $sql = "SELECT * FROM " . $dbecontract . ".lpse_rekanan WHERE UCASE(rkn_nama) LIKE '%".$findname."%'";
         } else {
             $sql = "SELECT * FROM " . $db . ".tbl_skpd WHERE UCASE(nama) = UCASE('" . $name . "')";
         }
@@ -120,7 +130,7 @@ class ApiBIRMS_contract extends Controller
             $row = $results[0];
 
             $org = new stdClass();
-            if ($role == "supplier") { 
+            if ($role == "supplierNonCompetitive") { 
                 $org->id = $row->npwp;
                 $org->name = $row->namaperusahaan;
                 $org->address = $this->getAddressPerusahaan($row);
@@ -130,6 +140,23 @@ class ApiBIRMS_contract extends Controller
                 $id->id = $row->npwp;
                 $id->legalName = $row->namaperusahaan;
                 $org->identifier = $id;
+            } else if ($role == "supplierCompetitive") { 
+                $org->id = $row->rkn_npwp;
+                $org->name = $row->rkn_nama;
+                
+                $address = new stdClass();
+                $address->streetAddress = $row->rkn_alamat;
+                $org->address = $address;
+
+                $cp = new stdClass();
+                $cp->email = $row->rkn_email;
+                $cp->telephone = $row->rkn_telepon;
+                $org->contactPoint = $cp; 
+                
+                $id = new stdClass();
+                $id->id = $row->rkn_npwp;
+                $id->legalName = $row->rkn_nama;
+                $org->identifier = $id;  
             } else {
                 $org->id = $row->unitID;
                 $org->name = $row->nama;
@@ -340,7 +367,7 @@ class ApiBIRMS_contract extends Controller
         $addr->streetAddress=$row->perusahaanalamat;
         $supl->address=$addr;
 
-        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplier", $parties, $orgId)];
+        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplierNonCompetitive", $parties, $orgId)];
         return $a;
     }
 
@@ -366,7 +393,7 @@ class ApiBIRMS_contract extends Controller
             $addr->streetAddress=$row->pemenangalamat;
             $supl->address=$addr;
 
-            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $orgId)];
+            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplierCompetitive", $parties, $orgId)];
         } else {
             $a->status = "pending";
         }
