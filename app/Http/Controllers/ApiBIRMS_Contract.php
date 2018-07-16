@@ -8,6 +8,7 @@ use Dto\JsonSchemaRegulator;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Dto\Dto;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use stdClass;
@@ -25,6 +26,13 @@ class OcdsRelease extends Dto
     function getJsonResponse(ResponseFactory $response)
     {
         return $response->make($this->toJson(true))->header('Content-Type', 'application/json');
+    }
+
+    function getJsonpResponse(ResponseFactory $response, Request $request)
+    {
+        $callback=$request->get("callback");
+        return $response->make($callback.'('.$this->toJson(true).')')
+            ->header('Content-Type', 'application/javascript');
     }
 
     /**
@@ -108,17 +116,20 @@ class ApiBIRMS_contract extends Controller
         $dbeproc = env('DB_EPROC');
         $dbecontract = env('DB_CONTRACT');
 
-        if ($competitive == false) {
-            $sql = "SELECT * FROM " . $dbeproc . ".tperusahaan WHERE UCASE(namaperusahaan) = UCASE('".$name."') ";
-        } else if ($competitive == true) {
-            if (strpos($name, ".") === false) {
-                $findname = $name;
-            } else {
-                $pieces   = explode(".", $name);
-                $findname = TRIM($pieces[1]);
+        if(isset($competitive)) {
+            if ($competitive == false) {
+                $sql = "SELECT * FROM " . $dbeproc . ".tperusahaan WHERE UCASE(namaperusahaan) = UCASE('" . $name . "') ";
+            } else if ($competitive == true) {
+                if (strpos($name, ".") === false) {
+                    $findname = $name;
+                } else {
+                    $pieces = explode(".", $name);
+                    $findname = TRIM($pieces[1]);
+                }
+                $sql = "SELECT * FROM " . $dbecontract . ".lpse_rekanan WHERE UCASE(rkn_nama) LIKE '%" . $findname . "%'";
             }
-            $sql = "SELECT * FROM " . $dbecontract . ".lpse_rekanan WHERE UCASE(rkn_nama) LIKE '%".$findname."%'";
-        } else {
+        }
+        else {
             $sql = "SELECT * FROM " . $db . ".tbl_skpd WHERE UCASE(nama) = UCASE('" . $name . "')";
         }
         $results = DB::select($sql);
@@ -129,7 +140,7 @@ class ApiBIRMS_contract extends Controller
             $row = $results[0];
 
             $org = new stdClass();
-            if ($competitive == false) {
+            if (isset($competitive) && $competitive == false) {
                 $org->id = $row->npwp;
                 $org->name = $row->namaperusahaan;
                 $org->address = $this->getAddressPerusahaan($row);
@@ -139,7 +150,7 @@ class ApiBIRMS_contract extends Controller
                 $id->id = $row->npwp;
                 $id->legalName = $row->namaperusahaan;
                 $org->identifier = $id;
-            } else if ($competitive == true) {
+            } else if (isset($competitive) && $competitive == true) {
                 $org->id = $row->rkn_npwp;
                 $org->name = $row->rkn_nama;
                 
@@ -204,7 +215,7 @@ class ApiBIRMS_contract extends Controller
         if ($results->jenis_belanja == 2) {
             return "services";
         }
-        abort(404, 'No main procurement category can be mapped for  code ' . $results->jenis_belanja);
+        abort(404, 'No main procurement category can be mapped for code ' . $results->jenis_belanja);
     }
 
     function getAmount($amount)
@@ -799,7 +810,11 @@ class ApiBIRMS_contract extends Controller
         }
                 //this creates real OCDS release object and runs basic schema validation
         $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
-        return $validatedRelease->getJsonResponse(response());
+        if(is_null(request()->get("callback"))) {
+            return $validatedRelease->getJsonResponse(response());
+        } else {
+            return $validatedRelease->getJsonpResponse(response(), request());
+        }
     }
 
 
