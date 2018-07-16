@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Dto\CustomDtoServiceContainer;
 use DateTime;
 use Dto\JsonSchemaRegulator;
-use Dto\ServiceContainer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Dto\Dto;
 
@@ -97,7 +96,7 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
-    function getOrganizationByName($year, $name, $role = null)
+    function getOrganizationByName($year, $name, $competitive)
     {
         $name = preg_replace('/\s+/', ' ', $name);
 
@@ -109,9 +108,9 @@ class ApiBIRMS_contract extends Controller
         $dbeproc = env('DB_EPROC');
         $dbecontract = env('DB_CONTRACT');
 
-        if ($role == "supplierNonCompetitive") { 
+        if ($competitive == false) {
             $sql = "SELECT * FROM " . $dbeproc . ".tperusahaan WHERE UCASE(namaperusahaan) = UCASE('".$name."') ";
-        } else if ($role == "supplierCompetitive") { 
+        } else if ($competitive == true) {
             if (strpos($name, ".") === false) {
                 $findname = $name;
             } else {
@@ -130,7 +129,7 @@ class ApiBIRMS_contract extends Controller
             $row = $results[0];
 
             $org = new stdClass();
-            if ($role == "supplierNonCompetitive") { 
+            if ($competitive == false) {
                 $org->id = $row->npwp;
                 $org->name = $row->namaperusahaan;
                 $org->address = $this->getAddressPerusahaan($row);
@@ -140,7 +139,7 @@ class ApiBIRMS_contract extends Controller
                 $id->id = $row->npwp;
                 $id->legalName = $row->namaperusahaan;
                 $org->identifier = $id;
-            } else if ($role == "supplierCompetitive") { 
+            } else if ($competitive == true) {
                 $org->id = $row->rkn_npwp;
                 $org->name = $row->rkn_nama;
                 
@@ -172,7 +171,7 @@ class ApiBIRMS_contract extends Controller
         }
     }
 
-    function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj = null)
+    function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj, $competitive)
     {
         //first check if organization is within parties array
         foreach ($parties as &$o) {
@@ -184,7 +183,7 @@ class ApiBIRMS_contract extends Controller
 
         //if not found, read new organization from org table
         if (!isset($org)) {
-            $org = $this->getOrganizationByName($year, $name, $role);
+            $org = $this->getOrganizationByName($year, $name, $competitive);
             $org->roles = [$role];
             array_push($parties, $org);
         } else {
@@ -367,7 +366,7 @@ class ApiBIRMS_contract extends Controller
         $addr->streetAddress=$row->perusahaanalamat;
         $supl->address=$addr;
 
-        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplierNonCompetitive", $parties, $orgId)];
+        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplier", $parties, $orgId, false)];
         return $a;
     }
 
@@ -393,7 +392,7 @@ class ApiBIRMS_contract extends Controller
             $addr->streetAddress=$row->pemenangalamat;
             $supl->address=$addr;
 
-            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplierCompetitive", $parties, $orgId)];
+            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $orgId, true)];
         } else {
             $a->status = "pending";
         }
@@ -509,7 +508,7 @@ class ApiBIRMS_contract extends Controller
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
         $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
-        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties);
+        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
         $tender->numberOfTenderers = $this->getNumberOfTenderers($results->sirupID);
         $tender->milestones = $this->getTenderMilestones($results->sirupID);
         return $tender;
@@ -523,7 +522,7 @@ class ApiBIRMS_contract extends Controller
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
         $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
-        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties);
+        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
         $tender->milestones = $this->getNonTenderMilestones($this->getNonLelangID($results->sirupID));
         return $tender;
     }
@@ -791,7 +790,7 @@ class ApiBIRMS_contract extends Controller
             $r->tender = $this->getNonTender($year, $results, $r->parties);
         }
 
-        $r->buyer = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "buyer", $r->parties);
+        $r->buyer = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "buyer", $r->parties, null, null);
         if ($source == 's') {
             $r->awards = $this->getCompetitiveAwards($year, $sirup_id, $r->parties);
         } else {
