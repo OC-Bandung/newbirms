@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+
 
 class Handler extends ExceptionHandler
 {
@@ -44,7 +46,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        //if Accept: header says we need json, return error as json, not html
+        if($request->wantsJson()) {
+            return new JsonResponse($exception->getTrace(), 422, [],JSON_UNESCAPED_SLASHES);
+        }
+        //else return error as html, as usual
+        else {
+            return parent::render($request, $exception);
+        }
     }
 
     /**
