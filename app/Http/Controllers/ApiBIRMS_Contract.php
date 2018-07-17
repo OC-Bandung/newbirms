@@ -8,7 +8,7 @@ use Dto\JsonSchemaRegulator;
 use Dto\ServiceContainer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Dto\Dto;
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use stdClass;
@@ -26,6 +26,13 @@ class OcdsRelease extends Dto
     function getJsonResponse(ResponseFactory $response)
     {
         return $response->make($this->toJson(true))->header('Content-Type', 'application/json');
+    }
+
+    function getJsonpResponse(ResponseFactory $response, Request $request)
+    {
+        $callback=$request->get("callback");
+        return $response->make($callback.'('.$this->toJson(true).')')
+            ->header('Content-Type', 'application/javascript');
     }
 
     /**
@@ -801,7 +808,11 @@ class ApiBIRMS_contract extends Controller
         }
                 //this creates real OCDS release object and runs basic schema validation
         $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
-        return $validatedRelease->getJsonResponse(response());
+        if(is_null(request()->get("callback"))) {
+            return $validatedRelease->getJsonResponse(response());
+        } else {
+            return $validatedRelease->getJsonpResponse(response(), request());
+        }
     }
 
 
