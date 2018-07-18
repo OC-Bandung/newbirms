@@ -509,29 +509,51 @@ class ApiBIRMS_contract extends Controller
         return $milestone;
     }
 
-    function getTender($year, $results, &$parties)
+    /**
+     * This function has parts of getTender that are common for getTender and getNonTender
+     *
+     * @param $year
+     * @param $results
+     * @param $parties
+     * @return stdClass
+     */
+    function getSharedTender($year, $results, &$parties)
     {
         $tender = new stdClass();
-        $tender->id = $this->getLelangID($results->sirupID);
         $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
         $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
         $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
-        $tender->numberOfTenderers = $this->getNumberOfTenderers($results->sirupID);
+
+        $db = env('DB_CONTRACT');
+        $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $results->sirupID . " ";
+        $tleresults = DB::select($sql);
+
+        if (sizeof($tleresults) == 0) {
+            $tender->numberOfTenderers = 0;
+        } else {
+            $tender->numberOfTenderers = (int)$tleresults[0]->jumlah_peserta;
+            $tender->value=$this->getAmount($tleresults[0]->nilai_nego);
+            //$tender->status=$tleresults[0]->stat; //TODO: uncomment this after mapping done
+            $tender->title=$tleresults[0]->namapekerjaan;
+        }
+
+        return $tender;
+    }
+
+
+    function getTender($year, $results, &$parties) {
+        $tender = $this->getSharedTender($year, $results, $parties);
+        $tender->id = $this->getLelangID($results->sirupID);
         $tender->milestones = $this->getTenderMilestones($results->sirupID);
         return $tender;
     }
 
     function getNonTender($year, $results, &$parties)
     {
-        $tender = new stdClass();
+        $tender = $this->getSharedTender($year, $results, $parties);
         $tender->id = $this->getNonLelangID($results->sirupID);
-        $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
-        $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
-        $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
-        $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
-        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
         $tender->milestones = $this->getNonTenderMilestones($this->getNonLelangID($results->sirupID));
         return $tender;
     }
