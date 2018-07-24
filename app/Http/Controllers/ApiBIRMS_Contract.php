@@ -208,12 +208,18 @@ class ApiBIRMS_contract extends Controller
 
     function getMainProcurementCategory($results)
     {
-        if ($results->jenis_belanja == 1)
-            return null;
-        if ($results->jenis_belanja == 2) {
+        if ($results->jenis_pengadaan == 1) {
+            return "goods";
+        } else if ($results->jenis_pengadaan == 2) {
+            return "works";
+        } else if ($results->jenis_pengadaan == 3) {
             return "services";
+        } else if ($results->jenis_pengadaan == 4) {
+            return "services";
+        } else {
+            return null;
         }
-        abort(404, 'No main procurement category can be mapped for  code ' . $results->jenis_belanja);
+        abort(404, 'No main procurement category can be mapped for  code ' . $results->jenis_pengadaan);
     }
 
     function getAmount($amount)
@@ -288,6 +294,49 @@ class ApiBIRMS_contract extends Controller
         return $lelangID;
     }
    
+    function getTenderer($row)
+    {
+        $tenderer = new stdClass();
+        $tenderer->id = $row->rkn_npwp;
+        $tenderer->name = $row->rkn_nama;
+        
+        $address = new stdClass();
+        $address->streetAddress = $row->rkn_alamat;
+        $tenderer->address = $address;
+
+        $cp = new stdClass();
+        $cp->email = $row->rkn_email;
+        $cp->telephone = $row->rkn_telepon;
+        $tenderer->contactPoint = $cp; 
+        
+        $id = new stdClass();
+        $id->id = $row->rkn_npwp;
+        $id->legalName = $row->rkn_nama;
+        $tenderer->identifier = $id; 
+
+        return $tenderer;
+    }
+
+    function getTenderers($tender_id)
+    {
+        $db = env('DB_CONTRACT');
+        $sql = "SELECT * FROM ".$db.".lpse_peserta 
+                LEFT JOIN ".$db.".lpse_rekanan ON lpse_peserta.rkn_id = lpse_rekanan.rkn_id
+                WHERE lls_id = ". $tender_id ." ORDER BY lpse_peserta.auditupdate ASC";
+        $results = DB::select($sql);
+
+        if (sizeof($results) == 0) {
+            //abort(404, 'No tenderers found by tender_id ' . $tender_id);
+            $tenderers = [];
+        } else {
+            $tenderers = [];
+            foreach ($results as $row) {
+                array_push($tenderers, $this->getTenderer($row));
+            }
+        }
+        return $tenderers;
+    }
+
     function getNumberOfTenderers($sirupID)
     {
         $db = env('DB_CONTRACT');
@@ -520,6 +569,7 @@ class ApiBIRMS_contract extends Controller
     function getSharedTender($year, $results, &$parties)
     {
         $tender = new stdClass();
+        $tender->id = $this->getLelangID($results->sirupID);
         $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
         $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
@@ -554,6 +604,11 @@ class ApiBIRMS_contract extends Controller
     {
         $tender = $this->getSharedTender($year, $results, $parties);
         $tender->id = $this->getNonLelangID($results->sirupID);
+        $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
+        $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
+        $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
+        $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
+        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
         $tender->milestones = $this->getNonTenderMilestones($this->getNonLelangID($results->sirupID));
         return $tender;
     }
