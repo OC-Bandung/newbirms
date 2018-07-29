@@ -117,7 +117,13 @@ class ApiBIRMS_contract extends Controller
         $dbecontract = env('DB_CONTRACT');
 
         if ($competitive === false) {
-            $sql = "SELECT * FROM " . $dbeproc . ".tperusahaan WHERE UCASE(namaperusahaan) = UCASE('".$name."') ";
+            $sql = "SELECT perusahaanID, npwp, namaperusahaan, alamatperusahaan, kota, telepon, fax, email FROM " . $dbeproc . ".tperusahaan WHERE UCASE(REPLACE(namaperusahaan, '  ', ' ')) = UCASE('".$name."') ";
+            $results = DB::select($sql);
+
+            if (sizeof($results) == 0) {
+                $sql = "SELECT perusahaanid AS perusahaanID, perusahaannpwp AS npwp, perusahaannama AS namaperusahaan, perusahaanalamat AS alamatperusahaan, NULL AS kota, NULL AS telepon, NULL AS fax, NULL AS email  FROM " . $dbecontract . ".tpengadaan_pemenang  WHERE UCASE(REPLACE(perusahaannama, '  ', ' ')) = UCASE('".$name."') ";
+                $results = DB::select($sql);
+            }
         } else if ($competitive === true) {
             if (strpos($name, ".") === false) {
                 $findname = $name;
@@ -132,12 +138,14 @@ class ApiBIRMS_contract extends Controller
         //die($sql);
         $results = DB::select($sql);
         
+        $org = new stdClass();
+
         if (sizeof($results) == 0) {
-            abort(404, 'No organization found by name ' . $name);
+            //abort(404, 'No organization found by name ' . $name);
+            $org->name = $name;
         } else {
             $row = $results[0];
-
-            $org = new stdClass();
+            
             if ($competitive === false) {
                 $org->id = $row->npwp;
                 $org->name = $row->namaperusahaan;
@@ -176,8 +184,8 @@ class ApiBIRMS_contract extends Controller
                 $id->legalName = $row->nama;
                 $org->identifier = $id;
             }
-            return $org;
         }
+        return $org;
     }
 
     function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj, $competitive)
@@ -371,13 +379,15 @@ class ApiBIRMS_contract extends Controller
             WHERE lls_id = " . $lls_id . " ORDER BY akt_urut";
             $results = DB::select($sql);
 
-            if (sizeof($results) == 0) {
+            /*if (sizeof($results) == 0) {
                 abort(404, 'No milestone found by lelang ID ' . $lls_id);
-            }
+            }*/
 
             $milestones = [];
-            foreach ($results as $row) {
-                array_push($milestones, $this->getTenderMilestone($row));
+            if (sizeof($results) != 0) {
+                foreach ($results as $row) {
+                    array_push($milestones, $this->getTenderMilestone($row));
+                }
             }
         }
         return $milestones;
@@ -460,29 +470,30 @@ class ApiBIRMS_contract extends Controller
 
     function getNonCompetitiveAwards($year, $pekerjaanID, &$parties) {
         //TODO: please write query to get to noncompetitive awards here
-        $db = env('DB_PLANNING');
+        $db = env('DB_CONTRACT');
         $sql = "SELECT
                     CONCAT(
-                        REPLACE(tpekerjaan.tanggalrencana,'-',''),
-                        '.' ,
-                        tpekerjaan.pid ,
-                        '.' ,
-                        tpekerjaan.saltid
-                    ) AS id ,
-                    tbl_pekerjaan.namapekerjaan ,
-                    pilih_start ,
-                    nilai_nego ,
-                    perusahaanid ,
-                    perusahaannama ,
-                    perusahaanalamat ,
-                    perusahaannpwp
+                        REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
+                        '.',
+                        tpekerjaan.pid,
+                        '.',
+                        tpekerjaan.saltid 
+                    ) AS id,
+                    tbl_pekerjaan.namapekerjaan,
+                    pilih_start,
+                    nilai_nego,
+                    perusahaanid,
+                    perusahaannama,
+                    perusahaanalamat,
+                    perusahaannpwp 
                 FROM
                     tbl_pekerjaan
-                LEFT JOIN birms_econtract.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-                LEFT JOIN birms_econtract.tpengadaan ON tpekerjaan.pid = tpengadaan.pid
-                LEFT JOIN birms_econtract.tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid
+                    LEFT JOIN ".$db.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+                    LEFT JOIN ".$db.".tpengadaan ON tpekerjaan.pid = tpengadaan.pid
+                    LEFT JOIN ".$db.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
                 WHERE
-                    tbl_pekerjaan.pekerjaanID = ". $pekerjaanID . " ";
+                    tbl_pekerjaan.pekerjaanID = ". $pekerjaanID . " AND tpekerjaan.pekerjaanstatus >= 4"; //4: Berjalan 7:Selesai
+        //die($sql);
         $results = DB::select($sql);
 
         $awards = [];
@@ -615,16 +626,16 @@ class ApiBIRMS_contract extends Controller
 
     function getProcurementMethod($internalProcurementMethodId)
     {
-        if (in_array($internalProcurementMethodId, [1, 2, 9, 10, 11, 12]))
+        if (in_array($internalProcurementMethodId, [1, 2, 3, 4, 9, 10, 11, 12]))
             return "open";
 
-        if ($internalProcurementMethodId == 3)
+        if (in_array($internalProcurementMethodId, [0, 3]))
             return "limited";
 
-        if (in_array($internalProcurementMethodId, [4, 5]))
-            return "open";
+        /*if (in_array($internalProcurementMethodId, [4, 5]))
+            return "open";*/
 
-        if (in_array($internalProcurementMethodId, [6, 7, 8]))
+        if (in_array($internalProcurementMethodId, [6, 7, 8, 21])) // Note 21 = Swakelola
             return "direct";
 
         abort(404, 'Cannot convert ' . $internalProcurementMethodId . ' to any OCDS procurementMethod!');
@@ -634,21 +645,47 @@ class ApiBIRMS_contract extends Controller
     function getNonCompetitiveContracts($year, $pekerjaanID, &$parties) {
         $db  = env('DB_CONTRACT');
         $sql = "SELECT
-                    tpekerjaan.pid,
-                    tkontrak_penunjukan.id ,
-                    CONCAT(REPLACE(tpekerjaan.tanggalrencana, '-' ,''), '.', tpekerjaan.pid, '.', tpekerjaan.saltid) AS awardid,
-                    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(tpekerjaan.namapekerjaan ,'&mdash;' , 1), '&mdash;' ,- 1)) AS namapekerjaan,
-                    TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(tpekerjaan.namapekerjaan ,'&mdash;' , 2), '&mdash;' ,- 1)) AS deskripsi,
-                    tkontrak_penunjukan.spk_nosurat,
-                    tkontrak_penunjukan.spk_tgl_surat,
-                    tkontrak_penunjukan.spk_tgl_slskontrak,
-                    tpengadaan.nilai_nego
-                FROM
-                    " .$db. ".tpekerjaan
-                LEFT JOIN " .$db. ".tpengadaan ON tpengadaan.pid = tpekerjaan.pid
-                LEFT JOIN " .$db. ".tkontrak_penunjukan ON tkontrak_penunjukan.pgid = tpengadaan.pgid
-                WHERE
-                    pekerjaanid = " .$pekerjaanID. " ";
+        tpekerjaan.pid,
+        CONCAT(
+            REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
+            '.',
+            tpekerjaan.pid,
+            '.',
+            tpekerjaan.saltid 
+        ) AS awardid,
+        TRIM(
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX( tpekerjaan.namapekerjaan, '—', 1 ),
+                '—',- 1 
+            ) 
+        ) AS namapekerjaan,
+        TRIM(
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX( tpekerjaan.namapekerjaan, '—', 2 ),
+                '—',- 1 
+            ) 
+        ) AS deskripsi,
+        tkontrak_penunjukan.spk_nosurat,
+        tkontrak_penunjukan.spk_tgl_surat,
+        tkontrak_penunjukan.spk_tgl_slskontrak,
+        tpengadaan.nilai_nego 
+    FROM
+        " .$db. ".tpekerjaan
+        LEFT JOIN " .$db. ".tpengadaan ON tpengadaan.pid = tpekerjaan.pid
+        LEFT JOIN " .$db. ".tkontrak_penunjukan ON tkontrak_penunjukan.pgid = tpengadaan.pgid 
+    WHERE
+        " .$db. ".tpekerjaan.pekerjaanstatus >= 4 
+        AND pekerjaanid = ".$pekerjaanID." 
+        AND (
+            NOT ISNULL( spk_nosurat ) 
+            AND NOT ISNULL( spk_tgl_surat ) 
+            AND NOT ISNULL ( tkontrak_penunjukan.spk_tgl_slskontrak ) 
+        ) 
+        GROUP BY tpekerjaan.pid, awardid, namapekerjaan, deskripsi, tkontrak_penunjukan.spk_nosurat,
+        tkontrak_penunjukan.spk_tgl_surat,
+        tkontrak_penunjukan.spk_tgl_slskontrak,
+        tpengadaan.nilai_nego";
+        
         $results = DB::select($sql);
 
         $contracts = [];
@@ -793,7 +830,8 @@ class ApiBIRMS_contract extends Controller
         $sirup_id  = $pieces[4];
         
         $dbplanning = env('DB_PLANNING');
-        $dbprime = env('DB_PRIME');
+        $dbcontract = env('DB_CONTRACT');
+        $dbprime    = env('DB_PRIME');
 
         if ($source == 's') {
             $sql = "SELECT * FROM ".$dbplanning.".tbl_sirup WHERE sirupID = '" . $sirup_id . "'";
@@ -801,8 +839,8 @@ class ApiBIRMS_contract extends Controller
             $sql = "SELECT
             tbl_pekerjaan.pekerjaanID AS sirupID,
             ".$year." AS tahun ,
-            namapekerjaan AS nama ,
-            anggaran AS pagu ,
+            tbl_pekerjaan.namapekerjaan AS nama ,
+            tbl_pekerjaan.anggaran AS pagu ,
             tbl_sumberdana.sumberdana AS sumber_dana_string ,
             1 AS jenis_belanja ,
             tbl_metode.jenisID AS jenis_pengadaan ,
@@ -824,6 +862,8 @@ class ApiBIRMS_contract extends Controller
                     8
                 WHEN tbl_metode.nama = 'Penunjukan Langsung' THEN
                     7
+                WHEN tbl_metode.nama = 'Swakelola' THEN
+                    21
                 ELSE
                     0
                 END
@@ -837,12 +877,15 @@ class ApiBIRMS_contract extends Controller
             'Kota Bandung' AS kldi ,
             tbl_skpd.nama AS satuan_kerja ,
             tbl_skpd.alamat AS lokasi ,
-            IF (tbl_metode.nama = 'Swakelola' , 1 , 0) AS isswakelola
+            IF (tbl_metode.nama = 'Swakelola' , 1 , 0) AS isswakelola,
+            IF (ISNULL(tpekerjaan.pid),0,1) AS isready, 
+            tpekerjaan.pekerjaanstatus
         FROM
             ".$dbplanning.".tbl_pekerjaan
         LEFT JOIN ".$dbplanning.".tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
         LEFT JOIN ".$dbprime.".tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
         LEFT JOIN ".$dbplanning.".tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+        LEFT JOIN ".$dbcontract.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
         WHERE tbl_pekerjaan.pekerjaanID = '". $sirup_id."'";    
         }
         //die($sql);
@@ -862,8 +905,8 @@ class ApiBIRMS_contract extends Controller
         if ($source == 's') {
             $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
         } else {
-            if (isset($results->pilihstart)) {
-                $r->date = $this->getOcdsDateFromString($results->pilih_start);
+            if (isset($results->tanggal_awal_pengadaan)) {
+                $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
             } else {
                 $r->date = $this->getOcdsDateFromString('0000-00-00');
             }
@@ -873,7 +916,9 @@ class ApiBIRMS_contract extends Controller
         if ($source == 's') {
             $r->tender = $this->getTender($year, $results, $r->parties);
         } else {
-            $r->tender = $this->getNonTender($year, $results, $r->parties);
+            if ($results->isready) {
+                $r->tender = $this->getNonTender($year, $results, $r->parties);
+            }
         }
 
         $r->buyer = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "buyer", $r->parties, null, null);
