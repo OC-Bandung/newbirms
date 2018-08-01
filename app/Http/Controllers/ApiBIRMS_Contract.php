@@ -626,14 +626,11 @@ class ApiBIRMS_contract extends Controller
 
     function getProcurementMethod($internalProcurementMethodId)
     {
-        if (in_array($internalProcurementMethodId, [1, 2, 3, 4, 9, 10, 11, 12]))
+        if (in_array($internalProcurementMethodId, [1, 2, 3, 4, 5, 9, 10, 11, 12]))
             return "open";
 
         if (in_array($internalProcurementMethodId, [0, 3]))
             return "limited";
-
-        /*if (in_array($internalProcurementMethodId, [4, 5]))
-            return "open";*/
 
         if (in_array($internalProcurementMethodId, [6, 7, 8, 21])) // Note 21 = Swakelola
             return "direct";
