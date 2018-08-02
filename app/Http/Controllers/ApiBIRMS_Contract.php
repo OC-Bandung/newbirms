@@ -937,51 +937,31 @@ class ApiBIRMS_contract extends Controller
 
     function get_contract($ocid)
     {
-
-
         /*------------------------------*/
         /* Settings
         /*------------------------------*/
-
         $dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbmain = env('DB_PRIME');
-
         /*------------------------------*/
         /* General
         /*------------------------------*/
-
-<<<<<<< HEAD
         $id = '1';
-=======
-        $date = '20100101';
->>>>>>> d087473a1929d376d975f79c176d59284b4189c2
         $tag = 'planning';
-
         $pieces = explode("-", $ocid);
         $sirup_id = $pieces[2];
         $pgid = '';
-
         /*------------------------------*/
         /* Planning Stage
         /*------------------------------*/
-
         $sql = "select * from tbl_sirup where sirupID = '" . $sirup_id . "' ";
-
         $results = DB::select($sql);
         $results = $results[0];
-
         $date = $results->tanggal_awal_pengadaan;
         $ocid = env('OCID') . $results->sirupID;
-<<<<<<< HEAD
         $contract_name = $results->nama;
-=======
-        $id = $ocid .'-01-'.$tag;
-    	$contract_name = $results->nama;
->>>>>>> d087473a1929d376d975f79c176d59284b4189c2
         $city = $results->kldi;
         $unit = $results->satuan_kerja;
-
         $metode = $results->metode_pengadaan;
         switch ($metode) {
             case 1:
@@ -1023,43 +1003,18 @@ class ApiBIRMS_contract extends Controller
             default:
                 $initiationType = '';
         }
-
-        $contactPoint = array('name'=>$results->satuan_kerja);
-
-        $buyer = array( 'name' =>  $results->kldi,
-                        'contactPoint' => $contactPoint );    
-
-
         $planning_value = array('amount' => $results->pagu, 'currency' => env('CURRENCY'));
-
         ///compiling all stages together
         $planning_stage = array('contract_name' => $contract_name,
             'city' => $city,
             'unit' => $unit,
             'planning_value' => $planning_value);
-
-<<<<<<< HEAD
         /*------------------------------*/
         /* Award Stage
         /*------------------------------*/
-=======
-        $amount = array('amount'=> $results->pagu,
-                        'currency'=>'IDR');
-
-        $budget = array('id' => $ocid,
-                        'description' => $results->sumber_dana_string,
-                        'amount'=>$amount);
-    	
-        ///compiling all stages together
-    	$planning_stage = array('rationale' => null,
-    							'budget' => $budget,
-                                'uri'=> env('LINK_SIRUP18').$sirup_id);
->>>>>>> d087473a1929d376d975f79c176d59284b4189c2
-
         $winning_bidder = "0";
         $award_amount = "0";
         $items = "0";
-
         if ($results->pagu <= 200000000) { //Non Lelang (Non Competitive)
             $sql_selection = "SELECT
                                 $dbplanning.tbl_pekerjaan.pekerjaanID,
@@ -1092,40 +1047,29 @@ class ApiBIRMS_contract extends Controller
                                 ON $dbcontract.tpengadaan_pemenang.pgid = $dbcontract.tpengadaan.pgid
                                 WHERE
                                 sirupID = " . $sirup_id . " AND $dbplanning.tbl_pekerjaan.namapekerjaan = '" . $contract_name . "'";
-
             $results = DB::select($sql_selection);
-
             if (!empty($results)) {
                 $results = $results[0];
-
                 $winning_bidder = $results->perusahaannama;
                 $award_amount = $results->nilai;
                 $pgid = $results->pgid;
-
                 $list_of_items_sql = "select * from $dbcontract.tpengadaan_rincian where pgid = '" . $pgid . "' ";
                 $items = DB::select($list_of_items_sql);
             }
-
         } else { //Lelang (Competitive)
             $sql_selection = "select * from $dbcontract.tlelangumum where sirupID = '" . $sirup_id . "' ";
             $results = DB::select($sql_selection);
-
             if (!empty($results)) {
                 $results = $results[0];
-
                 $winning_bidder = $results->pemenang;
                 $award_amount = $results->nilai_nego;
                 $items = "";
             }
         }
-
         //build the award stage
-<<<<<<< HEAD
         $award_stage = array('winning_bidder' => $winning_bidder,
             'award_amount' => $award_amount,
             'items' => $items);
-
-
         /*------------------------------*/
         /* Release
         /*------------------------------*/
@@ -1140,40 +1084,7 @@ class ApiBIRMS_contract extends Controller
             'contract' => '',
             'implementation' => ''
         );
-
         return response()->json($release)->header('Access-Control-Allow-Origin', '*');
-
         // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-
     }
-=======
-        $award_stage = array('winning_bidder' => $winning_bidder ,
-                             'award_amount' => $award_amount , 
-                             'items' => $items);
-
-
-/*------------------------------*/
-/* Release
-/*------------------------------*/    
-    	$release  = array(  
-                            'language'=>'id',
-                            'ocid' => $ocid ,
-    						'id' => $id,
-    						'date' => $date,
-    						'tag' => $tag,
-    						'initiationType' => $initiationType,
-                            'buyer'=> $buyer,
-    						'planning' => $planning_stage,
-                            'initiation' => '',
-                            'award' => $award_stage,
-                            'contract' => '',
-                            'implementation' => ''
-    					  );
-
-    	return response()->json($release)->header('Access-Control-Allow-Origin', '*');
-
-    	  // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-	  
-	}
->>>>>>> d087473a1929d376d975f79c176d59284b4189c2
 }
