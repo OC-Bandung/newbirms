@@ -951,7 +951,11 @@ class ApiBIRMS_contract extends Controller
         /* General
         /*------------------------------*/
 
+<<<<<<< HEAD
         $id = '1';
+=======
+        $date = '20100101';
+>>>>>>> d087473a1929d376d975f79c176d59284b4189c2
         $tag = 'planning';
 
         $pieces = explode("-", $ocid);
@@ -969,7 +973,12 @@ class ApiBIRMS_contract extends Controller
 
         $date = $results->tanggal_awal_pengadaan;
         $ocid = env('OCID') . $results->sirupID;
+<<<<<<< HEAD
         $contract_name = $results->nama;
+=======
+        $id = $ocid .'-01-'.$tag;
+    	$contract_name = $results->nama;
+>>>>>>> d087473a1929d376d975f79c176d59284b4189c2
         $city = $results->kldi;
         $unit = $results->satuan_kerja;
 
@@ -1015,6 +1024,11 @@ class ApiBIRMS_contract extends Controller
                 $initiationType = '';
         }
 
+        $contactPoint = array('name'=>$results->satuan_kerja);
+
+        $buyer = array( 'name' =>  $results->kldi,
+                        'contactPoint' => $contactPoint );    
+
 
         $planning_value = array('amount' => $results->pagu, 'currency' => env('CURRENCY'));
 
@@ -1024,9 +1038,23 @@ class ApiBIRMS_contract extends Controller
             'unit' => $unit,
             'planning_value' => $planning_value);
 
+<<<<<<< HEAD
         /*------------------------------*/
         /* Award Stage
         /*------------------------------*/
+=======
+        $amount = array('amount'=> $results->pagu,
+                        'currency'=>'IDR');
+
+        $budget = array('id' => $ocid,
+                        'description' => $results->sumber_dana_string,
+                        'amount'=>$amount);
+    	
+        ///compiling all stages together
+    	$planning_stage = array('rationale' => null,
+    							'budget' => $budget,
+                                'uri'=> env('LINK_SIRUP18').$sirup_id);
+>>>>>>> d087473a1929d376d975f79c176d59284b4189c2
 
         $winning_bidder = "0";
         $award_amount = "0";
@@ -1092,6 +1120,7 @@ class ApiBIRMS_contract extends Controller
         }
 
         //build the award stage
+<<<<<<< HEAD
         $award_stage = array('winning_bidder' => $winning_bidder,
             'award_amount' => $award_amount,
             'items' => $items);
@@ -1117,4 +1146,34 @@ class ApiBIRMS_contract extends Controller
         // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 
     }
+=======
+        $award_stage = array('winning_bidder' => $winning_bidder ,
+                             'award_amount' => $award_amount , 
+                             'items' => $items);
+
+
+/*------------------------------*/
+/* Release
+/*------------------------------*/    
+    	$release  = array(  
+                            'language'=>'id',
+                            'ocid' => $ocid ,
+    						'id' => $id,
+    						'date' => $date,
+    						'tag' => $tag,
+    						'initiationType' => $initiationType,
+                            'buyer'=> $buyer,
+    						'planning' => $planning_stage,
+                            'initiation' => '',
+                            'award' => $award_stage,
+                            'contract' => '',
+                            'implementation' => ''
+    					  );
+
+    	return response()->json($release)->header('Access-Control-Allow-Origin', '*');
+
+    	  // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+	  
+	}
+>>>>>>> d087473a1929d376d975f79c176d59284b4189c2
 }

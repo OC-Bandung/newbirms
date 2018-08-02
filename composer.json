@@ -9,10 +9,12 @@
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
         "dto/dto": ">=3.2.7",
-        "guzzlehttp/guzzle": "~6.3"
+        "guzzlehttp/guzzle": "~6.3",
+        "tonirilix/nested-json-flattener": "2.1.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
+        "barryvdh/laravel-ide-helper": "^2.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~5.7",
         "guzzlehttp/guzzle": "~6.3"
