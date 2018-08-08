@@ -816,6 +816,25 @@ class ApiBIRMS_contract extends Controller
         return DateTime::createFromFormat($format, $date)->format(DATE_ATOM);
     }
 
+    /**
+     * Adds ocds tag based on existing data about phases
+     *
+     * @param $r the release
+     */
+    function appendTag($r) {
+        if(property_exists ($r, "tender")) {
+            array_push($r->tag, "tender");
+        }
+
+        if(property_exists ($r, "awards") && !empty($r->awards)) {
+            array_push($r->tag, "award");
+        }
+
+        if(property_exists ($r, "contracts") && !empty($r->contracts)) {
+            array_push($r->tag, "contracts");
+        }
+    }
+
     function getNewContract($ocid)
     {
         $r = new stdClass();
@@ -925,6 +944,9 @@ class ApiBIRMS_contract extends Controller
             $r->awards = $this->getNonCompetitiveAwards($year, $sirup_id, $r->parties);
             $r->contracts = $this->getNonCompetitiveContracts($year, $sirup_id, $r->parties);
         }
+
+        $this->appendTag($r);
+
                 //this creates real OCDS release object and runs basic schema validation
         $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
         if(is_null(request()->get("callback"))) {
@@ -932,7 +954,10 @@ class ApiBIRMS_contract extends Controller
         } else {
             return $validatedRelease->getJsonpResponse(response(), request());
         }
+
+
     }
+
 
 
     function get_contract($ocid)
