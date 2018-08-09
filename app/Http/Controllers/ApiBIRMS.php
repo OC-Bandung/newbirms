@@ -767,4 +767,64 @@ class ApiBIRMS extends Controller
     			->json($results)
     			->header('Access-Control-Allow-Origin', '*');
 	}
+
+	public function get_sppd_material($year, $organization) 
+	{
+	    $dbplanning = env('DB_PLANNING');
+	    $dbcontract = env('DB_CONTRACT');
+	    $dbmain 	= env('DB_PRIME');
+
+		$sql = "SELECT 
+					CONCAT(REPLACE(tpekerjaan.tanggalrencana,'-',''),'.',tpengadaan.pid,'.',tpekerjaan.saltid) AS paketID, 
+					tpengadaan.pgid, 
+					tpengadaan.skpdID,
+					tpengadaan.kode AS koderekening,
+					tpengadaan.namapekerjaan,
+					tpengadaan.anggaran AS paguanggaran,
+					tpengadaan.nilai_nego AS nilaikontrak,
+					tpengadaan.pekerjaanstatus,
+					tpengadaan_pemenang.perusahaannama,
+					tpengadaan_pemenang.perusahaanalamat,
+					tpengadaan_pemenang.perusahaannpwp,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',5),'|',-1) AS perusahaanwakilnama,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',6),'|',-1) AS perusahaanwakiljabatan,
+					tkontrak_penunjukan.spk_nosurat AS spk_no,
+					tkontrak_penunjukan.spk_tgl_surat AS spk_tgl,
+					tkontrak_penunjukan.sp_nosurat AS sp_spmk_no,
+					tkontrak_penunjukan.sp_tgl_surat AS sp_spmk_tgl,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_serahterima.isian,'|',7),'|',-1) AS bapp_no,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_serahterima.isian,'|',8),'|',-1) AS bapp_tgl,
+					tprogress_serahterima.nosurat AS basthp_no,
+					tprogress_serahterima.tgl_surat AS basthp_tgl,
+					tprogress_pembayaran.nosurat AS bap_no,
+					tprogress_pembayaran.tgl_surat AS bap_tgl,
+					tprogress_pembayaran_bukti.nosurat AS kuitansi_no,
+					tprogress_pembayaran_bukti.tgl_surat AS kuitansi_tgl,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',1),'|',-1) AS suratjalan_no,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',2),'|',-1) AS suratjalan_tgl,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',3),'|',-1) AS faktur_no,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',4),'|',-1) AS faktur_tgl
+				FROM ".$dbcontract.".tpengadaan 
+					LEFT JOIN ".$dbcontract.".tpekerjaan ON tpengadaan.pid = tpekerjaan.pid 
+					LEFT JOIN ".$dbcontract.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
+					LEFT JOIN ".$dbcontract.".tkontrak_penunjukan ON tpengadaan.pgid = tkontrak_penunjukan.pgid
+					LEFT JOIN ".$dbcontract.".tprogress_serahterima ON tpengadaan.pgid = tprogress_serahterima.pgid
+					LEFT JOIN ".$dbcontract.".tprogress_pembayaran ON tpengadaan.pgid = tprogress_pembayaran.pgid
+					LEFT JOIN ".$dbcontract.".tprogress_pembayaran_bukti ON tpengadaan.pgid = tprogress_pembayaran_bukti.pgid
+				WHERE tpengadaan.ta = ".$year." 
+					AND tpengadaan.skpdID = (SELECT skpdID FROM ".$dbmain.".tbl_skpd WHERE nama = '".$organization."' OR unitID = '".$organization."')
+					AND tpengadaan.pekerjaanstatus = 7";
+		$results = DB::select($sql);
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');	
+	}
+
+	public function get_rencana($year, $organization)
+    {
+		$ocid = env('OCID');
+        $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
+                            ->orderBy('sirupID')
+                            ->paginate(env('JSON_RESULTS_PER_PAGE', 40));
+    }
 }

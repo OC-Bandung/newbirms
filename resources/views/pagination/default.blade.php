@@ -1,19 +1,11 @@
 @if ($paginator->lastPage() > 1)
-<div class="mdc-card__actions">
-            <div class="mdc-card__action-buttons">
-<ul class="pagination vertical">
-    <li class="{{ ($paginator->currentPage() == 1) ? ' disabled' : '' }}">
-        <a href="{{ $paginator->url(1) }}"  class="mdc-button mdc-card__action mdc-card__action--button"><i class="material-icons mdc-button__icon">fast_rewind</i></a>
-    </li>
+<nav aria-label="Paging">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="{{ $paginator->url(1) }}">Previous</a></li>
     @for ($i = 1; $i <= $paginator->lastPage(); $i++)
-        <li class="{{ ($paginator->currentPage() == $i) ? ' active' : '' }}">
-            <a href="{{ $paginator->url($i) }}" class="mdc-button mdc-card__action mdc-card__action--button">{{ $i }}</a>
-        </li>
+    <li class="page-item"><a class="page-link" href="{{ $paginator->url($i) }}">{{ $i }}</a></li>
     @endfor
-    <li class="{{ ($paginator->currentPage() == $paginator->lastPage()) ? ' disabled' : '' }}">
-        <a href="{{ $paginator->url($paginator->currentPage()+1) }}" class="mdc-button mdc-card__action mdc-card__action--button"><i class="material-icons mdc-button__icon">fast_forward</i></a>
-    </li>
-</ul>
-	</div>
-</div>	
+    <li class="page-item"><a class="page-link" href="{{ $paginator->url($paginator->currentPage()+1) }}">Next</a></li>
+  </ul>
+</nav>
 @endif

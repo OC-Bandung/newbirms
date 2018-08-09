@@ -596,6 +596,10 @@ class ApiBIRMS_contract extends Controller
         } else {
             $tender->numberOfTenderers = (int)$tleresults[0]->jumlah_peserta;
             $tender->value=$this->getAmount($tleresults[0]->nilai_nego);
+<<<<<<< HEAD
+=======
+            $tender->tenderers = $this->getTenderers($tleresults[0]->lls_id);
+>>>>>>> bootstrap
             //$tender->status=$tleresults[0]->stat; //TODO: uncomment this after mapping done
             $tender->title=$tleresults[0]->namapekerjaan;
         }
@@ -954,12 +958,17 @@ class ApiBIRMS_contract extends Controller
         } else {
             return $validatedRelease->getJsonpResponse(response(), request());
         }
+<<<<<<< HEAD
 
 
     }
 
 
 
+=======
+    }
+
+>>>>>>> bootstrap
     function get_contract($ocid)
     {
         /*------------------------------*/

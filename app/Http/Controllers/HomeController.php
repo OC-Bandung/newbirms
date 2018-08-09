@@ -31,7 +31,7 @@ class HomeController extends Controller
 					tbl_content.`name`,
 					tbl_content.filename,
 					tbl_post.created
-				FROM $dbprime.tbl_post 
+				FROM $dbprime.tbl_post
 					LEFT OUTER JOIN $dbprime.tbl_postcontent ON $dbprime.tbl_post.pst_id = $dbprime.tbl_postcontent.pst_id
 					LEFT OUTER JOIN $dbprime.tbl_content ON $dbprime.tbl_postcontent.con_id = $dbprime.tbl_content.con_id
 				WHERE poststatus = 2 AND $dbprime.tbl_content.filename <> '' ORDER BY $dbprime.tbl_post.created DESC LIMIT 10";
@@ -107,7 +107,7 @@ class HomeController extends Controller
 		/* Dashboard Data ---- End --- Previous Year */
 
 		/* Link ---- Start */
-		$birms_app[0] = array(	'Name' => "e-Musrenbang", 
+		$birms_app[0] = array(	'Name' => "e-Musrenbang",
                       			'Link' => "http://bappeda.bandung.go.id/musrenbang",
                       			'Title' => "e-City Planning [e-Musrenbang]",
 								'Icon' => "fa-building",
@@ -116,7 +116,7 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 	                    );
-		$birms_app[1] = array(	'Name' => "e-Budgeting", 
+		$birms_app[1] = array(	'Name' => "e-Budgeting",
                       			'Link' => url('ebudgeting'),
                       			'Title' => "ebudgeting [SIMDA]",
 								'Icon' => "fa-money",
@@ -125,7 +125,7 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 	                    );
-		$birms_app[2] = array(	'Name' => "e-RUP [SIRUP]", 
+		$birms_app[2] = array(	'Name' => "e-RUP [SIRUP]",
                       			'Link' => "https://sirup.lkpp.go.id/sirup/rekapKldi/D99",
                       			'Title' => "e-RUP [SiRUP]",
 								'Icon' => "fa-history",
@@ -134,7 +134,7 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 	                    );
-		$birms_app[3] = array(	'Name' => "e-Project", 
+		$birms_app[3] = array(	'Name' => "e-Project",
                       			'Link' => url('eproject'),
                       			'Title' => "e-Project Planning",
 								'Icon' => "fa-calendar",
@@ -143,7 +143,7 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 	                    );
-		/*$birms_app[4] = array(	'Name' => "e-Pengadaan", 
+		/*$birms_app[4] = array(	'Name' => "e-Pengadaan",
                       			'Link' => "",
                       			'Title' => "e-Pengadaan",
 								'Icon' => "fa-balance-scale",
@@ -151,7 +151,7 @@ class HomeController extends Controller
 								'Desc' => "Elektronik Pengadaan Barang / Jasa Secara Elektronik",
 								'Active' => 0,
 								'Sub' => array(
-											array(	'Name' => "e-BLP", 
+											array(	'Name' => "e-BLP",
 					                      			'Link' => url('eulp'),
 					                      			'Title' => "e-ULP",
 													'Icon' => "fa-calendar",
@@ -159,7 +159,7 @@ class HomeController extends Controller
 													'Desc' => "Pengajuan Lelang Umum melalui ULP",
 													'Active' => 0
 						                    ),
-						                    array(	'Name' => "e-Proc [LPSE]", 
+						                    array(	'Name' => "e-Proc [LPSE]",
 					                      			'Link' => "http://lpse.bandung.go.id",
 					                      			'Title' => "e-Procurement [LPSE]",
 													'Icon' => "fa-balance-scale",
@@ -167,7 +167,7 @@ class HomeController extends Controller
 													'Desc' => "Pengadaan Barang/Jasa melalui Lelang Umum",
 													'Active' => 0
 						                    ),
-						                    array(	'Name' => "e-Kontrak", 
+						                    array(	'Name' => "e-Kontrak",
 					                      			'Link' => url('econtract'),
 					                      			'Title' => "e-Kontrak",
 													'Icon' => "fa-file-text-o",
@@ -175,7 +175,7 @@ class HomeController extends Controller
 													'Desc' => "Pengadaan Barang/Jasa melalui Pengadaan/Penunjukan Langsung dan Manajemen Kontrak",
 													'Active' => 0
 						                    ),
-						                    array(	'Name' => "e-Swakelola", 
+						                    array(	'Name' => "e-Swakelola",
 					                      			'Link' => url('eswakelola'),
 					                      			'Title' => "e-Swakelola",
 													'Icon' => "fa-users",
@@ -184,10 +184,10 @@ class HomeController extends Controller
 													'Active' => 0
 						                    )
 										)
-							
+
 	                    );*/
 
-		$birms_app[4] = array(	'Name' => "e-BLP", 
+		$birms_app[4] = array(	'Name' => "e-BLP",
                       			'Link' => url('eulp'),
                       			'Title' => "e-ULP",
 								'Icon' => "fa-calendar",
@@ -197,7 +197,7 @@ class HomeController extends Controller
 								'Sub' => 0
 	                    );
 
-		$birms_app[5] = array(	'Name' => "e-Proc [LPSE]", 
+		$birms_app[5] = array(	'Name' => "e-Proc [LPSE]",
                       			'Link' => "http://lpse.bandung.go.id",
                       			'Title' => "e-Procurement [LPSE]",
 								'Icon' => "fa-balance-scale",
@@ -206,7 +206,7 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 						);
-		$birms_app[6] = array(	'Name' => "e-Kontrak", 
+		$birms_app[6] = array(	'Name' => "e-Kontrak",
                       			'Link' => url('econtract'),
                       			'Title' => "e-Kontrak",
 								'Icon' => "fa-file-text-o",
@@ -215,7 +215,7 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 						);
-		$birms_app[7] = array(	'Name' => "e-Swakelola", 
+		$birms_app[7] = array(	'Name' => "e-Swakelola",
                       			'Link' => url('eswakelola'),
                       			'Title' => "e-Swakelola",
 								'Icon' => "fa-users",
@@ -225,7 +225,7 @@ class HomeController extends Controller
 								'Sub' => 0
 						);
 
-		$birms_app[8] = array(	'Name' => "e-Progress", 
+		$birms_app[8] = array(	'Name' => "e-Progress",
                       			'Link' => url('eprogress'),
                       			'Title' => "e-Progress",
 								'Icon' => "fa-tasks",
@@ -234,7 +234,7 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 	                    );
-		$birms_app[9] = array(	'Name' => "e-Performance", 
+		$birms_app[9] = array(	'Name' => "e-Performance",
                       			'Link' => url('eperformance'),
                       			'Title' => "e-Performance",
 								'Icon' => "fa-bar-chart",
@@ -243,7 +243,7 @@ class HomeController extends Controller
 								'Active' => 0,
 								'Sub' => 0
 	                    );
-		$birms_app[10] = array(	'Name' => "e-Asset", 
+		$birms_app[10] = array(	'Name' => "e-Asset",
                       			'Link' => url('easset'),
                       			'Title' => "e-Asset",
 								'Icon' => "fa-bank",
@@ -284,12 +284,12 @@ class HomeController extends Controller
 
 		$data['ref_skpd']				= $rsskpd;
 
-    	$data['total_nilai_pengadaan'] 	= $total_nilai_pengadaan; 
+    	$data['total_nilai_pengadaan'] 	= $total_nilai_pengadaan;
 		$data['total_paket_lelang'] 	= $total_paket_lelang;
 		$data['total_paket_pl'] 		= $total_paket_pl;
 		$data['total_nilai_pengumuman_pl'] = $total_nilai_pengumuman_pl;
 
-		$data['total_prev_nilai_pengadaan'] 	= $total_prev_nilai_pengadaan; 
+		$data['total_prev_nilai_pengadaan'] 	= $total_prev_nilai_pengadaan;
 		$data['total_prev_paket_lelang'] 	= $total_prev_paket_lelang;
 		$data['total_prev_paket_pl'] 		= $total_prev_paket_pl;
 		$data['total_prev_nilai_pengumuman_pl'] = $total_prev_nilai_pengumuman_pl;
@@ -299,7 +299,7 @@ class HomeController extends Controller
 
 		$data['paket_lelang']			= $rspaketlelang;
 		$data['paket_pl']				= $rspaketpl;
-		
+
     	return View::make("frontend.home")->with($data);
     }
 
@@ -330,7 +330,7 @@ class HomeController extends Controller
 					tbl_content.`name`,
 					tbl_content.filename,
 					tbl_post.created
-				FROM $dbprime.tbl_post 
+				FROM $dbprime.tbl_post
 					LEFT OUTER JOIN $dbprime.tbl_postcontent ON $dbprime.tbl_post.pst_id = $dbprime.tbl_postcontent.pst_id
 					LEFT OUTER JOIN $dbprime.tbl_content ON $dbprime.tbl_postcontent.con_id = $dbprime.tbl_content.con_id
 				WHERE tbl_post.pst_id = ".$id." ";
@@ -341,7 +341,7 @@ class HomeController extends Controller
 		$data['article'] = $rspost;
     	return View::make("frontend.post")->with($data);
     }
-    
+
     function search1(Request $request)
     {
     	/*$data = [];
@@ -358,7 +358,7 @@ class HomeController extends Controller
 
 		$data = json_decode($json, true);
 
-    	return View::make("frontend.search")->with($data);	
+    	return View::make("frontend.search")->with($data);
     	//view('your-view')->with('leads', json_decode($leads, true));*/
 
     }
@@ -370,27 +370,27 @@ class HomeController extends Controller
     	$dbprime = env("DB_PRIME");
 
     	$data			 = [];
-		
+
 		/* Search Reference ---- Start */
 		$sql = "SELECT skpdID, unitID, satker, nama, singkatan FROM $dbprime.tbl_skpd WHERE isactive = 1 AND isparent = 1 ORDER BY unitID";
 		$rsskpd = DB::select($sql);
 		/* Search Reference ---- End */
 
 		$data['ref_skpd'] = $rsskpd;
-    	
+
     	if (!empty($request)) {
 	    	$q 		= $request->input('q');
 	    	$tahun 	= $request->input('tahun');
-	    	$skpdID = $request->input('skpdID');
+	    	//$skpdID = $request->input('skpdID');
 	    	$klasifikasi = $request->input('klasifikasi');
 	    	$tahap 	= $request->input('tahap');
-	    	
+
 	    	$min 	= $request->input('min');
 	    	$max 	= $request->input('max');
 	    	$startdate = $request->input('startdate');
 	    	$enddate = $request->input('enddate');
 
-		
+
 	    	switch ($tahap) {
 			    case 1: //Perencanaan
 			        $sql = "";
@@ -405,7 +405,7 @@ class HomeController extends Controller
 												    ['nilai_nego', '>=', 100],
 												    ['nilai_nego', '<=', 200],
 												]
-			    							)	
+			    							)
 			    						->get();*/
 			        break;
 			    case 3: //Pemenang
@@ -416,7 +416,7 @@ class HomeController extends Controller
 			        break;
 			    case 5: //Implementasi
 			        $sql = "";
-			        break;        
+			        break;
 			    default:
 			    	$sql = "SELECT
 								`tbl_pekerjaan`.`kodepekerjaan` ,
@@ -433,7 +433,7 @@ class HomeController extends Controller
 								`tsumberdana`.sumberdana,
 								`tpengadaan`.klasifikasiID,
 								LEFT(`tklasifikasi`.kode,2) AS kodeklasifikasi,
-								  CASE 
+								  CASE
 								     WHEN LEFT(`tklasifikasi`.kode,2) = 1 THEN 'Konstruksi'
 								     WHEN LEFT(`tklasifikasi`.kode,2) = 2 THEN 'Pengadaan Barang'
 								     WHEN LEFT(`tklasifikasi`.kode,2) = 3 THEN 'Jasa Konsultansi'
@@ -443,7 +443,8 @@ class HomeController extends Controller
 								`tbl_pekerjaan`.pilih_start,
 								`tbl_pekerjaan`.pilih_end,
 								`tbl_pekerjaan`.laksana_start,
-								`tbl_pekerjaan`.laksana_end
+								`tbl_pekerjaan`.laksana_end,
+								`tpekerjaan`.pekerjaanstatus
 							FROM
 								`$dbecontract`.`tpengadaan`
 							LEFT JOIN `$dbecontract`.`tpekerjaan` ON `tpengadaan`.`pid` = `tpekerjaan`.`pid`
@@ -455,37 +456,38 @@ class HomeController extends Controller
 							WHERE true ";
 
 							if (!empty($q)) {
-								$sql .= " AND `tpengadaan`.`namapekerjaan` LIKE '%$q%' "; 
+								$sql .= " AND `tpengadaan`.`namapekerjaan` LIKE '%$q%' ";
 							}
 
 							if (!empty($tahun)) {
-								$sql .= " AND `tpengadaan`.ta = $tahun "; 
+								$sql .= " AND `tpengadaan`.ta = $tahun ";
 							}
 
-							if (!empty($skpdID)) {
-								$sql .= " AND `tpengadaan`.skpdID = $skpdID"; 
-							}
+							/*if (!empty($skpdID)) {
+								$sql .= " AND `tpengadaan`.skpdID = $skpdID";
+							}*/
 
 							if (!empty($klasifikasi)) {
-								$sql .= " AND LEFT(`tklasifikasi`.kode,2) = $klasifikasi"; 
+								$sql .= " AND LEFT(`tklasifikasi`.kode,2) = $klasifikasi";
 							}
 
 							if (!empty($min)) {
-								$sql .= " AND (`tpengadaan`.anggaran >= $min OR `tpengadaan`.nilai_nego >= $min) "; 
+								$sql .= " AND (`tpengadaan`.anggaran >= $min OR `tpengadaan`.nilai_nego >= $min) ";
 							}
 
 							if (!empty($max)) {
-								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) "; 
+								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) ";
 							}
+							//echo $sql;
 			    	$rspengadaan = DB::select($sql);
 			    	/*$rspengadaan = DB::table($dbecontract.'.tpengadaan AS pgd')
-			    						->addSelect(DB::raw('kodepekerjaan, 
-			    							sirupID, 
-			    							tbl_metode.nama AS metodepengadaan, 
-			    							pgd.namakegiatan, 
-			    							pgd.namapekerjaan, 
-			    							pgd.nilai_nego, 
-			    							pgd.skpdID, 
+			    						->addSelect(DB::raw('kodepekerjaan,
+			    							sirupID,
+			    							tbl_metode.nama AS metodepengadaan,
+			    							pgd.namakegiatan,
+			    							pgd.namapekerjaan,
+			    							pgd.nilai_nego,
+			    							pgd.skpdID,
 			    							unitID,
 			    							tbl_skpd.nama AS namaskpd,
 			    							pgd.ta,
@@ -493,7 +495,7 @@ class HomeController extends Controller
 			    							tsumberdana.sumberdana,
 			    							pgd.klasifikasiID,
 											LEFT(tklasifikasi.kode,2) AS kodeklasifikasi,
-											CASE 
+											CASE
 								     			WHEN LEFT(`tklasifikasi`.kode,2) = 1 THEN "Konstruksi"
 								     			WHEN LEFT(`tklasifikasi`.kode,2) = 2 THEN "Pengadaan Barang"
 								     			WHEN LEFT(`tklasifikasi`.kode,2) = 3 THEN "Jasa Konsultansi"
@@ -516,13 +518,12 @@ class HomeController extends Controller
 			    							)
 			    						->get();*/
 			}
-			$data['totalsearch'] = count($rspengadaan);
-
-			$rspengadaan		= $this->arrayPaginator($rspengadaan, $request);
-	    	$data['pengadaan']	= $rspengadaan;
+	    	$data['pengadaan'] 	 = $rspengadaan;
+	    	//$data['pengadaan'] = $rspengadaan->toArray();
+	    	$data['totalsearch'] = count($rspengadaan);
     	} else {
     		$data['message'] = 'Silahkan isi kata yang ingin dicari terlebih dahulu';
     	}
-    	return View::make("frontend.search")->with($data);	
-    }   
+    	return View::make("frontend.search")->with($data);
+    }
 }
