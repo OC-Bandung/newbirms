@@ -8,17 +8,16 @@
         "php": ">=5.6.4",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
-<<<<<<< HEAD
-        "dto/dto": ">=3.2.7"
-=======
+        "dto/dto": ">=3.2.7",
+        "guzzlehttp/guzzle": "~6.3",
         "tonirilix/nested-json-flattener": "2.1.1"
->>>>>>> d087473a1929d376d975f79c176d59284b4189c2
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "barryvdh/laravel-ide-helper": "^2.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.7"
+        "phpunit/phpunit": "~5.7",
+        "guzzlehttp/guzzle": "~6.3"
     },
     "autoload": {
         "classmap": [

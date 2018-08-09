@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Sirup;
 use App\Paketlng;
 use App\Paketpl;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Input;
 use NestedJsonFlattener\Flattener\Flattener;
 
 class ApiBIRMS extends Controller
@@ -17,25 +19,61 @@ class ApiBIRMS extends Controller
         $ocid = env('OCID');
         $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
                             ->orderBy('sirupID')
-                            ->paginate(15);
+                            ->paginate(env('JSON_RESULTS_PER_PAGE', 40));
     }
-<<<<<<< HEAD
+
+    /**
+     * Creates paginator from a simple array coming from DB::select
+     * https://stackoverflow.com/a/44090541
+     * Use url parameter per_page to increase page number
+     *
+     * @param $array
+     * @param $request
+     * @return LengthAwarePaginator
+     */
+    public function arrayPaginator($array, $request)
+    {
+        $page = Input::get('page', 1);
+        $perPage = Input::get('per_page', env('JSON_RESULTS_PER_PAGE', 40));
+        $offset = ($page * $perPage) - $perPage;
+
+        return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true),
+            count($array), $perPage, $page,
+            ['path' => $request->url(), 'query' => $request->query()]);
+    }
 
     public function contractsPerYear($year)
     {
-        $results = Sirup::where("tahun", $year)->paginate(100); 
-        return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+		//$results = Sirup::where("tahun", $year)->paginate(100);
+		$ocid = env('OCID');
+
+		$dbplanning = env('DB_PLANNING');
+
+		$sql = 'SELECT
+		CONCAT("'.env('OCID').'","s-",tahun,"-",sirupID) AS ocid,
+		tahun AS year,
+		nama AS title,
+		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
+		pagu AS value
+	FROM
+	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND pagu <> 0 
+	UNION 
+	SELECT
+		CONCAT("'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
+		'.$year.' AS year,
+		namapekerjaan AS title,
+		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS uri,
+		anggaran AS value
+	FROM
+	'.$dbplanning.'.tbl_pekerjaan 
+	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1';
+
+        $results = $this->arrayPaginator(DB::select($sql), request());
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
     }
 
-=======
-
-    public function contractsPerYear($year)
-    {
-        $results = Sirup::where("tahun", $year)->paginate(100);
-        return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-    }
-
->>>>>>> d66e4ac41726cdab00c44a6c5057e97c89982339
     /* get_pns function
 	pns/{kewenangan}:{year}
 		kewenangan attribut
@@ -119,7 +157,7 @@ class ApiBIRMS extends Controller
 				LEFT OUTER JOIN $dbmain.tbl_user ON tr_sk_user.usrID = $dbmain.tbl_user.usrID
 				LEFT OUTER JOIN $dbmain.tbl_skpd ON tbl_sk.skpdID = $dbmain.tbl_skpd.skpdID
 				LIMIT 10';
-		$results = DB::select($sql)->paginate(15);
+		$results = DB::select($sql)->paginate(env('JSON_RESULTS_PER_PAGE', 40));
     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	  
 	}
@@ -292,10 +330,7 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-<<<<<<< HEAD
 
-=======
->>>>>>> d66e4ac41726cdab00c44a6c5057e97c89982339
 	public function graph3($year)
 	{
 		$sql = 'SELECT ta, COUNT(*) AS paket FROM '.env('DB_CONTRACT').'.`tlelangumum` GROUP BY ta ORDER BY ta DESC LIMIT 1';
@@ -404,7 +439,7 @@ class ApiBIRMS extends Controller
 
         $rowdata = array();
         $data = array();
-        
+
         foreach($rs1 as $row) {
             array_push($data, array($row->tahun));
         }
@@ -444,8 +479,8 @@ class ApiBIRMS extends Controller
 	public function graph_csv4()
 	{
 		return "CSV Total Procurement";
-	
-	}	
+
+	}
 	/*--- End Data Statistic ---*/
 
 	public function search(Request $request) {
