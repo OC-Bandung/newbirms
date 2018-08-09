@@ -589,16 +589,16 @@ class ApiBIRMS_contract extends Controller
 
         $db = env('DB_CONTRACT');
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $results->sirupID . " ";
-        $tleresults = DB::select($sql);
+        $results = DB::select($sql);
 
-        if (sizeof($tleresults) == 0) {
+        if (sizeof($results) == 0) {
             $tender->numberOfTenderers = 0;
         } else {
-            $tender->numberOfTenderers = (int)$tleresults[0]->jumlah_peserta;
-            $tender->value=$this->getAmount($tleresults[0]->nilai_nego);
-            $tender->tenderers = $this->getTenderers($tleresults[0]->lls_id);
-            //$tender->status=$tleresults[0]->stat; //TODO: uncomment this after mapping done
-            $tender->title=$tleresults[0]->namapekerjaan;
+            $tender->numberOfTenderers = (int)$results[0]->jumlah_peserta;
+            $tender->value=$this->getAmount($results[0]->nilai_nego);
+            $tender->tenderers = $this->getTenderers($results[0]->lls_id);
+            //$tender->status=$results[0]->stat; //TODO: uncomment this after mapping done
+            $tender->title=$results[0]->namapekerjaan;
         }
 
         return $tender;
@@ -832,7 +832,7 @@ class ApiBIRMS_contract extends Controller
         }
 
         if(property_exists ($r, "contracts") && !empty($r->contracts)) {
-            array_push($r->tag, "contracts");
+            array_push($r->tag, "contract");
         }
     }
 

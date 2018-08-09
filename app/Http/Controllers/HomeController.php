@@ -303,17 +303,27 @@ class HomeController extends Controller
     	return View::make("frontend.home")->with($data);
     }
 
-	public function arrayPaginator($array, $request)
-	{
-	    $page = Input::get('page', 1);
-	    $perPage = 10;
-	    $offset = ($page * $perPage) - $perPage;
+	/**
+     * Creates paginator from a simple array coming from DB::select
+     * https://stackoverflow.com/a/44090541
+     * Use url parameter per_page to increase page number
+     *
+     * @param $array
+     * @param $request
+     * @return LengthAwarePaginator
+     */
+    public function arrayPaginator($array, $request)
+    {
+        $page = Input::get('page', 1);
+        $perPage = Input::get('per_page', env('JSON_RESULTS_PER_PAGE', 40));
+        $offset = ($page * $perPage) - $perPage;
 
-	    return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true), count($array), $perPage, $page,
-	        ['path' => $request->url(), 'query' => $request->query()]);
+        return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true),
+            count($array), $perPage, $page,
+            ['path' => $request->url(), 'query' => $request->query()]);
 	}
-
-    function post($id)
+	
+	function post($id)
     {
     	$dbprime = env("DB_PRIME");
     	/* Article ---- Start */

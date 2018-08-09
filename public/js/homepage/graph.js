@@ -39,7 +39,12 @@ $(document).ready(function() {
          series: []
        }
 
-        $.getJSON("https://birms.bandung.go.id/beta/api/graph/1", function(list) {
+       var getUrl = window.location;
+       var virtualUrl = "/newbirms_json/public";
+       var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1]+virtualUrl;
+
+       //console.log(baseUrl);
+        $.getJSON(baseUrl+"/api/graph/1", function(list) {
           var newseries;
 
           $.each(list, function (i, item) {

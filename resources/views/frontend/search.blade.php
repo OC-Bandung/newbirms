@@ -173,8 +173,8 @@
 
       <div class="row">
           <div class="col pt-3 text-center">
-          {{ $pengadaan->links() }}
-              <button type="button" class="btn btn-outline-dark font-primary">Load more</button>
+          <?/*{{ $pengadaan->links() }}
+              <button type="button" class="btn btn-outline-dark font-primary">Load more</button>*/?>
           </div>
       </div>
 
