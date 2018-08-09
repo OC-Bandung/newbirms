@@ -831,7 +831,7 @@ class ApiBIRMS_contract extends Controller
         }
 
         if(property_exists ($r, "contracts") && !empty($r->contracts)) {
-            array_push($r->tag, "contracts");
+            array_push($r->tag, "contract");
         }
     }
 
