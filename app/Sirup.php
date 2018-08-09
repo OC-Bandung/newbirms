@@ -28,7 +28,6 @@ public function getTitleAttribute(){
     return $this->attributes['nama'];
 }
 
-
 public function getValueAttribute() {
  
 	$value = array(
@@ -38,8 +37,6 @@ public function getValueAttribute() {
 
 	 return ($value);
 }
-
-
 
 }
 

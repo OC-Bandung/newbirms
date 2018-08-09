@@ -1,35 +1,33 @@
 @extends('frontend.layouts.main')
 
 @section('header')
-    
-    <div class="intro">
-        <!--nav-->
-        @include('frontend.layouts.pages-nav') 
 
-        @include('frontend.homepage.search')
+    @extends('frontend.layouts.nav')
 
-    </div>  
-
-    @include('frontend.homepage.statistics')
+    @include('frontend.homepage.search')
 
 @endsection
 
-
 @section('content')
 
-    @include('frontend.homepage.welcome')
+    @include('frontend.homepage.dashboard')
 
-    @include('frontend.homepage.graphs')
+    @include('frontend.homepage.aboutnews')
 
-    @include ('frontend.homepage.map')
+    @include('frontend.homepage.statistic')
 
-    @include('frontend.homepage.recent-procurement')
+    @include('frontend.homepage.procurementmap')
 
-    @include ('frontend.homepage.open-data')
+    @include('frontend.homepage.currprocurement')
 
-    @include ('frontend.homepage.blog')
+    @include('frontend.homepage.ocinformation')
 
+    @include('frontend.homepage.newsupdate')
 
-    @include ('frontend.homepage.contact')
+    @include('frontend.homepage.appsquestion')
+
+@endsection
+
+@section('footer')
 
 @endsection

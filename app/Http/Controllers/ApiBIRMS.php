@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Sirup;
 use App\Paketlng;
 use App\Paketpl;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Input;
 
 class ApiBIRMS extends Controller
 {
@@ -16,7 +18,27 @@ class ApiBIRMS extends Controller
         $ocid = env('OCID');
         $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
                             ->orderBy('sirupID')
-                            ->paginate(15);
+                            ->paginate(env('JSON_RESULTS_PER_PAGE', 40));
+    }
+
+    /**
+     * Creates paginator from a simple array coming from DB::select
+     * https://stackoverflow.com/a/44090541
+     * Use url parameter per_page to increase page number
+     *
+     * @param $array
+     * @param $request
+     * @return LengthAwarePaginator
+     */
+    public function arrayPaginator($array, $request)
+    {
+        $page = Input::get('page', 1);
+        $perPage = Input::get('per_page', env('JSON_RESULTS_PER_PAGE', 40));
+        $offset = ($page * $perPage) - $perPage;
+
+        return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true),
+            count($array), $perPage, $page,
+            ['path' => $request->url(), 'query' => $request->query()]);
     }
 
     public function contractsPerYear($year)
@@ -33,18 +55,19 @@ class ApiBIRMS extends Controller
 		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
 		pagu AS value
 	FROM
-	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' 
+	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND pagu <> 0 
 	UNION 
 	SELECT
 		CONCAT("'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
 		'.$year.' AS year,
 		namapekerjaan AS title,
-		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","b-",'.$year.',"-",sirupID) AS uri,
+		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS uri,
 		anggaran AS value
 	FROM
 	'.$dbplanning.'.tbl_pekerjaan 
-	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0';
-		$results = DB::select($sql);
+	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1';
+
+        $results = $this->arrayPaginator(DB::select($sql), request());
     	return response()
     			->json($results)
     			->header('Access-Control-Allow-Origin', '*');
@@ -133,7 +156,7 @@ class ApiBIRMS extends Controller
 				LEFT OUTER JOIN $dbmain.tbl_user ON tr_sk_user.usrID = $dbmain.tbl_user.usrID
 				LEFT OUTER JOIN $dbmain.tbl_skpd ON tbl_sk.skpdID = $dbmain.tbl_skpd.skpdID
 				LIMIT 10';
-		$results = DB::select($sql)->paginate(15);
+		$results = DB::select($sql)->paginate(env('JSON_RESULTS_PER_PAGE', 40));
     	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
 	  
 	}
@@ -664,4 +687,64 @@ class ApiBIRMS extends Controller
     			->json($results)
     			->header('Access-Control-Allow-Origin', '*');
 	}
+
+	public function get_sppd_material($year, $organization) 
+	{
+	    $dbplanning = env('DB_PLANNING');
+	    $dbcontract = env('DB_CONTRACT');
+	    $dbmain 	= env('DB_PRIME');
+
+		$sql = "SELECT 
+					CONCAT(REPLACE(tpekerjaan.tanggalrencana,'-',''),'.',tpengadaan.pid,'.',tpekerjaan.saltid) AS paketID, 
+					tpengadaan.pgid, 
+					tpengadaan.skpdID,
+					tpengadaan.kode AS koderekening,
+					tpengadaan.namapekerjaan,
+					tpengadaan.anggaran AS paguanggaran,
+					tpengadaan.nilai_nego AS nilaikontrak,
+					tpengadaan.pekerjaanstatus,
+					tpengadaan_pemenang.perusahaannama,
+					tpengadaan_pemenang.perusahaanalamat,
+					tpengadaan_pemenang.perusahaannpwp,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',5),'|',-1) AS perusahaanwakilnama,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',6),'|',-1) AS perusahaanwakiljabatan,
+					tkontrak_penunjukan.spk_nosurat AS spk_no,
+					tkontrak_penunjukan.spk_tgl_surat AS spk_tgl,
+					tkontrak_penunjukan.sp_nosurat AS sp_spmk_no,
+					tkontrak_penunjukan.sp_tgl_surat AS sp_spmk_tgl,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_serahterima.isian,'|',7),'|',-1) AS bapp_no,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_serahterima.isian,'|',8),'|',-1) AS bapp_tgl,
+					tprogress_serahterima.nosurat AS basthp_no,
+					tprogress_serahterima.tgl_surat AS basthp_tgl,
+					tprogress_pembayaran.nosurat AS bap_no,
+					tprogress_pembayaran.tgl_surat AS bap_tgl,
+					tprogress_pembayaran_bukti.nosurat AS kuitansi_no,
+					tprogress_pembayaran_bukti.tgl_surat AS kuitansi_tgl,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',1),'|',-1) AS suratjalan_no,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',2),'|',-1) AS suratjalan_tgl,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',3),'|',-1) AS faktur_no,
+					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',4),'|',-1) AS faktur_tgl
+				FROM ".$dbcontract.".tpengadaan 
+					LEFT JOIN ".$dbcontract.".tpekerjaan ON tpengadaan.pid = tpekerjaan.pid 
+					LEFT JOIN ".$dbcontract.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
+					LEFT JOIN ".$dbcontract.".tkontrak_penunjukan ON tpengadaan.pgid = tkontrak_penunjukan.pgid
+					LEFT JOIN ".$dbcontract.".tprogress_serahterima ON tpengadaan.pgid = tprogress_serahterima.pgid
+					LEFT JOIN ".$dbcontract.".tprogress_pembayaran ON tpengadaan.pgid = tprogress_pembayaran.pgid
+					LEFT JOIN ".$dbcontract.".tprogress_pembayaran_bukti ON tpengadaan.pgid = tprogress_pembayaran_bukti.pgid
+				WHERE tpengadaan.ta = ".$year." 
+					AND tpengadaan.skpdID = (SELECT skpdID FROM ".$dbmain.".tbl_skpd WHERE nama = '".$organization."' OR unitID = '".$organization."')
+					AND tpengadaan.pekerjaanstatus = 7";
+		$results = DB::select($sql);
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');	
+	}
+
+	public function get_rencana($year, $organization)
+    {
+		$ocid = env('OCID');
+        $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
+                            ->orderBy('sirupID')
+                            ->paginate(env('JSON_RESULTS_PER_PAGE', 40));
+    }
 }

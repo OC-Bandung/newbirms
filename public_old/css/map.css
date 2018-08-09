@@ -1,0 +1,51 @@
+#map {
+    width: calc(100%);
+    height: 550px;
+}
+
+.color-key {
+    background: linear-gradient(to right,
+    hsl(107, 19%, 89%) 0%,
+    hsl(168, 40%, 77%) 25%,
+    hsl(185, 73%, 68%) 50%,
+    hsl(193, 100%, 56%) 75%,
+    hsl(209, 85%, 39%) 100%);
+    flex: 1;
+    -webkit-box-flex: 1;
+    margin: 0 5px;
+    text-align: left;
+    line-height: 1.0em;
+}
+
+
+
+#legend {
+    display: flex;
+    display: -webkit-box;
+   
+}
+ 
+.pie {
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: #35b7c2;
+  background-image:linear-gradient(to right, transparent 50%, #f8f8f8 0);
+  margin: auto;
+  margin-top: 25px;
+}
+
+.pie::before {
+ content: '';
+  display: block;
+  margin-left: 50%;
+  height: 100%;
+  border-radius: 0 100% 100% 0 / 50%;
+  background: #f8f8f8;
+  transform-origin: left;
+  transform: rotate(.9turn);
+}
+
+#data-caret {
+    font-size: 20px;
+    width: 20px;
+}

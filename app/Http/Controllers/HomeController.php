@@ -381,7 +381,7 @@ class HomeController extends Controller
     	if (!empty($request)) {
 	    	$q 		= $request->input('q');
 	    	$tahun 	= $request->input('tahun');
-	    	$skpdID = $request->input('skpdID');
+	    	//$skpdID = $request->input('skpdID');
 	    	$klasifikasi = $request->input('klasifikasi');
 	    	$tahap 	= $request->input('tahap');
 	    	
@@ -443,7 +443,8 @@ class HomeController extends Controller
 								`tbl_pekerjaan`.pilih_start,
 								`tbl_pekerjaan`.pilih_end,
 								`tbl_pekerjaan`.laksana_start,
-								`tbl_pekerjaan`.laksana_end
+								`tbl_pekerjaan`.laksana_end,
+								`tpekerjaan`.pekerjaanstatus
 							FROM
 								`$dbecontract`.`tpengadaan`
 							LEFT JOIN `$dbecontract`.`tpekerjaan` ON `tpengadaan`.`pid` = `tpekerjaan`.`pid`
@@ -462,9 +463,9 @@ class HomeController extends Controller
 								$sql .= " AND `tpengadaan`.ta = $tahun "; 
 							}
 
-							if (!empty($skpdID)) {
+							/*if (!empty($skpdID)) {
 								$sql .= " AND `tpengadaan`.skpdID = $skpdID"; 
-							}
+							}*/
 
 							if (!empty($klasifikasi)) {
 								$sql .= " AND LEFT(`tklasifikasi`.kode,2) = $klasifikasi"; 
@@ -477,6 +478,7 @@ class HomeController extends Controller
 							if (!empty($max)) {
 								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) "; 
 							}
+							//echo $sql;
 			    	$rspengadaan = DB::select($sql);
 			    	$rspengadaan = $this->arrayPaginator($rspengadaan, $request);
 
@@ -517,11 +519,9 @@ class HomeController extends Controller
 												]
 			    							)
 			    						->get();*/
-
-			
 			}
 	    	$data['pengadaan'] 	 = $rspengadaan;
-	    	//$data['pengadaan'] 	 = $rspengadaan->toArray();
+	    	//$data['pengadaan'] = $rspengadaan->toArray();
 	    	$data['totalsearch'] = count($rspengadaan);
     	} else {
     		$data['message'] = 'Silahkan isi kata yang ingin dicari terlebih dahulu';

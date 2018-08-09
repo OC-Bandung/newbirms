@@ -8,7 +8,7 @@ use Dto\JsonSchemaRegulator;
 use Dto\ServiceContainer;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Dto\Dto;
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use stdClass;
@@ -25,7 +25,14 @@ class OcdsRelease extends Dto
      */
     function getJsonResponse(ResponseFactory $response)
     {
-        return $response->make($this->toJson())->header('Content-Type', 'application/json');
+        return $response->make($this->toJson(true))->header('Content-Type', 'application/json');
+    }
+
+    function getJsonpResponse(ResponseFactory $response, Request $request)
+    {
+        $callback=$request->get("callback");
+        return $response->make($callback.'('.$this->toJson(true).')')
+            ->header('Content-Type', 'application/javascript');
     }
 
     /**
@@ -90,39 +97,98 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
-    function getOrganizationByName($year, $name, $orgObj = null)
+    function getAddressPerusahaan($row)
     {
+        $a = new stdClass();
+        $a->streetAddress = $row->alamatperusahaan;
+        return $a;
+    }
+
+    function getOrganizationByName($year, $name, $competitive)
+    {
+        $name = preg_replace('/\s+/', ' ', $name);
+
         if ($year <= 2016) {
             $db = env('DB_PRIME_PREV');
         } else {
             $db = env('DB_PRIME');
         }
+        $dbeproc = env('DB_EPROC');
+        $dbecontract = env('DB_CONTRACT');
 
-        $sql = "select * from " . $db . ".tbl_skpd where nama = '" . $name . "'";
+        if ($competitive === false) {
+            $sql = "SELECT perusahaanID, npwp, namaperusahaan, alamatperusahaan, kota, telepon, fax, email FROM " . $dbeproc . ".tperusahaan WHERE UCASE(REPLACE(namaperusahaan, '  ', ' ')) = UCASE('".$name."') ";
+            $results = DB::select($sql);
+
+            if (sizeof($results) == 0) {
+                $sql = "SELECT perusahaanid AS perusahaanID, perusahaannpwp AS npwp, perusahaannama AS namaperusahaan, perusahaanalamat AS alamatperusahaan, NULL AS kota, NULL AS telepon, NULL AS fax, NULL AS email  FROM " . $dbecontract . ".tpengadaan_pemenang  WHERE UCASE(REPLACE(perusahaannama, '  ', ' ')) = UCASE('".$name."') ";
+                $results = DB::select($sql);
+            }
+        } else if ($competitive === true) {
+            if (strpos($name, ".") === false) {
+                $findname = $name;
+            } else {
+                $pieces   = explode(".", $name);
+                $findname = TRIM($pieces[1]);
+            }
+            $sql = "SELECT * FROM " . $dbecontract . ".lpse_rekanan WHERE UCASE(rkn_nama) LIKE '%".$findname."%'";
+        } else {
+            $sql = "SELECT * FROM " . $db . ".tbl_skpd WHERE UCASE(nama) = UCASE('" . $name . "')";
+        }
+        //die($sql);
         $results = DB::select($sql);
-        if (sizeof($results) == 0 && $orgObj == null) {
-            abort(404, 'No organization found by name ' . $name);
-        }
+        
+        $org = new stdClass();
 
-        if (sizeof($results) > 0) {
+        if (sizeof($results) == 0) {
+            //abort(404, 'No organization found by name ' . $name);
+            $org->name = $name;
+        } else {
             $row = $results[0];
-            $org = new stdClass();
-            $org->id = $row->unitID;
-            $org->name = $row->nama;
-            $org->address = $this->getAddress($row);
-            $org->contactPoint = $this->getContactPoint($row);
+            
+            if ($competitive === false) {
+                $org->id = $row->npwp;
+                $org->name = $row->namaperusahaan;
+                $org->address = $this->getAddressPerusahaan($row);
+                $org->contactPoint = $this->getContactPoint($row); 
+                
+                $id = new stdClass();
+                $id->id = $row->npwp;
+                $id->legalName = $row->namaperusahaan;
+                $org->identifier = $id;
+            } else if ($competitive === true) {
+                $org->id = $row->rkn_npwp;
+                $org->name = $row->rkn_nama;
+                
+                $address = new stdClass();
+                $address->streetAddress = $row->rkn_alamat;
+                $org->address = $address;
 
-            $id = new stdClass();
-            $id->id = $row->unitID;
-            $id->legalName = $row->nama;
-            $org->identifier = $id;
-            return $org;
+                $cp = new stdClass();
+                $cp->email = $row->rkn_email;
+                $cp->telephone = $row->rkn_telepon;
+                $org->contactPoint = $cp; 
+                
+                $id = new stdClass();
+                $id->id = $row->rkn_npwp;
+                $id->legalName = $row->rkn_nama;
+                $org->identifier = $id;  
+            } else {
+                $org->id = $row->unitID;
+                $org->name = $row->nama;
+                $org->address = $this->getAddress($row);
+                $org->contactPoint = $this->getContactPoint($row);
+
+                $id = new stdClass();
+                $id->id = $row->unitID;
+                $id->legalName = $row->nama;
+                $org->identifier = $id;
+            }
         }
-
-        return $orgObj;
+        return $org;
     }
 
-    function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj = null)
+    function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj, $competitive)
     {
         //first check if organization is within parties array
         foreach ($parties as &$o) {
@@ -134,7 +200,7 @@ class ApiBIRMS_contract extends Controller
 
         //if not found, read new organization from org table
         if (!isset($org)) {
-            $org = $this->getOrganizationByName($year, $name, $orgObj);
+            $org = $this->getOrganizationByName($year, $name, $competitive);
             $org->roles = [$role];
             array_push($parties, $org);
         } else {
@@ -150,12 +216,18 @@ class ApiBIRMS_contract extends Controller
 
     function getMainProcurementCategory($results)
     {
-        if ($results->jenis_belanja == 1)
-            return null;
-        if ($results->jenis_belanja == 2) {
+        if ($results->jenis_pengadaan == 1) {
+            return "goods";
+        } else if ($results->jenis_pengadaan == 2) {
+            return "works";
+        } else if ($results->jenis_pengadaan == 3) {
             return "services";
+        } else if ($results->jenis_pengadaan == 4) {
+            return "services";
+        } else {
+            return null;
         }
-        abort(404, 'No main procurement category can be mapped for  code ' . $results->jenis_belanja);
+        abort(404, 'No main procurement category can be mapped for  code ' . $results->jenis_pengadaan);
     }
 
     function getAmount($amount)
@@ -163,6 +235,13 @@ class ApiBIRMS_contract extends Controller
         $a = new stdClass();
         $a->amount = (double)$amount;
         $a->currency = env('CURRENCY');
+        return $a;
+    }
+
+    function getUnit($unit)
+    {
+        $a = new stdClass();
+        $a->unit = $unit;
         return $a;
     }
 
@@ -193,17 +272,91 @@ class ApiBIRMS_contract extends Controller
         return $period;
     }
 
+    function getNonLelangID($sirupID)
+    {
+        $db = env('DB_CONTRACT');
+        $sql = "SELECT * FROM " . $db . ".tpekerjaan WHERE pekerjaanID = " . $sirupID . " ";
+        $results = DB::select($sql);
+        if (sizeof($results) == 0) {
+            //abort(404, 'No procurement found by sirupID ' . $sirupID);
+            $lelangID = 0;
+        } else {
+            $row = $results[0];
+            $pid = (int)$row->pid;
+        }
+        return $pid;
+    }
+
+    function getLelangID($sirupID)
+    {
+        $db = env('DB_CONTRACT');
+        $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
+        $results = DB::select($sql);
+        if (sizeof($results) == 0) {
+            //abort(404, 'No procurement found by sirupID ' . $sirupID);
+            $lelangID = 0;
+        } else {
+            $row = $results[0];
+            $lelangID = (int)$row->lls_id;
+        }
+        return $lelangID;
+    }
+   
+    function getTenderer($row)
+    {
+        $tenderer = new stdClass();
+        $tenderer->id = $row->rkn_npwp;
+        $tenderer->name = $row->rkn_nama;
+        
+        $address = new stdClass();
+        $address->streetAddress = $row->rkn_alamat;
+        $tenderer->address = $address;
+
+        $cp = new stdClass();
+        $cp->email = $row->rkn_email;
+        $cp->telephone = $row->rkn_telepon;
+        $tenderer->contactPoint = $cp; 
+        
+        $id = new stdClass();
+        $id->id = $row->rkn_npwp;
+        $id->legalName = $row->rkn_nama;
+        $tenderer->identifier = $id; 
+
+        return $tenderer;
+    }
+
+    function getTenderers($tender_id)
+    {
+        $db = env('DB_CONTRACT');
+        $sql = "SELECT * FROM ".$db.".lpse_peserta 
+                LEFT JOIN ".$db.".lpse_rekanan ON lpse_peserta.rkn_id = lpse_rekanan.rkn_id
+                WHERE lls_id = ". $tender_id ." ORDER BY lpse_peserta.auditupdate ASC";
+        $results = DB::select($sql);
+
+        if (sizeof($results) == 0) {
+            //abort(404, 'No tenderers found by tender_id ' . $tender_id);
+            $tenderers = [];
+        } else {
+            $tenderers = [];
+            foreach ($results as $row) {
+                array_push($tenderers, $this->getTenderer($row));
+            }
+        }
+        return $tenderers;
+    }
+
     function getNumberOfTenderers($sirupID)
     {
         $db = env('DB_CONTRACT');
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
         $results = DB::select($sql);
         if (sizeof($results) == 0) {
-            abort(404, 'No procurement found by sirupID ' . $sirupID);
+            //abort(404, 'No procurement found by sirupID ' . $sirupID);
+            $bidder = 0;
+        } else {
+            $row = $results[0];
+            $bidder = (int)$row->jumlah_peserta;
         }
-        $row = $results[0];
-
-        $bidder = (int)$row->jumlah_peserta;
         return $bidder;
     }
 
@@ -214,29 +367,76 @@ class ApiBIRMS_contract extends Controller
         $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $sirupID . " ";
         $results = DB::select($sql);
         if (sizeof($results) == 0) {
-            abort(404, 'No procurement found by sirupID ' . $sirupID);
+            //abort(404, 'No procurement found by sirupID ' . $sirupID);
+            $milestones = [];
+        } else {
+            $row = $results[0];
+            $lls_id = $row->lls_id;
+
+            $db = env('DB_CONTRACT');
+            $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
+            LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
+            WHERE lls_id = " . $lls_id . " ORDER BY akt_urut";
+            $results = DB::select($sql);
+
+            /*if (sizeof($results) == 0) {
+                abort(404, 'No milestone found by lelang ID ' . $lls_id);
+            }*/
+
+            $milestones = [];
+            if (sizeof($results) != 0) {
+                foreach ($results as $row) {
+                    array_push($milestones, $this->getTenderMilestone($row));
+                }
+            }
         }
-        $row = $results[0];
-        $lls_id = $row->lls_id;
-
-        $db = env('DB_CONTRACT');
-        $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
-        LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
-        WHERE lls_id = " . $lls_id . " ORDER BY akt_urut";
-        $results = DB::select($sql);
-
-        if (sizeof($results) == 0) {
-            abort(404, 'No milestone found by lelang ID ' . $lls_id);
-        }
-
-        $milestones = [];
-        foreach ($results as $row) {
-            array_push($milestones, $this->getTenderMilestone($row));
-        }
-
         return $milestones;
     }
 
+    function getNonTenderMilestones($pID)
+    {
+        $db = env('DB_CONTRACT');
+        $milestoneDateFormat = 'Y-m-d H:i:s';
+        $sql = "SELECT tahapID, nama, tanggal_mulai, tanggal_selesai FROM " . $db . ".tpekerjaan_jadwal
+                LEFT JOIN " . $db . ".tmaster_tahap ON tpekerjaan_jadwal.tahapID = tmaster_tahap.ID
+                WHERE pid = " . $pID . " ";
+        $results = DB::select($sql);
+        if (sizeof($results) == 0) {
+            //abort(404, 'No procurement found by sirupID ' . $sirupID);
+            $milestones = [];
+        } else {
+            $milestones = [];
+            foreach ($results as $row) {
+                array_push($milestones, $this->getNonTenderMilestone($row));
+            }
+        }
+        return $milestones;
+    }
+
+    function getNonCompetitiveAward($year, $row, &$parties)
+    {
+        $a = new stdClass();
+        $a->id = $row->id;
+        $a->title = $row->namapekerjaan;
+        $a->date = $this->getOcdsDateFromString($row->pilih_start);
+
+        $a->status = "active";
+        $a->value = $this->getAmount($row->nilai_nego);
+
+        $supl       = new stdClass();
+        $supl->name = $row->perusahaannama;
+        
+        $orgId      = new stdClass();
+        $orgId->legalName=$row->perusahaannama;
+        $supl->identifier=$orgId;
+
+        $addr=new stdClass();
+        $addr->streetAddress=$row->perusahaanalamat;
+        $supl->address=$addr;
+
+        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplier", $parties, $orgId, false)];
+        return $a;
+    }
 
     function getCompetitiveAward($year, $row, &$parties)
     {
@@ -244,25 +444,64 @@ class ApiBIRMS_contract extends Controller
         $a->id = $row->lgid;
         $a->title = $row->namapekerjaan;
         $a->date = $this->getOcdsDateFromString($row->tanggalpengumuman);
-        $a->status = "active";
-        $a->value = $this->getAmount($row->nilai_nego);
+        
+        if ($row->nilai_nego != 0) {
+            $a->status = "active";
+            $a->value = $this->getAmount($row->nilai_nego);
 
-        $supl = new stdClass();
-        $supl->name=$row->pemenang;
-        $orgId=new stdClass();
-        $orgId->legalName=$row->pemenang;
-        $supl->identifier=$orgId;
-        $addr=new stdClass();
-        $addr->streetAddress=$row->pemenangalamat;
-        $supl->address=$addr;
+            $supl       = new stdClass();
+            $supl->name = $row->pemenang;
+            
+            $orgId      = new stdClass();
+            $orgId->legalName=$row->pemenang;
+            $supl->identifier=$orgId;
 
-        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties,$supl)];
+            $addr=new stdClass();
+            $addr->streetAddress=$row->pemenangalamat;
+            $supl->address=$addr;
+
+            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $orgId, true)];
+        } else {
+            $a->status = "pending";
+        }
         return $a;
     }
 
 
-    function getNonCompetitiveAwards($sirupID, &$parties) {
+    function getNonCompetitiveAwards($year, $pekerjaanID, &$parties) {
         //TODO: please write query to get to noncompetitive awards here
+        $db = env('DB_CONTRACT');
+        $sql = "SELECT
+                    CONCAT(
+                        REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
+                        '.',
+                        tpekerjaan.pid,
+                        '.',
+                        tpekerjaan.saltid 
+                    ) AS id,
+                    tbl_pekerjaan.namapekerjaan,
+                    pilih_start,
+                    nilai_nego,
+                    perusahaanid,
+                    perusahaannama,
+                    perusahaanalamat,
+                    perusahaannpwp 
+                FROM
+                    tbl_pekerjaan
+                    LEFT JOIN ".$db.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+                    LEFT JOIN ".$db.".tpengadaan ON tpekerjaan.pid = tpengadaan.pid
+                    LEFT JOIN ".$db.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
+                WHERE
+                    tbl_pekerjaan.pekerjaanID = ". $pekerjaanID . " AND tpekerjaan.pekerjaanstatus >= 4"; //4: Berjalan 7:Selesai
+        //die($sql);
+        $results = DB::select($sql);
+
+        $awards = [];
+        foreach ($results as $row) {
+            array_push($awards, $this->getNonCompetitiveAward($year, $row, $parties));
+        }
+
+        return $awards;
     }
 
     function getCompetitiveAwards($year, $sirupID, &$parties)
@@ -297,6 +536,23 @@ class ApiBIRMS_contract extends Controller
         return $milestonestatusCode;
     }
 
+    function getNonTenderMilestone($row)
+    {
+        $milestoneDateFormat = 'Y-m-d H:i:s';
+        $milestone = new stdClass();
+
+        $milestone->id = $row->tahapID;
+        $milestone->title = $row->nama;
+        //$milestone->description = $row->dtj_keterangan;
+        $milestone->dueDate = $this->getOcdsDateFromString($row->tanggal_selesai, $milestoneDateFormat);
+        $milestone->dateMet = $this->getOcdsDateFromString($row->tanggal_mulai, $milestoneDateFormat);
+        //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
+        $milestone->status = $this->getMilestoneStatus($row->tanggal_selesai, $row->tanggal_mulai);
+        //$milestone->status = $row->akt_status; //TODO: titan we need a mapping here between akt_status and milestone
+        //status http://standard.open-contracting.org/1.1/en/schema/codelists/#milestone-status
+        return $milestone;
+    }
+
     function getTenderMilestone($row)
     {
         $milestoneDateFormat = 'Y-m-d H:i:s';
@@ -313,38 +569,188 @@ class ApiBIRMS_contract extends Controller
         return $milestone;
     }
 
-    function getTender($year, $results, &$parties)
+    /**
+     * This function has parts of getTender that are common for getTender and getNonTender
+     *
+     * @param $year
+     * @param $results
+     * @param $parties
+     * @return stdClass
+     */
+    function getSharedTender($year, $results, &$parties)
     {
         $tender = new stdClass();
-        $tender->id = $results->sirupID;
+        $tender->id = $this->getLelangID($results->sirupID);
         $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
         $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
-        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties);
-        $tender->numberOfTenderers = $this->getNumberOfTenderers($results->sirupID);
+        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
+
+        $db = env('DB_CONTRACT');
+        $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $results->sirupID . " ";
+        $tleresults = DB::select($sql);
+
+        if (sizeof($tleresults) == 0) {
+            $tender->numberOfTenderers = 0;
+        } else {
+            $tender->numberOfTenderers = (int)$tleresults[0]->jumlah_peserta;
+            $tender->value=$this->getAmount($tleresults[0]->nilai_nego);
+            $tender->tenderers = $this->getTenderers($tleresults[0]->lls_id);
+            //$tender->status=$tleresults[0]->stat; //TODO: uncomment this after mapping done
+            $tender->title=$tleresults[0]->namapekerjaan;
+        }
+
+        return $tender;
+    }
+
+
+    function getTender($year, $results, &$parties) {
+        $tender = $this->getSharedTender($year, $results, $parties);
+        $tender->id = $this->getLelangID($results->sirupID);
         $tender->milestones = $this->getTenderMilestones($results->sirupID);
+        return $tender;
+    }
+
+    function getNonTender($year, $results, &$parties)
+    {
+        $tender = $this->getSharedTender($year, $results, $parties);
+        $tender->id = $this->getNonLelangID($results->sirupID);
+        $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
+        $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
+        $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
+        $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
+        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
+        $tender->milestones = $this->getNonTenderMilestones($this->getNonLelangID($results->sirupID));
         return $tender;
     }
 
     function getProcurementMethod($internalProcurementMethodId)
     {
-        if (in_array($internalProcurementMethodId, [1, 2, 9, 10, 11, 12]))
+        if (in_array($internalProcurementMethodId, [1, 2, 3, 4, 5, 9, 10, 11, 12]))
             return "open";
 
-        if ($internalProcurementMethodId == 3)
+        if (in_array($internalProcurementMethodId, [0, 3]))
             return "limited";
 
-        if (in_array($internalProcurementMethodId, [4, 5]))
-            return "open";
-
-        if (in_array($internalProcurementMethodId, [6, 7, 8]))
+        if (in_array($internalProcurementMethodId, [6, 7, 8, 21])) // Note 21 = Swakelola
             return "direct";
 
         abort(404, 'Cannot convert ' . $internalProcurementMethodId . ' to any OCDS procurementMethod!');
         return null;
     }
 
+    function getNonCompetitiveContracts($year, $pekerjaanID, &$parties) {
+        $db  = env('DB_CONTRACT');
+        $sql = "SELECT
+        tpekerjaan.pid,
+        CONCAT(
+            REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
+            '.',
+            tpekerjaan.pid,
+            '.',
+            tpekerjaan.saltid 
+        ) AS awardid,
+        TRIM(
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX( tpekerjaan.namapekerjaan, '—', 1 ),
+                '—',- 1 
+            ) 
+        ) AS namapekerjaan,
+        TRIM(
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX( tpekerjaan.namapekerjaan, '—', 2 ),
+                '—',- 1 
+            ) 
+        ) AS deskripsi,
+        tkontrak_penunjukan.spk_nosurat,
+        tkontrak_penunjukan.spk_tgl_surat,
+        tkontrak_penunjukan.spk_tgl_slskontrak,
+        tpengadaan.nilai_nego 
+    FROM
+        " .$db. ".tpekerjaan
+        LEFT JOIN " .$db. ".tpengadaan ON tpengadaan.pid = tpekerjaan.pid
+        LEFT JOIN " .$db. ".tkontrak_penunjukan ON tkontrak_penunjukan.pgid = tpengadaan.pgid 
+    WHERE
+        " .$db. ".tpekerjaan.pekerjaanstatus >= 4 
+        AND pekerjaanid = ".$pekerjaanID." 
+        AND (
+            NOT ISNULL( spk_nosurat ) 
+            AND NOT ISNULL( spk_tgl_surat ) 
+            AND NOT ISNULL ( tkontrak_penunjukan.spk_tgl_slskontrak ) 
+        ) 
+        GROUP BY tpekerjaan.pid, awardid, namapekerjaan, deskripsi, tkontrak_penunjukan.spk_nosurat,
+        tkontrak_penunjukan.spk_tgl_surat,
+        tkontrak_penunjukan.spk_tgl_slskontrak,
+        tpengadaan.nilai_nego";
+        
+        $results = DB::select($sql);
+
+        $contracts = [];
+        foreach ($results as $row) {
+            array_push($contracts, $this->getNonCompetitiveContract($year, $row, $parties));
+        }
+
+        return $contracts;    
+    }
+
+    function getNonCompetitiveContract($year, $row, &$parties)
+    {
+        $ContractDateFormat = 'Y-m-d H:i:s';
+
+        $a = new stdClass();
+        $a->id = $row->pid;
+        $a->awardID  = $row->awardid;
+        $a->title = $row->namapekerjaan;
+        $a->title = $row->deskripsi;
+        if (($row->spk_nosurat != "") && ($row->spk_tgl_surat != "0000-00-00")) {
+            $a->status = "active";
+        } else {
+            $a->status = "pending";
+        }
+        
+        $a->period = array(
+            'startDate' => $this->getOcdsDateFromString($row->spk_tgl_surat, $ContractDateFormat),
+            'endDate' => $this->getOcdsDateFromString($row->spk_tgl_slskontrak, $ContractDateFormat)
+            );
+        $a->value = $this->getAmount($row->nilai_nego);
+        $a->items = $this->getNonCompetitiveItems($row->pid);
+        $a->dateSigned = $this->getOcdsDateFromString($row->spk_tgl_surat, $ContractDateFormat);
+        return $a;
+    }
+
+    function getNonCompetitiveItems($pid) {
+        $db = env('DB_CONTRACT');
+        $sql = "SELECT 
+                    tpengadaan_rincian.ID,
+                    nama,
+                    (SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 1), '|' ,-1) *
+                     SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 2), '|' ,-1)) AS volume,
+                     satuan 
+                FROM " . $db . ".tpengadaan_rincian 
+                LEFT JOIN " . $db . ".tpenawaran_rincian ON tpengadaan_rincian.ID = tpenawaran_rincian.pengadaan_rincian_id
+                WHERE pid = " . $pid . " AND nilai_akhir <> 0";
+        $results = DB::select($sql);
+
+        $items = [];
+        foreach ($results as $row) {
+            array_push($items, $this->getItem($row));
+        }
+
+        return $items;
+    }
+
+    function getItem($row)
+    {
+        $a = new stdClass();
+        $a->id = $row->ID;
+        $a->description = $row->nama;
+        $a->quantity = $row->volume;
+        $a->unit = $this->getUnit($row->satuan);
+
+        return $a;
+    }
+    
     /**
      * You should return here only initiaion type allowed by ocds. Example 'tender'. This is NOT an open code-type,
      * so you cannot use any string you like here.
@@ -411,6 +817,25 @@ class ApiBIRMS_contract extends Controller
         return DateTime::createFromFormat($format, $date)->format(DATE_ATOM);
     }
 
+    /**
+     * Adds ocds tag based on existing data about phases
+     *
+     * @param $r the release
+     */
+    function appendTag($r) {
+        if(property_exists ($r, "tender")) {
+            array_push($r->tag, "tender");
+        }
+
+        if(property_exists ($r, "awards") && !empty($r->awards)) {
+            array_push($r->tag, "award");
+        }
+
+        if(property_exists ($r, "contracts") && !empty($r->contracts)) {
+            array_push($r->tag, "contracts");
+        }
+    }
+
     function getNewContract($ocid)
     {
         $r = new stdClass();
@@ -422,13 +847,66 @@ class ApiBIRMS_contract extends Controller
         $sirup_id  = $pieces[4];
         
         $dbplanning = env('DB_PLANNING');
+        $dbcontract = env('DB_CONTRACT');
+        $dbprime    = env('DB_PRIME');
 
-        if ($source = 's') {
-            $sql_intro = "SELECT * FROM ".$dbplanning.".tbl_sirup WHERE sirupID = '" . $sirup_id . "'";
+        if ($source == 's') {
+            $sql = "SELECT * FROM ".$dbplanning.".tbl_sirup WHERE sirupID = '" . $sirup_id . "'";
         } else {
-            $sql_intro = "SELECT * FROM ".$dbplanning.".tbl_pekerjaan WHERE pekerjaanID = '". $sirup_id."'";    
+            $sql = "SELECT
+            tbl_pekerjaan.pekerjaanID AS sirupID,
+            ".$year." AS tahun ,
+            tbl_pekerjaan.namapekerjaan AS nama ,
+            tbl_pekerjaan.anggaran AS pagu ,
+            tbl_sumberdana.sumberdana AS sumber_dana_string ,
+            1 AS jenis_belanja ,
+            tbl_metode.jenisID AS jenis_pengadaan ,
+            (
+                CASE
+                WHEN tbl_metode.nama = 'Belanja Sendiri' THEN
+                    9
+                WHEN tbl_metode.nama = 'Kontes / Sayembara' THEN
+                    10
+                WHEN tbl_metode.nama = 'Pelelangan Sederhana' THEN
+                    2
+                WHEN tbl_metode.nama = 'Pelelangan Umum' THEN
+                    1
+                WHEN tbl_metode.nama = 'Pembelian Secara Elektronik' THEN
+                    9
+                WHEN tbl_metode.nama = 'Pemilihan Langsung' THEN
+                    6
+                WHEN tbl_metode.nama = 'Pengadaan Langsung' THEN
+                    8
+                WHEN tbl_metode.nama = 'Penunjukan Langsung' THEN
+                    7
+                WHEN tbl_metode.nama = 'Swakelola' THEN
+                    21
+                ELSE
+                    0
+                END
+            ) AS metode_pengadaan ,
+            2 AS jenis ,
+            pilih_start AS tanggal_awal_pengadaan ,
+            pilih_end AS tanggal_akhir_pengadaan ,
+            laksana_start AS tanggal_awal_pekerjaan ,
+            laksana_end AS tanggal_akhir_pekerjaan ,
+            satker AS id_satker ,
+            'Kota Bandung' AS kldi ,
+            tbl_skpd.nama AS satuan_kerja ,
+            tbl_skpd.alamat AS lokasi ,
+            IF (tbl_metode.nama = 'Swakelola' , 1 , 0) AS isswakelola,
+            IF (ISNULL(tpekerjaan.pid),0,1) AS isready, 
+            tpekerjaan.pekerjaanstatus
+        FROM
+            ".$dbplanning.".tbl_pekerjaan
+        LEFT JOIN ".$dbplanning.".tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
+        LEFT JOIN ".$dbprime.".tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+        LEFT JOIN ".$dbplanning.".tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+        LEFT JOIN ".$dbcontract.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+        WHERE tbl_pekerjaan.pekerjaanID = '". $sirup_id."'";    
         }
-        $results = DB::select($sql_intro);
+        //die($sql);
+        $results = DB::select($sql);
 
         if (sizeof($results) == 0) {
             abort(404, 'Cannot find contract with ocid=' . $ocid);
@@ -440,57 +918,72 @@ class ApiBIRMS_contract extends Controller
         $r->parties = [];
         $r->tag = ['planning'];
         $r->initiationType = $this->getInitiationType($results);
-        $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
+        
+        if ($source == 's') {
+            $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
+        } else {
+            if (isset($results->tanggal_awal_pengadaan)) {
+                $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
+            } else {
+                $r->date = $this->getOcdsDateFromString('0000-00-00');
+            }
+        }
         $r->planning = $this->getPlanning($results);
-        //$r->tender = $this->getTender($year, $results, $r->parties);
-        $r->buyer = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "buyer", $r->parties);
-        $r->awards = $this->getCompetitiveAwards($year,$sirup_id, $r->parties);
 
+        if ($source == 's') {
+            $r->tender = $this->getTender($year, $results, $r->parties);
+        } else {
+            if ($results->isready) {
+                $r->tender = $this->getNonTender($year, $results, $r->parties);
+            }
+        }
 
-        //this creates real OCDS release object and runs basic schema validation
+        $r->buyer = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "buyer", $r->parties, null, null);
+        if ($source == 's') {
+            $r->awards = $this->getCompetitiveAwards($year, $sirup_id, $r->parties);
+        } else {
+            $r->awards = $this->getNonCompetitiveAwards($year, $sirup_id, $r->parties);
+            $r->contracts = $this->getNonCompetitiveContracts($year, $sirup_id, $r->parties);
+        }
+
+        $this->appendTag($r);
+
+                //this creates real OCDS release object and runs basic schema validation
         $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
-        return $validatedRelease->getJsonResponse(response());
+        if(is_null(request()->get("callback"))) {
+            return $validatedRelease->getJsonResponse(response());
+        } else {
+            return $validatedRelease->getJsonpResponse(response(), request());
+        }
     }
-
 
     function get_contract($ocid)
     {
-
-
         /*------------------------------*/
         /* Settings
         /*------------------------------*/
-
         $dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbmain = env('DB_PRIME');
-
         /*------------------------------*/
         /* General
         /*------------------------------*/
-
         $id = '1';
         $tag = 'planning';
-
         $pieces = explode("-", $ocid);
         $sirup_id = $pieces[2];
         $pgid = '';
-
         /*------------------------------*/
         /* Planning Stage
         /*------------------------------*/
-
-        $sql_intro = "select * from tbl_sirup where sirupID = '" . $sirup_id . "' ";
-
-        $results = DB::select($sql_intro);
+        $sql = "select * from tbl_sirup where sirupID = '" . $sirup_id . "' ";
+        $results = DB::select($sql);
         $results = $results[0];
-
         $date = $results->tanggal_awal_pengadaan;
         $ocid = env('OCID') . $results->sirupID;
         $contract_name = $results->nama;
         $city = $results->kldi;
         $unit = $results->satuan_kerja;
-
         $metode = $results->metode_pengadaan;
         switch ($metode) {
             case 1:
@@ -532,24 +1025,18 @@ class ApiBIRMS_contract extends Controller
             default:
                 $initiationType = '';
         }
-
-
         $planning_value = array('amount' => $results->pagu, 'currency' => env('CURRENCY'));
-
         ///compiling all stages together
         $planning_stage = array('contract_name' => $contract_name,
             'city' => $city,
             'unit' => $unit,
             'planning_value' => $planning_value);
-
         /*------------------------------*/
         /* Award Stage
         /*------------------------------*/
-
         $winning_bidder = "0";
         $award_amount = "0";
         $items = "0";
-
         if ($results->pagu <= 200000000) { //Non Lelang (Non Competitive)
             $sql_selection = "SELECT
                                 $dbplanning.tbl_pekerjaan.pekerjaanID,
@@ -582,39 +1069,29 @@ class ApiBIRMS_contract extends Controller
                                 ON $dbcontract.tpengadaan_pemenang.pgid = $dbcontract.tpengadaan.pgid
                                 WHERE
                                 sirupID = " . $sirup_id . " AND $dbplanning.tbl_pekerjaan.namapekerjaan = '" . $contract_name . "'";
-
             $results = DB::select($sql_selection);
-
             if (!empty($results)) {
                 $results = $results[0];
-
                 $winning_bidder = $results->perusahaannama;
                 $award_amount = $results->nilai;
                 $pgid = $results->pgid;
-
                 $list_of_items_sql = "select * from $dbcontract.tpengadaan_rincian where pgid = '" . $pgid . "' ";
                 $items = DB::select($list_of_items_sql);
             }
-
         } else { //Lelang (Competitive)
             $sql_selection = "select * from $dbcontract.tlelangumum where sirupID = '" . $sirup_id . "' ";
             $results = DB::select($sql_selection);
-
             if (!empty($results)) {
                 $results = $results[0];
-
                 $winning_bidder = $results->pemenang;
                 $award_amount = $results->nilai_nego;
                 $items = "";
             }
         }
-
         //build the award stage
         $award_stage = array('winning_bidder' => $winning_bidder,
             'award_amount' => $award_amount,
             'items' => $items);
-
-
         /*------------------------------*/
         /* Release
         /*------------------------------*/
@@ -629,10 +1106,7 @@ class ApiBIRMS_contract extends Controller
             'contract' => '',
             'implementation' => ''
         );
-
         return response()->json($release)->header('Access-Control-Allow-Origin', '*');
-
         // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-
     }
 }

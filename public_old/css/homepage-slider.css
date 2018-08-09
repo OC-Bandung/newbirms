@@ -1,0 +1,250 @@
+*, *::after, *::before { -webkit-box-sizing: border-box; box-sizing: border-box; }
+
+body {
+ 
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+
+@-webkit-keyframes pulse {
+	from {
+		opacity: 1;
+		-webkit-transform: scale3d(0, 0, 1);
+		transform: scale3d(0, 0, 1);
+	}
+
+	to {
+		opacity: 0;
+		-webkit-transform: scale3d(1, 1, 1);
+		transform: scale3d(1, 1, 1);
+	}
+
+}
+
+@keyframes pulse {
+	from {
+		opacity: 1;
+		-webkit-transform: scale3d(0, 0, 1);
+		transform: scale3d(0, 0, 1);
+	}
+
+	to {
+		opacity: 0;
+		transform: scale3d(1, 1, 1);
+		webkit-transform: scale3d(1, 1, 1);
+	}
+
+}
+ 
+
+@keyframes octocat-wave {
+	0%,
+	100% {
+		transform: rotate(0);
+	}
+
+	20%,
+	60% {
+		transform: rotate(-25deg);
+	}
+
+	40%,
+	80% {
+		transform: rotate(10deg);
+	}
+
+}
+
+  
+.section {
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: column;
+	flex-direction: column;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+
+.section--nav {
+	position: relative;
+	overflow: hidden;
+	-webkit-flex-direction: row-reverse;
+	flex-direction: row-reverse;
+}
+ 
+ 
+/* Mockup Slider */
+.mockup-slider {
+	position: relative;
+	width: calc(100% - 12em);
+	margin: 0 0 0 2em;
+	max-width: 600px;
+}
+
+
+.mockup-slider img {
+	position: relative;
+	display: block;
+	max-width: 100%;
+	margin-top: 10px;
+	margin-left: 150px 0;
+	box-shadow: 0 10px 20px -4px rgba(0,0,0,0.6);
+}
+
+.mockup-slider__title {
+	position: absolute;
+	font-size: 1.5em;
+	bottom: 30%;
+	left: -0.5em;
+	font-weight: normal;
+	margin: 0;
+
+}
+
+h3.mockup-slider__title  span {
+	background-color:  rgba(255,255,255,0.9);
+}
+
+
+.mockup-slider__subtitle {
+	position: absolute;
+	top: 70%;
+	left: -1em;
+	margin: 0;
+	color: #fff;
+	font-size: 1.05em;
+	padding: 0.25em 0.5em;
+	z-index: 100;
+}
+  
+
+/* Zahi */
+.section#Zahi {
+	 background: #fff;
+	 color: #59b2ac;
+}
+  
+@media screen and (max-width: 50em) {
+	 
+	.section--nav {
+		padding: 4em 0;
+	}
+	.section--nav::before {
+		content: attr(id);
+		position: absolute;
+		top: 1em;
+		right: 1em;
+	}
+	.mockup-slider {
+		display: none;
+	}
+	.nav {
+		-webkit-flex: none;
+		flex: none;
+		margin: 0 auto;
+	}
+	.nav.nav--berta {
+		width: 100%;
+	}
+}
+
+
+
+
+/* General styles */
+
+.nav {
+	position: relative;
+	width: 8em;
+	margin: 0 0 0 1em;
+}
+
+.nav__item {
+	line-height: 1;
+	position: relative;
+	display: block;
+	margin: 0;
+	padding: 0;
+	letter-spacing: 0;
+	color: currentColor;
+	border: 0;
+	background: none;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+.nav__item:focus {
+	outline: none;
+}
+ 
+/*** Zahi ***/
+
+.nav--zahi .nav__item {
+	width: 2em;
+	height: 2em;
+}
+
+.nav--zahi .nav__item::before,
+.nav--zahi .nav__item::after {
+	content: '';
+	position: absolute;
+}
+
+.nav--zahi .nav__item:not(:last-child)::before {
+	top: calc(2em - 9px);
+	left: 5px;
+	width: 2px;
+	height: calc(2em - 12px);
+	background: #1960a2;
+}
+
+.nav--zahi .nav__item::after {
+	top: 50%;
+	left: 0;
+	width: 12px;
+	height: 12px;
+	margin: -5px 0 0 0;
+	border: 2px solid #1960a2;
+	border-radius: 50%;
+	background: #35b7c2;
+	-webkit-transition: -webkit-transform 0.3s, border-color 0.3s, border-width 0.3s, background 0.3s;
+	transition: transform 0.3s, border-color 0.3s, border-width 0.3s, background 0.3s;
+}
+
+.nav--zahi .nav__item--current::after {
+	border-width: 1px;
+	border-color: #fff;
+	-webkit-transform: scale3d(1.6,1.6,1);
+	transform: scale3d(1.6,1.6,1);
+}
+
+.nav--zahi .nav__item:not(.nav__item--current):focus::after,
+.nav--zahi .nav__item:not(.nav__item--current):hover::after {
+	border-color: #1960a2;
+	background: #1960a2;
+}
+
+.nav--zahi .nav__item-title {
+ 
+	line-height: 1.5;
+	display: block;
+	position: relative;
+	padding: 0 0 0 2.5em;
+	white-space: nowrap;
+	opacity: 0.3;
+ 
+	-webkit-transition: opacity 0.3s, color 0.3s;
+	transition: opacity 0.3s, color 0.3s;
+}
+
+.nav--zahi .nav__item:not(.nav__item--current):focus .nav__item-title,
+.nav--zahi .nav__item:not(.nav__item--current):hover .nav__item-title {
+	opacity: 0.5;
+}
+
+.nav--zahi .nav__item--current .nav__item-title {
+	opacity: 1;
+	color: #35b7c2;
+}
