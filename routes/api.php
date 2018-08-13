@@ -27,10 +27,6 @@ Route::get('pns/{kewenangan}/{year}', 'ApiBIRMS@get_pns');
 
 Route::get('contract/all','ApiBIRMS@contractAll');
 
-Route::get('rencana/{year}/{organization}', 'ApiBIRMS@get_rencana');
-//Route::get('progres/{year}/{organization}', 'ApiBIRMS@get_progres');
-Route::get('sppdmaterial/{year}/{organization}', 'ApiBIRMS@get_sppd_material');
-
 /* Searching */
 Route::get('search','ApiBIRMS@search');
 
@@ -49,5 +45,13 @@ Route::get('graph/csv/2/{year}','ApiBIRMS@graph_csv2');
 Route::get('graph/csv/3/{year}','ApiBIRMS@graph_csv3');
 Route::get('graph/csv/4','ApiBIRMS@graph_csv4');
 
-Route::get('recent/planning/{year}','ApiBIRMS@planning');
-Route::get('recent/contract/{year}','ApiBIRMS@contract');
+Route::get('recent/perencanaan','ApiBIRMS@perencanaan');
+Route::get('recent/pengadaan','ApiBIRMS_Contract@get_recent_pengadaan');
+Route::get('recent/pemenang','ApiBIRMS@pemenang');
+Route::get('recent/kontrak','ApiBIRMS@kontrak');
+
+/* Request Diskominfo */
+Route::get('rencana/{year}/{organization}', 'ApiBIRMS@get_rencana');
+//Route::get('progres/{year}/{organization}', 'ApiBIRMS@get_progres');
+Route::get('progres/{year}/{organization}', 'ApiBIRMS@get_progres');
+

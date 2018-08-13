@@ -17,7 +17,9 @@ class ApiBIRMS extends Controller
     public function contractsAll()
     {
         $ocid = env('OCID');
-        $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
+		$results = Sirup::selectRaw('sirupID, 
+							CONCAT(\'$ocid.\',\'s-\',tahun,\'-\',sirupID) AS ocid,
+							tahun, nama, pagu')
                             ->orderBy('sirupID')
                             ->paginate(env('JSON_RESULTS_PER_PAGE', 40));
     }
@@ -633,41 +635,212 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 			
 	}
+
+	public function jenis_belanja($jenis) {
+        switch ($jenis) {
+            case 1:
+				$jenis_belanja = 'Barang/Jasa'; 
+				break;
+			case 2:
+				$jenis_belanja = 'Modal'; 
+				break;
+			default:
+                $jenis_belanja = '';
+        }		
+		return $jenis_belanja;
+	}
+	
+	public function jenis_pengadaan($jenis) {
+		switch ($jenis) {
+            case 1:
+				$jenis_pengadaan = 'Barang'; 
+				break;
+			case 2:
+				$jenis_pengadaan = 'Pekerjaan Konstruksi'; 
+				break;
+			case 3:
+				$jenis_pengadaan = 'Jasa Konsultansi'; 
+				break;
+			case 4:
+				$jenis_pengadaan = 'Jasa Lainnya'; 
+				break;	
+			default:
+                $jenis_pengadaan = '';
+        }		
+		return $jenis_pengadaan;
+	}
+
+	public function metode_pengadaan($metode) {
+		switch ($metode) {
+            case 1:
+				$metode_pengadaan = 'Lelang Umum'; 
+				break;
+			case 2:
+				$metode_pengadaan = 'Lelang Sederhana'; 
+				break;
+			case 3:
+				$metode_pengadaan = 'Lelang Terbatas'; 
+				break;
+			case 4:
+				$metode_pengadaan = 'Seleksi Umum'; 
+				break;
+			case 5:
+				$metode_pengadaan = 'Seleksi Sederhana'; 
+				break;
+			case 6:
+				$metode_pengadaan = 'Pemilihan Langsung'; 
+				break;
+			case 7:
+				$metode_pengadaan = 'Penunjukan Langsung'; 
+				break;
+			case 8:
+				$metode_pengadaan = 'Pengadaan Langsung'; 
+				break;
+			case 9:
+				$metode_pengadaan = 'e-Purchasing'; 
+				break;				
+			default:
+                $metode_pengadaan = '';
+        }		
+		return $metode_pengadaan;
+	}
+		
+	public function get_program($year, $kode) {
+		$dbplanning = env('DB_PLANNING');
+
+		$sql = "SELECT Ket_Program FROM ".$dbplanning.".ta_program WHERE Tahun = ".$year." AND 
+				ta_program.ID_Prog = CONCAT(SUBSTRING_INDEX('".$kode."', '.', 1), SUBSTRING_INDEX(SUBSTRING_INDEX('".$kode."', '.', 2), '.', -1)) AND
+				ta_program.Kd_Urusan = SUBSTRING_INDEX(SUBSTRING_INDEX('".$kode."', '.', 3), '.', -1) AND 
+				ta_program.Kd_Bidang = SUBSTRING_INDEX(SUBSTRING_INDEX('".$kode."', '.', 4), '.', -1) AND 
+				ta_program.Kd_Unit = SUBSTRING_INDEX(SUBSTRING_INDEX('".$kode."', '.', 5), '.', -1) AND
+				ta_program.Kd_Sub = SUBSTRING_INDEX(SUBSTRING_INDEX('".$kode."', '.', 6), '.', -1) AND
+				ta_program.Kd_Prog = SUBSTRING_INDEX(SUBSTRING_INDEX('".$kode."', '.', 7), '.', -1) ";
+		$rsprogram = DB::select($sql);
+		
+		if (sizeof($rsprogram) != 0) {
+			$rsprogram = $rsprogram[0];
+			$namaprogram = $rsprogram->Ket_Program;
+		} else {
+			$namaprogram = "";
+		}
+		return $namaprogram;
+	}				
+
 	/*--- Recent Data ---*/
-	public function planning($year) {
-		$sql = 'SELECT * FROM '.env('DB_PLANNING').'.tbl_sirup ORDER BY sirupID DESC LIMIT 10';
+	public function perencanaan() {
+		$dbplanning = env('DB_PLANNING');
+        $dbcontract = env('DB_CONTRACT');
+        $dbprime    = env('DB_PRIME');
+
+		$year = date('Y');
+		$sql = 'SELECT
+						CONCAT("'.env('OCID').'","s-",tahun,"-",sirupID) AS ocid,
+						NULL AS koderekening,
+						sirupID,
+						tahun,
+						nama,
+						pagu,
+						sumber_dana_string,
+						jenis_belanja,
+						jenis_pengadaan,
+						metode_pengadaan,
+						NULL AS procurementMethodDetails,
+						NULL AS awardCriteria,
+						jenis,
+						tanggal_awal_pengadaan,
+						tanggal_akhir_pengadaan,
+						tanggal_awal_pekerjaan,
+						tanggal_akhir_pekerjaan,
+						id_satker,
+						kldi,
+						satuan_kerja,
+						lokasi,
+						isswakelola, 
+						NULL AS isready,
+						NULL AS pekerjaanstatus,
+						NULL AS created_at,
+						NULL AS updated_at
+				FROM
+				'.$dbplanning.'.tbl_sirup
+				WHERE tahun = '.$year.' AND pagu <> 0 
+					UNION
+					SELECT
+					CONCAT( "'.env('OCID').'", "b-", '.$year.', "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
+					kodepekerjaan AS koderekening,
+					sirupID,
+					'.$year.' AS tahun ,
+					tbl_pekerjaan.namapekerjaan AS nama ,
+					tbl_pekerjaan.anggaran AS pagu ,
+					tbl_sumberdana.sumberdana AS sumber_dana_string ,
+					1 AS jenis_belanja ,
+					tbl_metode.jenisID AS jenis_pengadaan ,
+					(
+						CASE
+						WHEN tbl_metode.nama = "Belanja Sendiri" THEN
+							9
+						WHEN tbl_metode.nama = "Kontes / Sayembara" THEN
+							10
+						WHEN tbl_metode.nama = "Pelelangan Sederhana" THEN
+							2
+						WHEN tbl_metode.nama = "Pelelangan Umum" THEN
+							1
+						WHEN tbl_metode.nama = "Pembelian Secara Elektronik" THEN
+							9
+						WHEN tbl_metode.nama = "Pemilihan Langsung" THEN
+							6
+						WHEN tbl_metode.nama = "Pengadaan Langsung" THEN
+							8
+						WHEN tbl_metode.nama = "Penunjukan Langsung" THEN
+							7
+						WHEN tbl_metode.nama = "Swakelola" THEN
+							21
+						ELSE
+							0
+						END
+					) AS metode_pengadaan ,
+					NULL AS procurementMethodDetails,
+					NULL AS awardCriteria,
+					2 AS jenis ,
+					pilih_start AS tanggal_awal_pengadaan ,
+					pilih_end AS tanggal_akhir_pengadaan ,
+					laksana_start AS tanggal_awal_pekerjaan ,
+					laksana_end AS tanggal_akhir_pekerjaan ,
+					satker AS id_satker ,
+					"Kota Bandung" AS kldi ,
+					tbl_skpd.nama AS satuan_kerja ,
+					tbl_skpd.alamat AS lokasi ,
+					IF (tbl_metode.nama = "Swakelola" , 1 , 0) AS isswakelola,
+					IF (ISNULL(tpekerjaan.pid),0,1) AS isready, 
+					tpekerjaan.pekerjaanstatus,
+					tbl_pekerjaan.created AS created_at,
+					tbl_pekerjaan.updated AS updated_at
+				FROM
+					'.$dbplanning.'.tbl_pekerjaan
+				LEFT JOIN '.$dbplanning.'.tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
+				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+				WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1 LIMIT 20';
 		$rsdummy = DB::select($sql);
 
 		$rowdata = array();
 		$data = array();
 
-		$jenis_belanja[1] = 'Barang/Jasa'; 
-		$jenis_belanja[2] = 'Modal';
-		
-		$jenis_pengadaan[1] = 'Barang'; 
-		$jenis_pengadaan[2] = 'Pekerjaan Konstruksi';
-		$jenis_pengadaan[3] = 'Jasa Konsultansi';
-		$jenis_pengadaan[4] = 'Jasa Lainnya';
-		
-		$metode_pengadaan[1] = 'Lelang Umum'; 
-		$metode_pengadaan[2] = 'Lelang Sederhana'; 
-		$metode_pengadaan[3] = 'Lelang Terbatas';  
-		$metode_pengadaan[4] = 'Seleksi Umum';  
-		$metode_pengadaan[5] = 'Seleksi Sederhana'; 
-		$metode_pengadaan[6] = 'Pemilihan Langsung'; 
-		$metode_pengadaan[7] = 'Penunjukan Langsung';  
-		$metode_pengadaan[8] = 'Pengadaan Langsung';  
-		$metode_pengadaan[9] = 'e-Purchasing'; 
-
 		foreach($rsdummy as $row) {
-			$sirupID = $row->sirupID;
-			$ocid = env('OCID') . $sirupID ;
+			$pieces = explode("-", $row->ocid);
+        	$source    = $pieces[2]; // s = sirup.lkpp.go.id. b = birms.bandung.go.id
+			
+			$data['ocid'] 		= $row->ocid;
+			if ($source == "s") {
+				$data['uri'] 		= env('LINK_SIRUP18').$row->sirupID;
+			} else {
+				$data['uri'] 		= "";
+			}
 
-			$data['ocid'] 		= $ocid;
-			$data['uri'] 		= env('LINK_SIRUP').$year."/".$sirupID;
 			$data['title'] 		= $row->nama; 
-			$data['project'] 	= "";
-			$data['sirupID'] 	= "".$sirupID."";
+			$data['koderekening'] = $row->koderekening;
+			$data['project'] 	= $this->get_program($row->tahun, $row->koderekening);
+			$data['sirupID'] 	= $row->sirupID;
 			$data['SKPD']		= $row->satuan_kerja;
 			$data['budget']		= array(
 					'description' =>$row->sumber_dana_string,
@@ -675,12 +848,20 @@ class ApiBIRMS extends Controller
 						'amount' => $row->pagu,
 						'currency' => env('CURRENCY')
 					),
-					'uri' => env('LINK_SIRUP').$year."/".$sirupID
+					'uri' => $data['uri']
 				);
-			$data['mainProcurementCategory']		= $jenis_pengadaan[$row->jenis_pengadaan];
-			$data['procurementMethod']				= $metode_pengadaan[$row->metode_pengadaan];
-			$data['procurementMethodDetails']		= "";
-			$data['awardCriteria']					= "";
+			if ($row->jenis_pengadaan != "") {	
+				$data['mainProcurementCategory']	= $this->jenis_pengadaan($row->jenis_pengadaan);
+			} else {
+				$data['mainProcurementCategory']	= "";
+			}
+			$data['procurementMethod']				= $row->metode_pengadaan;
+			if ($row->metode_pengadaan != 0) {
+				$data['procurementMethodDetails']	= $this->metode_pengadaan($row->metode_pengadaan);
+			} else {
+				$data['procurementMethodDetails']	= "";
+			}
+			$data['awardCriteria']					= "priceOnly";
 			$data['tender']		= array(
 					'startDate' => $row->tanggal_awal_pengadaan,
 					'endDate' => $row->tanggal_akhir_pengadaan
@@ -689,8 +870,8 @@ class ApiBIRMS extends Controller
 					'startDate' => $row->tanggal_awal_pekerjaan,
 					'endDate' => $row->tanggal_akhir_pekerjaan
 			);
-			$data['created_at']		= "";
-			$data['updated_at']		= "";
+			$data['created_at']		= $row->created_at;
+			$data['updated_at']		= $row->updated_at;
 			array_push($rowdata, $data);
         }
 
@@ -701,7 +882,134 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function contract($year) {
+	public function pengadaan() {
+		$dbplanning = env('DB_PLANNING');
+        $dbcontract = env('DB_CONTRACT');
+        $dbprime    = env('DB_PRIME');
+		
+		$year = date('Y');
+		$sql = 'SELECT
+						CONCAT("'.env('OCID').'","s-",tahun,"-",sirupID) AS ocid,
+						NULL AS koderekening,
+						sirupID,
+						tahun,
+						nama,
+						pagu,
+						sumber_dana_string,
+						jenis_belanja,
+						jenis_pengadaan,
+						metode_pengadaan,
+						NULL AS procurementMethodDetails,
+						NULL AS awardCriteria,
+						jenis,
+						tanggal_awal_pengadaan,
+						tanggal_akhir_pengadaan,
+						tanggal_awal_pekerjaan,
+						tanggal_akhir_pekerjaan,
+						id_satker,
+						kldi,
+						satuan_kerja,
+						lokasi,
+						isswakelola, 
+						NULL AS isready,
+						NULL AS pekerjaanstatus,
+						NULL AS created_at,
+						NULL AS updated_at
+				FROM
+				'.$dbplanning.'.tbl_sirup
+				WHERE tahun = '.$year.' AND pagu <> 0 
+					UNION
+					SELECT
+					CONCAT( "'.env('OCID').'", "b-", '.$year.', "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
+					kodepekerjaan AS koderekening,
+					sirupID,
+					'.$year.' AS tahun ,
+					tbl_pekerjaan.namapekerjaan AS nama ,
+					tbl_pekerjaan.anggaran AS pagu ,
+					tbl_sumberdana.sumberdana AS sumber_dana_string ,
+					1 AS jenis_belanja ,
+					tbl_metode.jenisID AS jenis_pengadaan ,
+					(
+						CASE
+						WHEN tbl_metode.nama = "Belanja Sendiri" THEN
+							9
+						WHEN tbl_metode.nama = "Kontes / Sayembara" THEN
+							10
+						WHEN tbl_metode.nama = "Pelelangan Sederhana" THEN
+							2
+						WHEN tbl_metode.nama = "Pelelangan Umum" THEN
+							1
+						WHEN tbl_metode.nama = "Pembelian Secara Elektronik" THEN
+							9
+						WHEN tbl_metode.nama = "Pemilihan Langsung" THEN
+							6
+						WHEN tbl_metode.nama = "Pengadaan Langsung" THEN
+							8
+						WHEN tbl_metode.nama = "Penunjukan Langsung" THEN
+							7
+						WHEN tbl_metode.nama = "Swakelola" THEN
+							21
+						ELSE
+							0
+						END
+					) AS metode_pengadaan ,
+					NULL AS procurementMethodDetails,
+					NULL AS awardCriteria,
+					2 AS jenis ,
+					pilih_start AS tanggal_awal_pengadaan ,
+					pilih_end AS tanggal_akhir_pengadaan ,
+					laksana_start AS tanggal_awal_pekerjaan ,
+					laksana_end AS tanggal_akhir_pekerjaan ,
+					satker AS id_satker ,
+					"Kota Bandung" AS kldi ,
+					tbl_skpd.nama AS satuan_kerja ,
+					tbl_skpd.alamat AS lokasi ,
+					IF (tbl_metode.nama = "Swakelola" , 1 , 0) AS isswakelola,
+					IF (ISNULL(tpekerjaan.pid),0,1) AS isready, 
+					tpekerjaan.pekerjaanstatus,
+					tbl_pekerjaan.created AS created_at,
+					tbl_pekerjaan.updated AS updated_at
+				FROM
+					'.$dbplanning.'.tbl_pekerjaan
+				LEFT JOIN '.$dbplanning.'.tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
+				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+				WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1 LIMIT 20';
+		$rsdummy = DB::select($sql);
+
+		$rspengadaan = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+
+		foreach($rspengadaan as $row) {
+			$pieces = explode("-", $row->ocid);
+			$source    = $pieces[2];
+
+			$data['ocid'] 		= $row->ocid;
+			array_push($rowdata, $data);
+        }
+
+		$results = $rowdata;
+
+		return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
+	}
+
+	public function pemenang() {
+		$dbplanning = env('DB_PLANNING');
+	    $dbcontract = env('DB_CONTRACT');
+	    $dbmain 	= env('DB_PRIME');
+	}
+
+	public function kontrak() {
+		$dbplanning = env('DB_PLANNING');
+        $dbcontract = env('DB_CONTRACT');
+        $dbprime    = env('DB_PRIME');
+
+		$year = date('Y');
 		$sql =  'SELECT sirupID, tpengadaan.kode, tpengadaan.namakegiatan, tpengadaan.namapekerjaan, tpengadaan.anggaran, tpengadaan.hps, tpengadaan.nilai_nego FROM '.env('DB_CONTRACT').'.tpengadaan
 				LEFT JOIN '.env('DB_CONTRACT').'.tpekerjaan ON tpengadaan.pid = tpekerjaan.pid
 				LEFT JOIN '.env('DB_PLANNING').'.tbl_pekerjaan ON tpekerjaan.pekerjaanID = tbl_pekerjaan.pekerjaanID
@@ -711,24 +1019,6 @@ class ApiBIRMS extends Controller
 
 		$rowdata = array();
 		$data = array();
-
-		$jenis_belanja[1] = 'Barang/Jasa'; 
-		$jenis_belanja[2] = 'Modal';
-		
-		$jenis_pengadaan[1] = 'Barang'; 
-		$jenis_pengadaan[2] = 'Pekerjaan Konstruksi';
-		$jenis_pengadaan[3] = 'Jasa Konsultansi';
-		$jenis_pengadaan[4] = 'Jasa Lainnya';
-		
-		$metode_pengadaan[1] = 'Lelang Umum'; 
-		$metode_pengadaan[2] = 'Lelang Sederhana'; 
-		$metode_pengadaan[3] = 'Lelang Terbatas';  
-		$metode_pengadaan[4] = 'Seleksi Umum';  
-		$metode_pengadaan[5] = 'Seleksi Sederhana'; 
-		$metode_pengadaan[6] = 'Pemilihan Langsung'; 
-		$metode_pengadaan[7] = 'Penunjukan Langsung';  
-		$metode_pengadaan[8] = 'Pengadaan Langsung';  
-		$metode_pengadaan[9] = 'e-Purchasing'; 
 
 		foreach($rsdummy as $row) {
 			$sirupID = $row->sirupID;
@@ -768,7 +1058,7 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function get_sppd_material($year, $organization) 
+	public function get_progres($year, $organization) 
 	{
 	    $dbplanning = env('DB_PLANNING');
 	    $dbcontract = env('DB_CONTRACT');
@@ -781,6 +1071,7 @@ class ApiBIRMS extends Controller
 					tpengadaan.kode AS koderekening,
 					tpengadaan.namapekerjaan,
 					tpengadaan.anggaran AS paguanggaran,
+					tpengadaan.hps AS hps,
 					tpengadaan.nilai_nego AS nilaikontrak,
 					tpengadaan.pekerjaanstatus,
 					tpengadaan_pemenang.perusahaannama,
@@ -812,9 +1103,11 @@ class ApiBIRMS extends Controller
 					LEFT JOIN ".$dbcontract.".tprogress_pembayaran ON tpengadaan.pgid = tprogress_pembayaran.pgid
 					LEFT JOIN ".$dbcontract.".tprogress_pembayaran_bukti ON tpengadaan.pgid = tprogress_pembayaran_bukti.pgid
 				WHERE tpengadaan.ta = ".$year." 
-					AND tpengadaan.skpdID = (SELECT skpdID FROM ".$dbmain.".tbl_skpd WHERE nama = '".$organization."' OR unitID = '".$organization."')
-					AND tpengadaan.pekerjaanstatus = 7";
-		$results = DB::select($sql);
+					AND tpengadaan.pekerjaanstatus = 7 ";
+		if (strtoupper($organization) <> 'ALL') {
+			$sql .= "AND tpengadaan.skpdID = (SELECT skpdID FROM ".$dbmain.".tbl_skpd WHERE nama = '".$organization."' OR unitID = '".$organization."')";
+		}
+		$results = $this->arrayPaginator(DB::select($sql), request());
     	return response()
     			->json($results)
     			->header('Access-Control-Allow-Origin', '*');	
@@ -822,9 +1115,16 @@ class ApiBIRMS extends Controller
 
 	public function get_rencana($year, $organization)
     {
-		$ocid = env('OCID');
-        $results = Sirup::selectRaw('sirupID, CONCAT(\'$ocid\',sirupID) AS ocid, tahun, nama, pagu')
-                            ->orderBy('sirupID')
-                            ->paginate(env('JSON_RESULTS_PER_PAGE', 40));
+		$dbplanning = env('DB_PLANNING');
+		
+		if (strtoupper($organization) == 'ALL') {
+			$sql = 'SELECT * FROM '.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' ';
+		} else {
+			$sql = 'SELECT * FROM '.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND satuan_kerja = \''.$organization.'\'';
+		}
+		$results = $this->arrayPaginator(DB::select($sql), request());
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
     }
 }

@@ -11,8 +11,7 @@ $(".main-menu div a").click(function(e){
 
 
 $(document).ready(function(){
-
-var jqxhr = $.getJSON("api/v1/recent/perencanaan.json", function(data) {
+var jqxhr = $.getJSON("api/recent/perencanaan", function(data) {
         get_planning(data);
     });
 });
@@ -20,7 +19,7 @@ var jqxhr = $.getJSON("api/v1/recent/perencanaan.json", function(data) {
 $("#load_perencanaan").click(function(e) {
 
 e.preventDefault();
-var jqxhr = $.getJSON("api/v1/recent/perencanaan.json", function(data) {
+var jqxhr = $.getJSON("api/recent/perencanaan", function(data) {
         get_planning(data);
     });
 });
@@ -49,7 +48,7 @@ $("#load_kontrak").click(function(e) {
 
 e.preventDefault();
 
-var jqxhr = $.getJSON("api/v1/recent/kontrak.json", function(data) {
+var jqxhr = $.getJSON("api/recent/kontrak", function(data) {
     get_contract(data);
     });
 });
@@ -82,7 +81,7 @@ function get_planning(data) {
     html+= '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
     html+= '<div class="d-flex w-100 justify-content-between">';
     html+= '    <h5 class="mb-1">' + json.title + '</h5>';
-    html+= '    <small>3 days ago</small>';
+    html+= '    <small>OCID: ' + json.ocid + '</small>';
     html+= '  </div>';
 
     html+= '  <div class="d-flex w-100 justify-content-between">';
@@ -92,7 +91,7 @@ function get_planning(data) {
     html+= '  <div class="d-flex w-100 justify-content-between pt-1">';
     html+= '    <span class="h6">';
     html+= '      <span class="font-weight-bold"> Pagu  </span>';
-    html+= '        <div class="h6 pt-1">' + json.budget.amount.amount / 1000000  + '</div>';
+    html+= '        <div class="h6 pt-1">' + json.budget.amount.amount / 1000000  + ' jt </div>';
     html+= '    </span>';
 
 

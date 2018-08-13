@@ -4,8 +4,7 @@
       <div class="col-12  text-center">
 
         <ul class="list-inline mb-0  mt-2 border-bottom-1px">
-           <li class="nav-item list-inline-item"><a class="nav-link" href="{{ url('')}}"><img src="img/birms.png"></a></li>
-           <li class="nav-item list-inline-item"><a class="nav-link" href="{{ url('')}}">Beranda</a></li>
+           <li class="nav-item list-inline-item"><a class="nav-link" href="{{ url('')}}"><img src="{{ url('img/birms.png') }}"></a></li>
            <li class="nav-item list-inline-item dropdown">
              <a class="nav-link dropdown-toggle" class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
               BIRMS Apps

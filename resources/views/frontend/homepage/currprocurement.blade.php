@@ -3,8 +3,8 @@
 
         <div class="row">
           <div class="col-12">
-            <h3>Pengadaan Terkini</h3>
-            <p>Click to view details. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <h3>@lang('homepage.procurement_title')</h3>
+            <p>@lang('homepage.procurement_shortdesc')</p>
           </div>
         </div>
 
@@ -15,32 +15,32 @@
                   <li id="load_perencanaan" class="list-planning active p-3">
                       <span class="d-block">
                           <a class="text-dark no-underline" href="#">
-                          <span class="h5">  Perencanaan </span>
-                          <span class="d-block">Rencana Umum Pengadaan</span>
+                          <span class="h5">@lang('homepage.planning_title')</span>
+                          <span class="d-block">@lang('homepage.planning_shortdesc')</span>
                           </a>
                       </span>
                   </li>
                   <li id="load_pengadaan" class="list-tender p-3 ">
                       <span class=" d-block">
                           <a class="text-dark no-underline" href="#">
-                            <span class="h5"> Pengadaan </span>
-                            <span class="d-block">Lelang maupun pengadaan langsung</span>
+                            <span class="h5">@lang('homepage.tender_title')</span>
+                            <span class="d-block">@lang('homepage.tender_shortdesc')</span>
                           </a>
                       </span>
                   </li>
                   <li id="load_pemenang" class=" list-award p-3">
                       <span class=" d-block">
                           <a class="text-dark no-underline" href="#">
-                            <span class="h5">  Pemenang  </span>
-                            <span class="d-block">Penyedia mendapatkan pengadaan</span>
+                            <span class="h5">@lang('homepage.award_title')</span>
+                            <span class="d-block">@lang('homepage.award_shortdesc')</span>
                           </a>
                       </span>
                   </li>
                   <li id="load_kontrak" class=" list-contract p-3  ">
                       <span class=" d-block">
                           <a class="text-dark no-underline" href="#">
-                            <span class="h5"> Kontrak </span>
-                            <span class="d-block">Penyedia berhasil kontrak</span>
+                            <span class="h5">@lang('homepage.contract_title')</span>
+                            <span class="d-block">@lang('homepage.contract_shortdesc')</span>
                           </a>
                       </span>
                   </li>
@@ -55,12 +55,11 @@
         </div>
 
         <div class="col-8 pl-0 ">
-          <div id="recent-from-api"> </div>
-          <div class="list-group rounded-0">
+            <div id="recent-from-api"> </div>
+                <div class="list-group rounded-0">
+                </div>
             </div>
         </div>
-
-      </div>
     </div>
 </section>
 

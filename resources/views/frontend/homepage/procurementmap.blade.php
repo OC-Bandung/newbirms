@@ -16,7 +16,7 @@
                   <div class="col-5">
                     <div id="map-controls">
                         <div id="filter">
-                            <h5>Tampilkan kontrak berdasarkan</h5>
+                            <h5>@lang('homepage.procurement_map_title')</h5>
                             <div class="select-style">
                                 <select id="map-variable">
                                     <option value="count">Jumlah Paket Pekerjaan</option>
@@ -33,15 +33,14 @@
                  </div>
 
                  <div class="col">
-                   <h5> Value </h5>
-                   <span class="h4"> Rp. </span> <span class="h2"> 372,64 </span> <span class="h4"> M </span> </h1>
+                   <h5> Nilai Kontrak </h5>
+                   <span class="h4"> Rp. </span> <span id="data-value"></span> </h4>
                  </div>
 
                </div>
 
                  <div class="row no-gutter">
                   <div id="map" class="pt-3">
-                      <img class="img-fluid" src="img/bdg-map.jpg">
                   </div>
                 </div>
 

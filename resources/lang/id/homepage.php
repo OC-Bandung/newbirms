@@ -7,6 +7,7 @@ return [
 	'about_guidelines' => 'Panduan',
 
 	'procurement_title' => 'Pengadaan Terkini',
+	'procurement_shortdesc' => 'Pengadaan saat ini yang sedang dilakukan di pemerintah Kota Bandung',
 
 	'planning_title' => 'Perencanaan',
 	'planning_shortdesc' => 'Rencana Umum Pengadaan',

@@ -6,6 +6,7 @@ return [
 	'about_guidelines' => 'Guidelines',
 
 	'procurement_title' => 'Recent Procurement',
+	'procurement_shortdesc' => 'Recent Procurement in progress in Bandung City Government',
 
 	'planning_title' => 'Planning',
 	'planning_shortdesc' => 'See What\'s in our pipeline',

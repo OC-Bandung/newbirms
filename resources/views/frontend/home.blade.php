@@ -2,7 +2,7 @@
 
 @section('header')
 
-    @extends('frontend.layouts.nav')
+    @include('frontend.layouts.nav')
 
     @include('frontend.homepage.search')
 
