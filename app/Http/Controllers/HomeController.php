@@ -466,29 +466,29 @@ class HomeController extends Controller
 							WHERE true ";
 
 							if (!empty($q)) {
-								$sql .= " AND `tpengadaan`.`namapekerjaan` LIKE '%$q%' ";
+								$sql .= " AND tpengadaan.namapekerjaan LIKE '%$q%' ";
 							}
 
 							if (!empty($tahun)) {
-								$sql .= " AND `tpengadaan`.ta = $tahun ";
+								$sql .= " AND tpengadaan.ta = $tahun ";
 							}
 
 							/*if (!empty($skpdID)) {
-								$sql .= " AND `tpengadaan`.skpdID = $skpdID";
+								$sql .= " AND tpengadaan.skpdID = $skpdID";
 							}*/
 
 							if (!empty($klasifikasi)) {
-								$sql .= " AND LEFT(`tklasifikasi`.kode,2) = $klasifikasi";
+								$sql .= " AND LEFT(tklasifikasi.kode,2) = $klasifikasi";
 							}
 
 							if (!empty($min)) {
-								$sql .= " AND (`tpengadaan`.anggaran >= $min OR `tpengadaan`.nilai_nego >= $min) ";
+								$sql .= " AND (tpengadaan.anggaran >= $min OR tpengadaan.nilai_nego >= $min) ";
 							}
 
 							if (!empty($max)) {
-								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) ";
+								$sql .= " AND (tpengadaan.anggaran <= $max OR tpengadaan.nilai_nego <= $max) ";
 							}
-							//echo $sql;
+					echo $sql;
 			    	$rspengadaan = DB::select($sql);
 			    	/*$rspengadaan = DB::table($dbecontract.'.tpengadaan AS pgd')
 			    						->addSelect(DB::raw('kodepekerjaan,
