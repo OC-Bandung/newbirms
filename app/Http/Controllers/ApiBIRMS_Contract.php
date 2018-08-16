@@ -399,7 +399,7 @@ class ApiBIRMS_contract extends Controller
         $milestoneDateFormat = 'Y-m-d H:i:s';
         $sql = "SELECT tahapID, nama, tanggal_mulai, tanggal_selesai FROM " . $db . ".tpekerjaan_jadwal
                 LEFT JOIN " . $db . ".tmaster_tahap ON tpekerjaan_jadwal.tahapID = tmaster_tahap.ID
-                WHERE pid = " . $pID . " ";
+                WHERE pid = " . $pID . " ORDER BY tmaster_tahap.urutan";
         $results = DB::select($sql);
         if (sizeof($results) == 0) {
             //abort(404, 'No procurement found by sirupID ' . $sirupID);
@@ -548,14 +548,14 @@ class ApiBIRMS_contract extends Controller
         $milestone->dateMet = $this->getOcdsDateFromString($row->tanggal_mulai, $milestoneDateFormat);
         //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
         $milestone->status = $this->getMilestoneStatus($row->tanggal_selesai, $row->tanggal_mulai);
-        //$milestone->status = $row->akt_status; //TODO: titan we need a mapping here between akt_status and milestone
-        //status http://standard.open-contracting.org/1.1/en/schema/codelists/#milestone-status
         return $milestone;
     }
 
     function getTenderMilestone($row)
     {
         $milestoneDateFormat = 'Y-m-d H:i:s';
+
+        $row->akt_jenis = ucwords(strtolower(preg_replace('/_/', ' ', $row->akt_jenis)));
         $milestone = new stdClass();
         $milestone->id = $row->akt_id;
         $milestone->title = $row->akt_jenis;
@@ -564,8 +564,6 @@ class ApiBIRMS_contract extends Controller
         $milestone->dateMet = $this->getOcdsDateFromString($row->dtj_tglawal, $milestoneDateFormat);
         //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
         $milestone->status = $this->getMilestoneStatus($row->dtj_tglakhir, $row->dtj_tglawal);
-        //$milestone->status = $row->akt_status; //TODO: titan we need a mapping here between akt_status and milestone
-        //status http://standard.open-contracting.org/1.1/en/schema/codelists/#milestone-status
         return $milestone;
     }
 
@@ -580,15 +578,24 @@ class ApiBIRMS_contract extends Controller
     function getSharedTender($year, $results, &$parties)
     {
         $tender = new stdClass();
-        $tender->id = $this->getLelangID($results->sirupID);
         $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
         $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
         $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
         $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
 
+        return $tender;
+    }
+
+
+    function getTender($year, $results, &$parties) {
         $db = env('DB_CONTRACT');
-        $sql = "select * from " . $db . ".tlelangumum where sirupID = " . $results->sirupID . " ";
+        
+        $tender = $this->getSharedTender($year, $results, $parties);
+        $tender->id = $this->getLelangID($results->sirupID);
+        $tender->milestones = $this->getTenderMilestones($results->sirupID);
+
+        $sql = "SELECT * FROM " . $db . ".tlelangumum WHERE sirupID = " . $results->sirupID . " ";
         $results = DB::select($sql);
 
         if (sizeof($results) == 0) {
@@ -604,24 +611,48 @@ class ApiBIRMS_contract extends Controller
         return $tender;
     }
 
-
-    function getTender($year, $results, &$parties) {
-        $tender = $this->getSharedTender($year, $results, $parties);
-        $tender->id = $this->getLelangID($results->sirupID);
-        $tender->milestones = $this->getTenderMilestones($results->sirupID);
-        return $tender;
-    }
-
     function getNonTender($year, $results, &$parties)
     {
+        $db = env('DB_CONTRACT');
+
         $tender = $this->getSharedTender($year, $results, $parties);
         $tender->id = $this->getNonLelangID($results->sirupID);
-        $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
-        $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
-        $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
-        $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
-        $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
         $tender->milestones = $this->getNonTenderMilestones($this->getNonLelangID($results->sirupID));
+
+        $sql = "SELECT
+                    CONCAT(
+                        REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
+                        '.',
+                        tpekerjaan.pid,
+                        '.',
+                        tpekerjaan.saltid 
+                    ) AS id,
+                    tbl_pekerjaan.namapekerjaan,
+                    pilih_start,
+                    nilai_nego,
+                    perusahaanid,
+                    perusahaannama,
+                    perusahaanalamat,
+                    perusahaannpwp,
+                    tpekerjaan.pekerjaanstatus 
+                FROM
+                    tbl_pekerjaan
+                    LEFT JOIN ".$db.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+                    LEFT JOIN ".$db.".tpengadaan ON tpekerjaan.pid = tpengadaan.pid
+                    LEFT JOIN ".$db.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
+                WHERE
+                    tbl_pekerjaan.pekerjaanID = ". $results->sirupID . " ";
+        $results = DB::select($sql);
+
+        $tender->numberOfTenderers = 1;
+        if (sizeof($results) == 0) {
+
+        } else {
+            $tender->value=$this->getAmount($results[0]->nilai_nego);
+            //$tender->status=$results[0]->stat; //TODO: uncomment this after mapping done
+            $tender->title=$results[0]->namapekerjaan;
+        }
+
         return $tender;
     }
 

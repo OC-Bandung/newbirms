@@ -737,7 +737,7 @@ class ApiBIRMS extends Controller
 	}				
 
 	/*--- Recent Data ---*/
-	public function perencanaan() {
+	public function get_recent_perencanaan() {
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
@@ -1008,13 +1008,13 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function pemenang() {
+	public function get_recent_pemenang() {
 		$dbplanning = env('DB_PLANNING');
 	    $dbcontract = env('DB_CONTRACT');
 	    $dbmain 	= env('DB_PRIME');
 	}
 
-	public function kontrak() {
+	public function get_recent_kontrak() {
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');

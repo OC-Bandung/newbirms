@@ -17,30 +17,56 @@
                     <div id="map-controls">
                         <div id="filter">
                             <h5>@lang('homepage.procurement_map_title')</h5>
-                            <div class="select-style">
-                                <select id="map-variable">
+                            
+                                <select   id="map-variable">
                                     <option value="count">Jumlah Paket Pekerjaan</option>
                                     <option value="value">Pagu Anggaran</option>
-                                </select>
+                               </select>
+                           
+                        </div> 
+                        <!-- end of  filter  -->
+                </div>
+                <!-- end of map controls -->
+                </div>
+                <!-- end of col -->
+  <div class="col">
+  <label id="data-label" for="data-value"></label>
+                            <div class="h5">
+                                <div> Nilai kontrak </div>  
+                                <div id="data-value"></div>
                             </div>
+
+                            <a href="#"><u>View List</u></a> | <a href="#"><u>Access data</u></
+                      
+                            <div id="legend">
+                                <div id="map-min">Min</div>
+                                <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
+                                <div id="map-max" class="padding-right-small">Maks</div>
+                            </div>
+</div>
+                <div class="col">
+                <div id="data-box"  >
+                        
+                            <label id="data-label" for="data-value"></label>
+                            
+                                <div> Nilai kontrak </div>  
+                                <div id="data-value"></div>
+                            </div>
+
+                          
+                        <div id="legend">
+                            <div id="map-min">Min</div>
+                            <div class="color-key"><span id="data-caret">&#x25c6;</span></div>
+                            <div id="map-max" class="padding-right-small">Maks</div>
                         </div>
-                   </div>
-                 </div>
-
-                 <div class="col">
-                   <h5> Number </h5>
-                   <h2> 2000 </h2>
-                 </div>
-
-                 <div class="col">
-                   <h5> Nilai Kontrak </h5>
-                   <span class="h4"> Rp. </span> <span id="data-value"></span> </h4>
-                 </div>
-
+                    
+   
+                    </div>
+                </div>
                </div>
 
                  <div class="row no-gutter">
-                  <div id="map" class="pt-3">
+                 <div id="map" class="pt-3">
                   </div>
                 </div>
 
