@@ -737,7 +737,8 @@ class ApiBIRMS extends Controller
 	}				
 
 	/*--- Recent Data ---*/
-	public function get_recent_perencanaan() {
+	public function get_recent_perencanaan() 
+	{
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
@@ -892,7 +893,8 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function pengadaan() {
+	public function pengadaan() 
+	{
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
@@ -1008,13 +1010,59 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function get_recent_pemenang() {
+	public function get_recent_pemenang() 
+	{
 		$dbplanning = env('DB_PLANNING');
 	    $dbcontract = env('DB_CONTRACT');
-	    $dbmain 	= env('DB_PRIME');
+		$dbmain 	= env('DB_PRIME');
+		
+		$year = date('Y');
+		$sql = '';
+		$rsdummy = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+
+		foreach($rsdummy as $row) {
+			$sirupID = $row->sirupID;
+			$ocid = env('OCID') . $sirupID ;
+
+			$suppliers = array();
+			$data['ocid'] 		= $ocid;
+			$data['uri'] 		= env('LINK_SIRUP').$year."/".$sirupID;
+			$data['title'] 		= $row->namapekerjaan; 
+			$data['kode']		= $row->kode;
+			$data['activity']	= $row->namakegiatan;
+			$data['sirupID'] 	= $sirupID;
+			$data['SKPD']		= "";
+			$data['anggaran']	= "";m
+			$data['hps']		= $row->hps;
+			$data['nilai_penawaran']	= "";
+			$data['nilai_nego']			= $row->nilai_nego;
+			$data['suppliers']			= $suppliers;
+
+			$data['procurementMethod']		= "";
+			$data['procurementMethodDetails'] = "";
+			$data['awardCriteria']		= "";
+			$data['dateSigned'] = "";
+			$data['contract']	= array(
+					'startDate' => "",
+					'endDate' => ""
+			);
+			$data['created_at']		= "";
+			$data['updated_at']		= "";
+			array_push($rowdata, $data);
+        }
+
+		$results = $rowdata;
+
+		return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function get_recent_kontrak() {
+	public function get_recent_kontrak() 
+	{
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
@@ -1068,7 +1116,8 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function get_skpd($year) {
+	public function get_skpd($year) 
+	{
 		$dbmain 	= env('DB_PRIME');
 		$dbmain_prev= env('DB_PRIME_PREV');
 

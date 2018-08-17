@@ -467,9 +467,7 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
-
     function getNonCompetitiveAwards($year, $pekerjaanID, &$parties) {
-        //TODO: please write query to get to noncompetitive awards here
         $db = env('DB_CONTRACT');
         $sql = "SELECT
                     CONCAT(
@@ -587,7 +585,6 @@ class ApiBIRMS_contract extends Controller
         return $tender;
     }
 
-
     function getTender($year, $results, &$parties) {
         $db = env('DB_CONTRACT');
         
@@ -604,11 +601,26 @@ class ApiBIRMS_contract extends Controller
             $tender->numberOfTenderers = (int)$results[0]->jumlah_peserta;
             $tender->value=$this->getAmount($results[0]->nilai_nego);
             $tender->tenderers = $this->getTenderers($results[0]->lls_id);
-            //$tender->status=$results[0]->stat; //TODO: uncomment this after mapping done
+            $tender->status=$this->getSharedTenderStatus($results[0]->pekerjaanstatus); //TODO: uncomment this after mapping done
             $tender->title=$results[0]->namapekerjaan;
         }
 
         return $tender;
+    }
+
+    function getSharedTenderStatus($status)
+    {
+        if (($status == 1) || ($status == 2) || ($status == 3)) {
+            return "planned";
+        } else if (($status == 4) || ($status == 5)) {
+            return "active";
+        } else if ($status == 6) {
+            return "unsuccesful";
+        } else if ($status == 7) {
+            return "complete";
+        } else {
+            return "withdrawn";
+        }
     }
 
     function getNonTender($year, $results, &$parties)
@@ -649,7 +661,7 @@ class ApiBIRMS_contract extends Controller
 
         } else {
             $tender->value=$this->getAmount($results[0]->nilai_nego);
-            //$tender->status=$results[0]->stat; //TODO: uncomment this after mapping done
+            $tender->status=$this->getSharedTenderStatus($results[0]->pekerjaanstatus); //TODO:
             $tender->title=$results[0]->namapekerjaan;
         }
 
@@ -671,49 +683,50 @@ class ApiBIRMS_contract extends Controller
         return null;
     }
 
-    function getNonCompetitiveContracts($year, $pekerjaanID, &$parties) {
+    function getNonCompetitiveContracts($year, $pekerjaanID, &$parties) 
+    {
         $db  = env('DB_CONTRACT');
         $sql = "SELECT
-        tpekerjaan.pid,
-        CONCAT(
-            REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
-            '.',
-            tpekerjaan.pid,
-            '.',
-            tpekerjaan.saltid 
-        ) AS awardid,
-        TRIM(
-            SUBSTRING_INDEX(
-                SUBSTRING_INDEX( tpekerjaan.namapekerjaan, '—', 1 ),
-                '—',- 1 
-            ) 
-        ) AS namapekerjaan,
-        TRIM(
-            SUBSTRING_INDEX(
-                SUBSTRING_INDEX( tpekerjaan.namapekerjaan, '—', 2 ),
-                '—',- 1 
-            ) 
-        ) AS deskripsi,
-        tkontrak_penunjukan.spk_nosurat,
-        tkontrak_penunjukan.spk_tgl_surat,
-        tkontrak_penunjukan.spk_tgl_slskontrak,
-        tpengadaan.nilai_nego 
-    FROM
-        " .$db. ".tpekerjaan
-        LEFT JOIN " .$db. ".tpengadaan ON tpengadaan.pid = tpekerjaan.pid
-        LEFT JOIN " .$db. ".tkontrak_penunjukan ON tkontrak_penunjukan.pgid = tpengadaan.pgid 
-    WHERE
-        " .$db. ".tpekerjaan.pekerjaanstatus >= 4 
-        AND pekerjaanid = ".$pekerjaanID." 
-        AND (
-            NOT ISNULL( spk_nosurat ) 
-            AND NOT ISNULL( spk_tgl_surat ) 
-            AND NOT ISNULL ( tkontrak_penunjukan.spk_tgl_slskontrak ) 
-        ) 
-        GROUP BY tpekerjaan.pid, awardid, namapekerjaan, deskripsi, tkontrak_penunjukan.spk_nosurat,
-        tkontrak_penunjukan.spk_tgl_surat,
-        tkontrak_penunjukan.spk_tgl_slskontrak,
-        tpengadaan.nilai_nego";
+                    tpekerjaan.pid,
+                    CONCAT(
+                        REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
+                        '.',
+                        tpekerjaan.pid,
+                        '.',
+                        tpekerjaan.saltid 
+                    ) AS awardid,
+                    TRIM(
+                        SUBSTRING_INDEX(
+                            SUBSTRING_INDEX( tpekerjaan.namapekerjaan, '—', 1 ),
+                            '—',- 1 
+                        ) 
+                    ) AS namapekerjaan,
+                    TRIM(
+                        SUBSTRING_INDEX(
+                            SUBSTRING_INDEX( tpekerjaan.namapekerjaan, '—', 2 ),
+                            '—',- 1 
+                        ) 
+                    ) AS deskripsi,
+                    tkontrak_penunjukan.spk_nosurat,
+                    tkontrak_penunjukan.spk_tgl_surat,
+                    tkontrak_penunjukan.spk_tgl_slskontrak,
+                    tpengadaan.nilai_nego 
+                FROM
+                    " .$db. ".tpekerjaan
+                    LEFT JOIN " .$db. ".tpengadaan ON tpengadaan.pid = tpekerjaan.pid
+                    LEFT JOIN " .$db. ".tkontrak_penunjukan ON tkontrak_penunjukan.pgid = tpengadaan.pgid 
+                WHERE
+                    " .$db. ".tpekerjaan.pekerjaanstatus >= 4 
+                    AND pekerjaanid = ".$pekerjaanID." 
+                    AND (
+                        NOT ISNULL( spk_nosurat ) 
+                        AND NOT ISNULL( spk_tgl_surat ) 
+                        AND NOT ISNULL ( tkontrak_penunjukan.spk_tgl_slskontrak ) 
+                    ) 
+                    GROUP BY tpekerjaan.pid, awardid, namapekerjaan, deskripsi, tkontrak_penunjukan.spk_nosurat,
+                    tkontrak_penunjukan.spk_tgl_surat,
+                    tkontrak_penunjukan.spk_tgl_slskontrak,
+                    tpengadaan.nilai_nego";
         
         $results = DB::select($sql);
 
@@ -750,7 +763,8 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
-    function getNonCompetitiveItems($pid) {
+    function getNonCompetitiveItems($pid) 
+    {
         $db = env('DB_CONTRACT');
         $sql = "SELECT 
                     tpengadaan_rincian.ID,
@@ -793,7 +807,7 @@ class ApiBIRMS_contract extends Controller
     {
         return 'tender'; //currently ocds supports tender
         //TODO: please fix this, you are not allowed to return these types internal types as ocds
-        $metode = $results->metode_pengadaan;
+        /*$metode = $results->metode_pengadaan;
         switch ($metode) {
             case 1:
                 $initiationType = 'Lelang Umum';
@@ -834,7 +848,7 @@ class ApiBIRMS_contract extends Controller
             default:
                 $initiationType = '';
         }
-        return $initiationType;
+        return $initiationType;*/
     }
 
     /**
@@ -853,7 +867,8 @@ class ApiBIRMS_contract extends Controller
      *
      * @param $r the release
      */
-    function appendTag($r) {
+    function appendTag($r) 
+    {
         if(property_exists ($r, "tender")) {
             array_push($r->tag, "tender");
         }
@@ -1067,7 +1082,8 @@ class ApiBIRMS_contract extends Controller
 		return $namaprogram;
     }
     
-    function get_recent_pengadaan() {
+    function get_recent_pengadaan() 
+    {
         $dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
