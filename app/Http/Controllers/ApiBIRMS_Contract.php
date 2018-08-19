@@ -188,7 +188,7 @@ class ApiBIRMS_contract extends Controller
         return $org;
     }
 
-    function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj, $competitive)
+    function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj, $competitive = null)
     {
         //first check if organization is within parties array
         foreach ($parties as &$o) {
@@ -200,7 +200,11 @@ class ApiBIRMS_contract extends Controller
 
         //if not found, read new organization from org table
         if (!isset($org)) {
-            $org = $this->getOrganizationByName($year, $name, $competitive);
+            if($competitive==null && isset($orgObj)) {
+                $org=$orgObj;
+            } else {
+                $org = $this->getOrganizationByName($year, $name, $competitive);
+            }
             $org->roles = [$role];
             array_push($parties, $org);
         } else {
@@ -302,30 +306,30 @@ class ApiBIRMS_contract extends Controller
         return $lelangID;
     }
    
-    function getTenderer($row)
+    function getRegistrant($row, $year,  &$parties)
     {
-        $tenderer = new stdClass();
-        $tenderer->id = $row->rkn_npwp;
-        $tenderer->name = $row->rkn_nama;
+        $registrant = new stdClass();
+        $registrant->id = $row->rkn_npwp;
+        $registrant->name = $row->rkn_nama;
         
         $address = new stdClass();
         $address->streetAddress = $row->rkn_alamat;
-        $tenderer->address = $address;
+        $registrant->address = $address;
 
         $cp = new stdClass();
         $cp->email = $row->rkn_email;
         $cp->telephone = $row->rkn_telepon;
-        $tenderer->contactPoint = $cp; 
+        $registrant->contactPoint = $cp;
         
         $id = new stdClass();
         $id->id = $row->rkn_npwp;
         $id->legalName = $row->rkn_nama;
-        $tenderer->identifier = $id; 
+        $registrant->identifier = $id;
 
-        return $tenderer;
+        return $this->getOrganizationReferenceByName($year, $row->perusahaannama, "registrant", $parties, $registrant);
     }
 
-    function getTenderers($tender_id)
+    function registerRegistrants($tender_id, $year,  &$parties)
     {
         $db = env('DB_CONTRACT');
         $sql = "SELECT * FROM ".$db.".lpse_peserta 
@@ -334,17 +338,18 @@ class ApiBIRMS_contract extends Controller
         $results = DB::select($sql);
 
         if (sizeof($results) == 0) {
-            //abort(404, 'No tenderers found by tender_id ' . $tender_id);
-            $tenderers = [];
         } else {
-            $tenderers = [];
             foreach ($results as $row) {
-                array_push($tenderers, $this->getTenderer($row));
+               $this->getRegistrant($row, $year,$parties);
             }
         }
-        return $tenderers;
     }
 
+    /**
+     * @param $sirupID
+     * @return int
+     * @deprecated
+     */
     function getNumberOfTenderers($sirupID)
     {
         $db = env('DB_CONTRACT');
@@ -425,7 +430,7 @@ class ApiBIRMS_contract extends Controller
 
         $supl       = new stdClass();
         $supl->name = $row->perusahaannama;
-        
+
         $orgId      = new stdClass();
         $orgId->legalName=$row->perusahaannama;
         $supl->identifier=$orgId;
@@ -434,7 +439,7 @@ class ApiBIRMS_contract extends Controller
         $addr->streetAddress=$row->perusahaanalamat;
         $supl->address=$addr;
 
-        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplier", $parties, $orgId, false)];
+        $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplier", $parties, $supl, false)];
         return $a;
     }
 
@@ -598,9 +603,10 @@ class ApiBIRMS_contract extends Controller
         if (sizeof($results) == 0) {
             $tender->numberOfTenderers = 0;
         } else {
-            $tender->numberOfTenderers = (int)$results[0]->jumlah_peserta;
             $tender->value=$this->getAmount($results[0]->nilai_nego);
-            $tender->tenderers = $this->getTenderers($results[0]->lls_id);
+            $tender->tenderers=$this->getTenderers($results[0]->lls_id);
+            $tender->numberOfTenderers = sizeof($tender->tenderers);
+            $this->registerRegistrants($results[0]->lls_id, $year, $parties);
             $tender->status=$this->getSharedTenderStatus($results[0]->pekerjaanstatus); //TODO: uncomment this after mapping done
             $tender->title=$results[0]->namapekerjaan;
         }
@@ -1377,5 +1383,11 @@ class ApiBIRMS_contract extends Controller
         );
         return response()->json($release)->header('Access-Control-Allow-Origin', '*');
         // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
+    }
+
+    private function getTenderers($lls_id)
+    {
+        return [];
+        //TODO: implement this !!
     }
 }
