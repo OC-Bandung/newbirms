@@ -52,7 +52,7 @@ class ApiBIRMS extends Controller
 		$dbplanning = env('DB_PLANNING');
 
 		$sql = 'SELECT
-		CONCAT("'.env('OCID').'","s-",tahun,"-",sirupID) AS ocid,
+		CONCAT("'.$ocid.'","s-",tahun,"-",sirupID) AS ocid,
 		tahun AS year,
 		nama AS title,
 		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
@@ -61,7 +61,7 @@ class ApiBIRMS extends Controller
 	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND pagu <> 0 
 	UNION 
 	SELECT
-		CONCAT("'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
+		CONCAT("'.$ocid.'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
 		'.$year.' AS year,
 		namapekerjaan AS title,
 		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS uri,
@@ -69,7 +69,6 @@ class ApiBIRMS extends Controller
 	FROM
 	'.$dbplanning.'.tbl_pekerjaan 
 	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1';
-
         $results = $this->arrayPaginator(DB::select($sql), request());
     	return response()
     			->json($results)
@@ -1023,7 +1022,7 @@ class ApiBIRMS extends Controller
 		$rowdata = array();
 		$data = array();
 
-		foreach($rsdummy as $row) {
+		/*foreach($rsdummy as $row) {
 			$sirupID = $row->sirupID;
 			$ocid = env('OCID') . $sirupID ;
 
@@ -1052,7 +1051,7 @@ class ApiBIRMS extends Controller
 			$data['created_at']		= "";
 			$data['updated_at']		= "";
 			array_push($rowdata, $data);
-        }
+        }*/
 
 		$results = $rowdata;
 

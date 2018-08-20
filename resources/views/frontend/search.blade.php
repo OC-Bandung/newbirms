@@ -23,7 +23,7 @@
 
             <div class="row">
               
-              <div class="col">
+              <div class="col-4">
                   <div class="form-group">
                      <h6> Tahun </h6>
                         <select class="form-control" name="tahun" id="tahun">
@@ -39,7 +39,7 @@
                   </div>
               </div>
 
-              <div class="col">
+              <div class="col-4">
                 <div class="form-group">
                    <h6> Tahapan </h6>
                    <select class="form-control" name="tahap" id="tahap">
@@ -49,10 +49,10 @@
                         @else
                         <option value="1">Perencanaan</option>
                         @endif
-                        @if (app('request')->input('tahap') == '2')
-                        <option value="2" selected>Pengadaan</option>
+                        @if (app('request')->input('tahap') == '4')
+                        <option value="4" selected>Pengadaan</option>
                         @else
-                        <option value="2">Pengadaan</option>
+                        <option value="4">Pengadaan</option>
                         @endif
                         @if (app('request')->input('tahap') == '3')
                         <option value="3" selected>Pemenang</option>
@@ -73,50 +73,86 @@
                 </div>
               </div>
 
-              <div class="col">
+              <div class="col-">
                 <div class="form-group">
                    <h6> Klasifikasi </h6>
-                    <select class="form-control" name="klasifikasi" id="klasifikasi">
+                    <select class="form-control" name="jenis_pengadaanID" id="jenis_pengadaanID">
                             <option value="" disabled selected>- Klasifikasi -</option>
-                            @if (app('request')->input('klasifikasi') == '01')
-                            <option value="01" selected>Konstruksi</option>
+                            @if (app('request')->input('jenis_pengadaanID') == '1')
+                            <option value="1" selected>Pengadaan Barang</option>
                             @else
-                            <option value="01">Konstruksi</option>
+                            <option value="1">Pengadaan Barang</option>
                             @endif
-                            @if (app('request')->input('klasifikasi') == '02')
-                            <option value="02" selected>Pengadaan Barang</option>
+                            @if (app('request')->input('jenis_pengadaanID') == '2')
+                            <option value="2" selected>Pekerjaan Konstruksi</option>
                             @else
-                            <option value="02">Pengadaan Barang</option>
+                            <option value="2">Pekerjaan Konstruksi</option>
                             @endif
-                            @if (app('request')->input('klasifikasi') == '03')
-                            <option value="03" selected>Jasa Konsultansi</option>
+                            @if (app('request')->input('jenis_pengadaanID') == '3')
+                            <option value="3" selected>Jasa Konsultansi</option>
                             @else
-                            <option value="03">Jasa Konsultansi</option>
+                            <option value="3">Jasa Konsultansi</option>
                             @endif
-                            @if (app('request')->input('klasifikasi') == '04')
-                            <option value="04" selected>Jasa Lainnya</option>
+                            @if (app('request')->input('jenis_pengadaanID') == '4')
+                            <option value="4" selected>Jasa Lainnya</option>
                             @else
-                            <option value="04">Jasa Lainnya</option>
+                            <option value="4">Jasa Lainnya</option>
                             @endif
                     </select>
                 </div>
               </div>
 
-              <div class="col">
+              <div class="col-3">
                 <div class="form-group justify-content-between">
                    <h6> Pagu Anggaran / Nilai Kontrak </h6>
                    <div class="row">
                      <div class="col">
-                       <input type="text" class="form-control" placeholder="Min">
+                       <input type="text" class="form-control" placeholder="Min" name="min" value="{{ app('request')->input('min') }}">
                      </div>
                      <div class="col">
-                       <input type="text" class="form-control" placeholder="Max">
+                       <input type="text" class="form-control" placeholder="Max" name="max" value="{{ app('request')->input('max') }}">
                     </div>
                   </div>
                 </div>
               </div>
 
             </div>
+
+            <div class="row">
+                <div class="col">
+                  <div class="form-group justify-content-between">
+                     <h6> Test</h6>
+                     <div class="row">
+                     </div>
+                  </div>  
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                  <div class="form-group justify-content-between">
+                     <h6> Pagu Anggaran / Nilai Kontrak </h6>
+                     <div class="row">
+                       <div class="col">
+                        <div class="input-group mb-3">
+                          <div class="input-group-prepend">
+                            <span class="input-group-text" id="cmin">Rp.</span>
+                          </div>
+                          <input type="text" class="form-control" placeholder="Min" name="min" id="min" aria-label="Min" aria-describedby="cmin">
+                        </div>
+                       </div>
+                       <div class="col">
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text" id="cmax">Rp.</span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Max" name="max" id="max" aria-label="Max" aria-describedby="cmax">
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
             <div class="row">
               <div class="col-6">
@@ -155,16 +191,22 @@
           <div id="search-results" class="list-group">
           @foreach($pengadaan as $row) 
             <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-              <span class="badge badge-dark">Perencanaan</span>
+              <span class="badge badge-dark">{{ $row->pekerjaanstatus }}</span>
               <div class="d-flex w-100 justify-content-between pt-1">
                 <span><h5 class="mb-1">{{ $row->namapekerjaan }}</h5></span>
-                <span class="float-right"> {{ MyGlobals::moneyDisplay($row->anggaran,0,',','.') }} </span>
+                <span class="float-right">Pagu: {{ MyGlobals::moneyDisplay($row->pagu_anggaran,0,',','.') }} </span>
               </div>
-             <div class="h6">Tanggal Rencana Pengadaan : @if (!empty($row->pilih_start))
-                                            {{ date('d-m-Y', strtotime($row->pilih_start)) }} 
+              <div>
+                <h6>SKPD : {{ $row->namaskpd }}</h6>
+                @if ($row->nilai_nego != 0)
+                <span class="float-right">Kontrak: {{ MyGlobals::moneyDisplay($row->nilai_nego,0,',','.') }}</span>
+                @endif
+              </div>
+             <div class="h6">Tanggal Rencana Pengadaan : @if (!empty($row->tanggal_awal_pengadaan))
+                                            {{ date('d-m-Y', strtotime($row->tanggal_awal_pengadaan)) }} 
                                         @else
                                             &mdash;
-                                        @endif  -  Klasifikasi: {{ $row->klasifikasi }}</div>
+                                        @endif  -  Klasifikasi: {{ $row->jenis_pengadaan }}</div>
             </a>
           @endforeach
           </div>

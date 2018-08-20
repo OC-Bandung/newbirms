@@ -653,16 +653,23 @@ class ApiBIRMS_contract extends Controller
                     LEFT JOIN ".$db.".tpengadaan ON tpekerjaan.pid = tpengadaan.pid
                     LEFT JOIN ".$db.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
                 WHERE
-                    tbl_pekerjaan.pekerjaanID = ". $results->sirupID . " ";
-        $results = DB::select($sql);
+                    tbl_pekerjaan.pekerjaanID = ". $results->sirupID . " AND (NOT ISNULL(perusahaanid) OR perusahaanid <> '')";
+        $rsnontender = DB::select($sql);
 
-        $tender->numberOfTenderers = 1;
-        if (sizeof($results) == 0) {
+        $tender->numberOfTenderers = count($rsnontender); //Total tenderers from Non Competitive / Direct Procurement
+        
+        if (sizeof($rsnontender) <> 0) {
+            $sql = "SELECT SUM(nilai_nego) AS jumlah_nilai FROM tbl_pekerjaan
+                    LEFT JOIN ".$db.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+                    LEFT JOIN ".$db.".tpengadaan ON tpekerjaan.pid = tpengadaan.pid
+                    LEFT JOIN ".$db.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
+                WHERE
+                    tbl_pekerjaan.pekerjaanID = ". $results->sirupID . " AND (NOT ISNULL(perusahaanid) OR perusahaanid <> '')";
+            $rscount = DB::select($sql);
 
-        } else {
-            $tender->value=$this->getAmount($results[0]->nilai_nego);
-            $tender->status=$this->getSharedTenderStatus($results[0]->pekerjaanstatus); //TODO:
-            $tender->title=$results[0]->namapekerjaan;
+            $tender->value=$this->getAmount($rscount[0]->jumlah_nilai);
+            $tender->status=$this->getSharedTenderStatus($rsnontender[0]->pekerjaanstatus); //TODO:
+            $tender->title=$rsnontender[0]->namapekerjaan;
         }
 
         return $tender;
@@ -894,62 +901,67 @@ class ApiBIRMS_contract extends Controller
         
         $dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
-        $dbprime    = env('DB_PRIME');
+
+        if ($year <= 2016) {
+            $dbprime = env('DB_PRIME_PREV');
+        } else {
+            $dbprime = env('DB_PRIME');
+        }
 
         if ($source == 's') {
             $sql = "SELECT * FROM ".$dbplanning.".tbl_sirup WHERE sirupID = '" . $sirup_id . "'";
         } else {
             $sql = "SELECT
-            tbl_pekerjaan.pekerjaanID AS sirupID,
-            ".$year." AS tahun ,
-            tbl_pekerjaan.namapekerjaan AS nama ,
-            tbl_pekerjaan.anggaran AS pagu ,
-            tbl_sumberdana.sumberdana AS sumber_dana_string ,
-            1 AS jenis_belanja ,
-            tbl_metode.jenisID AS jenis_pengadaan ,
-            (
-                CASE
-                WHEN tbl_metode.nama = 'Belanja Sendiri' THEN
-                    9
-                WHEN tbl_metode.nama = 'Kontes / Sayembara' THEN
-                    10
-                WHEN tbl_metode.nama = 'Pelelangan Sederhana' THEN
-                    2
-                WHEN tbl_metode.nama = 'Pelelangan Umum' THEN
-                    1
-                WHEN tbl_metode.nama = 'Pembelian Secara Elektronik' THEN
-                    9
-                WHEN tbl_metode.nama = 'Pemilihan Langsung' THEN
-                    6
-                WHEN tbl_metode.nama = 'Pengadaan Langsung' THEN
-                    8
-                WHEN tbl_metode.nama = 'Penunjukan Langsung' THEN
-                    7
-                WHEN tbl_metode.nama = 'Swakelola' THEN
-                    21
-                ELSE
-                    0
-                END
-            ) AS metode_pengadaan ,
-            2 AS jenis ,
-            pilih_start AS tanggal_awal_pengadaan ,
-            pilih_end AS tanggal_akhir_pengadaan ,
-            laksana_start AS tanggal_awal_pekerjaan ,
-            laksana_end AS tanggal_akhir_pekerjaan ,
-            satker AS id_satker ,
-            'Kota Bandung' AS kldi ,
-            tbl_skpd.nama AS satuan_kerja ,
-            tbl_skpd.alamat AS lokasi ,
-            IF (tbl_metode.nama = 'Swakelola' , 1 , 0) AS isswakelola,
-            IF (ISNULL(tpekerjaan.pid),0,1) AS isready, 
-            tpekerjaan.pekerjaanstatus
-        FROM
-            ".$dbplanning.".tbl_pekerjaan
-        LEFT JOIN ".$dbplanning.".tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
-        LEFT JOIN ".$dbprime.".tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
-        LEFT JOIN ".$dbplanning.".tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
-        LEFT JOIN ".$dbcontract.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-        WHERE tbl_pekerjaan.pekerjaanID = '". $sirup_id."'";    
+                    tbl_pekerjaan.pekerjaanID AS sirupID,
+                    ".$year." AS tahun ,
+                    tbl_pekerjaan.namapekerjaan AS nama ,
+                    IF(tbl_pekerjaan.anggaranp <> 0,tbl_pekerjaan.anggaranp,tbl_pekerjaan.anggaran) AS pagu ,
+                    tbl_sumberdana.sumberdana AS sumber_dana_string ,
+                    1 AS jenis_belanja ,
+                    tbl_metode.jenisID AS jenis_pengadaan ,
+                    (
+                        CASE
+                        WHEN tbl_metode.nama = 'Belanja Sendiri' THEN
+                            9
+                        WHEN tbl_metode.nama = 'Kontes / Sayembara' THEN
+                            10
+                        WHEN tbl_metode.nama = 'Pelelangan Sederhana' THEN
+                            2
+                        WHEN tbl_metode.nama = 'Pelelangan Umum' THEN
+                            1
+                        WHEN tbl_metode.nama = 'Pembelian Secara Elektronik' THEN
+                            9
+                        WHEN tbl_metode.nama = 'Pemilihan Langsung' THEN
+                            6
+                        WHEN tbl_metode.nama = 'Pengadaan Langsung' THEN
+                            8
+                        WHEN tbl_metode.nama = 'Penunjukan Langsung' THEN
+                            7
+                        WHEN tbl_metode.nama = 'Swakelola' THEN
+                            21
+                        ELSE
+                            0
+                        END
+                    ) AS metode_pengadaan ,
+                    2 AS jenis ,
+                    pilih_start AS tanggal_awal_pengadaan ,
+                    pilih_end AS tanggal_akhir_pengadaan ,
+                    laksana_start AS tanggal_awal_pekerjaan ,
+                    laksana_end AS tanggal_akhir_pekerjaan ,
+                    satker AS id_satker ,
+                    'Kota Bandung' AS kldi ,
+                    tbl_skpd.nama AS satuan_kerja ,
+                    tbl_skpd.alamat AS lokasi ,
+                    IF (tbl_metode.nama = 'Swakelola' , 1 , 0) AS isswakelola,
+                    IF (ISNULL(tpekerjaan.pid),0,1) AS isready, 
+                    tpekerjaan.pekerjaanstatus
+                FROM
+                    ".$dbplanning.".tbl_pekerjaan
+                LEFT JOIN ".$dbplanning.".tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
+                LEFT JOIN ".$dbprime.".tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+                LEFT JOIN ".$dbplanning.".tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+                LEFT JOIN ".$dbcontract.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+                WHERE tbl_pekerjaan.pekerjaanID = '". $sirup_id."'";    
         }
         //die($sql);
         $results = DB::select($sql);

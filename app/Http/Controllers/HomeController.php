@@ -392,7 +392,7 @@ class HomeController extends Controller
 	    	$q 		= $request->input('q');
 	    	$tahun 	= $request->input('tahun');
 	    	//$skpdID = $request->input('skpdID');
-	    	$klasifikasi = $request->input('klasifikasi');
+	    	$jenis_pengadaanID = $request->input('jenis_pengadaanID');
 	    	$tahap 	= $request->input('tahap');
 
 	    	$min 	= $request->input('min');
@@ -400,13 +400,93 @@ class HomeController extends Controller
 	    	$startdate = $request->input('startdate');
 	    	$enddate = $request->input('enddate');
 
+			$sql = 'SELECT *
+					FROM
+						(
+						SELECT
+							tbl_sirup.sirupID,
+							tbl_sirup.tahun,
+							tbl_sirup.nama AS namapekerjaan,
+							1 AS iswork,
+							IF(tlelangumum.nilai_nego <> 0, "7", "1") AS pekerjaanstatus,
+							tbl_sirup.pagu AS pagu_anggaran,
+							tbl_sirup.sumber_dana_string,
+							tbl_sirup.jenis_pengadaan AS jenis_pengadaanID, 
+							(
+							CASE
+									
+									WHEN tbl_sirup.jenis_pengadaan = 1 THEN
+									"Pengadaan Barang" 
+									WHEN tbl_sirup.jenis_pengadaan = 2 THEN
+									"Pekerjaan Konstruksi" 
+									WHEN tbl_sirup.jenis_pengadaan = 3 THEN
+									"Jasa Konsultansi" 
+									WHEN tbl_sirup.jenis_pengadaan = 4 THEN
+									"Jasa Lainnya" ELSE "N/A" 
+								END 
+								) AS jenis_pengadaan,
+								tbl_sirup.tanggal_awal_pengadaan,
+								tbl_sirup.tanggal_akhir_pengadaan,
+								tbl_sirup.satuan_kerja AS namaskpd,
+								tlelangumum.nilai_nego 
+							FROM
+								'.$dbplanning.'.tbl_sirup
+								LEFT JOIN '.$dbecontract.'.tlelangumum ON tbl_sirup.sirupID = tlelangumum.sirupID UNION
+							SELECT
+								tbl_pekerjaan.pekerjaanID AS sirupID,
+								tbl_pekerjaan.tahun,
+								tbl_pekerjaan.namapekerjaan,
+								iswork,
+								tpengadaan.pekerjaanstatus,
+								tbl_pekerjaan.anggaran AS pagu_anggaran,
+								tbl_sumberdana.sumberdana AS sumber_dana_string,
+								tbl_jenis.jenisID AS jenis_pengadaanID, 
+								tbl_jenis.nama AS jenis_pengadaan,
+								pilih_start AS tanggal_awal_pengadaan,
+								pilih_end AS tanggal_akhir_pengadaan,
+								tbl_skpd.nama AS namaskpd,
+								tpengadaan.nilai_nego 
+							FROM
+								'.$dbplanning.'.tbl_pekerjaan
+								LEFT JOIN tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
+								LEFT JOIN tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+								LEFT JOIN tbl_jenis ON tbl_metode.jenisID = tbl_jenis.jenisID
+								LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+								LEFT JOIN '.$dbecontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+								LEFT JOIN '.$dbecontract.'.tpengadaan ON tpekerjaan.pid = tpengadaan.pid 
+							) AS pengadaan 
+						WHERE true ';
 
-	    	switch ($tahap) {
+						if (!empty($q)) {
+							$sql .= ' AND pengadaan.namapekerjaan LIKE \'%'.$q.'%\' ';
+						}
+
+						if (!empty($tahun)) {
+							$sql .= ' AND tahun = '.$tahun.' ';
+						}
+
+						if (!empty($tahap)) {
+							$sql .= ' AND pengadaan.pekerjaanstatus = '.$tahap.' ';
+						}
+
+						if (!empty($jenis_pengadaanID)) {
+							$sql .= ' AND pengadaan.jenis_pengadaanID = '.$jenis_pengadaanID.' ';
+						}
+
+						if (!empty($min)) {
+							$sql .= ' AND (pengadaan.pagu_anggaran >= '.$min.' OR pengadaan.nilai_nego >= '.$min.') ';
+						}
+
+						if (!empty($max)) {
+							$sql .= ' AND (pengadaan.pagu_anggaran <= '.$max.' OR pengadaan.nilai_nego <= '.$max.') ';
+						}
+			
+			/* switch ($tahap) {
 			    case 1: //Perencanaan
 			        $sql = "";
 			        break;
 			    case 2: //Pengadaan
-			        /*$rspengadaan = DB::table($dbecontract.'.tpengadaan')
+			        $rspengadaan = DB::table($dbecontract.'.tpengadaan')
 			    						->select('tpengadaan.kode', 'tpengadaan.namakegiatan', 'tpengadaan.namapekerjaan', 'tpengadaan.nilai_nego','sirupID')
 			    						->leftJoin($dbecontract.'.tpekerjaan', 'tpengadaan.pid', '=', 'tpekerjaan.pid')
 										->leftJoin('tbl_pekerjaan', 'tpekerjaan.pekerjaanID', '=', 'tbl_pekerjaan.pekerjaanID')
@@ -416,7 +496,7 @@ class HomeController extends Controller
 												    ['nilai_nego', '<=', 200],
 												]
 			    							)
-			    						->get();*/
+			    						->get();
 			        break;
 			    case 3: //Pemenang
 			        $sql = "";
@@ -475,7 +555,7 @@ class HomeController extends Controller
 
 							/*if (!empty($skpdID)) {
 								$sql .= " AND tpengadaan.skpdID = $skpdID";
-							}*/
+							}
 
 							if (!empty($klasifikasi)) {
 								$sql .= " AND LEFT(tklasifikasi.kode,2) = $klasifikasi";
@@ -487,8 +567,8 @@ class HomeController extends Controller
 
 							if (!empty($max)) {
 								$sql .= " AND (tpengadaan.anggaran <= $max OR tpengadaan.nilai_nego <= $max) ";
-							}
-					echo $sql;
+							}*/
+					//echo $sql;
 			    	$rspengadaan = DB::select($sql);
 			    	/*$rspengadaan = DB::table($dbecontract.'.tpengadaan AS pgd')
 			    						->addSelect(DB::raw('kodepekerjaan,
@@ -527,8 +607,7 @@ class HomeController extends Controller
 												]
 			    							)
 			    						->get();*/
-			}
-	    	$data['pengadaan'] 	 = $rspengadaan;
+			$data['pengadaan'] 	 = $rspengadaan;
 	    	//$data['pengadaan'] = $rspengadaan->toArray();
 	    	$data['totalsearch'] = count($rspengadaan);
     	} else {
