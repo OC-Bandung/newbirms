@@ -200,10 +200,10 @@ class ApiBIRMS_contract extends Controller
 
         //if not found, read new organization from org table
         if (!isset($org)) {
-            if($competitive==null && isset($orgObj)) {
+            if(isset($orgObj)) {
                 $org=$orgObj;
             } else {
-                $org = $this->getOrganizationByName($year, $name, $competitive);
+                    $org = $this->getOrganizationByName($year, $name, $competitive);
             }
             $org->roles = [$role];
             array_push($parties, $org);
@@ -430,6 +430,7 @@ class ApiBIRMS_contract extends Controller
 
         $supl       = new stdClass();
         $supl->name = $row->perusahaannama;
+        //$supl->id = TODO: set the supplier id here !!
 
         $orgId      = new stdClass();
         $orgId->legalName=$row->perusahaannama;
@@ -456,6 +457,7 @@ class ApiBIRMS_contract extends Controller
 
             $supl       = new stdClass();
             $supl->name = $row->pemenang;
+            //$supl->id = TODO: set the supplier id here !!
             
             $orgId      = new stdClass();
             $orgId->legalName=$row->pemenang;
@@ -465,7 +467,7 @@ class ApiBIRMS_contract extends Controller
             $addr->streetAddress=$row->pemenangalamat;
             $supl->address=$addr;
 
-            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $orgId, true)];
+            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $supl, true)];
         } else {
             $a->status = "pending";
         }
