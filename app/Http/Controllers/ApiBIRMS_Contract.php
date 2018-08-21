@@ -326,7 +326,7 @@ class ApiBIRMS_contract extends Controller
         $id->legalName = $row->rkn_nama;
         $registrant->identifier = $id;
 
-        return $this->getOrganizationReferenceByName($year, $row->perusahaannama, "registrant", $parties, $registrant);
+        return $this->getOrganizationReferenceByName($year, $row->rkn_nama, "registrant", $parties, $registrant);
     }
 
     function registerRegistrants($tender_id, $year,  &$parties)
@@ -676,7 +676,7 @@ class ApiBIRMS_contract extends Controller
             $tender->value=$this->getAmount($rscount[0]->jumlah_nilai);
             $tender->status=$this->getSharedTenderStatus($rsnontender[0]->pekerjaanstatus); //TODO:
             $tender->title=$rsnontender[0]->namapekerjaan;
-        }
+       }
 
         return $tender;
     }
@@ -1397,9 +1397,46 @@ class ApiBIRMS_contract extends Controller
         // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
     }
 
+    function getTenderer($row)
+    {
+        $tenderer = new stdClass();
+        $tenderer->id = $row->rkn_npwp;
+        $tenderer->name = $row->rkn_nama;
+        
+        $address = new stdClass();
+        $address->streetAddress = $row->rkn_alamat;
+        $tenderer->address = $address;
+
+        $cp = new stdClass();
+        $cp->email = $row->rkn_email;
+        $cp->telephone = $row->rkn_telepon;
+        $tenderer->contactPoint = $cp; 
+        
+        $id = new stdClass();
+        $id->id = $row->rkn_npwp;
+        $id->legalName = $row->rkn_nama;
+        $tenderer->identifier = $id; 
+
+        return $tenderer;
+    }
+
     private function getTenderers($lls_id)
     {
-        return [];
-        //TODO: implement this !!
+        $db = env('DB_CONTRACT');
+        $sql = "SELECT * FROM ".$db.".lpse_peserta 
+                LEFT JOIN ".$db.".lpse_rekanan ON lpse_peserta.rkn_id = lpse_rekanan.rkn_id
+                WHERE lls_id = ". $lls_id ." AND (TRIM(psr_harga) <> '' AND TRIM(psr_harga_terkoreksi) <> '') ORDER BY lpse_peserta.auditupdate ASC";
+        $results = DB::select($sql);
+
+        if (sizeof($results) == 0) {
+            //abort(404, 'No tenderers found by tender_id ' . $tender_id);
+            $tenderers = [];
+        } else {
+            $tenderers = [];
+            foreach ($results as $row) {
+                array_push($tenderers, $this->getTenderer($row));
+            }
+        }
+        return $tenderers;
     }
 }
