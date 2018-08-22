@@ -615,7 +615,7 @@ class ApiBIRMS_contract extends Controller
             $tender->numberOfTenderers = 0;
         } else {
             $tender->value=$this->getAmount($results[0]->nilai_nego);
-            $tender->tenderers=$this->getTenderers($results[0]->lls_id);
+            $tender->tenderers=$this->getTenderers($year, $results[0]->lls_id, $parties);
             $tender->numberOfTenderers = sizeof($tender->tenderers);
             $this->registerRegistrants($results[0]->lls_id, $year, $parties);
             $tender->status=$this->getSharedTenderStatus($results[0]->pekerjaanstatus); //TODO: Check again mapping status
@@ -1408,7 +1408,7 @@ class ApiBIRMS_contract extends Controller
         // return response()->json($results)->header('Access-Control-Allow-Origin', '*');
     }
 
-    function getTenderer($row)
+    function getTenderer($year, $row,  &$parties)
     {
         $tenderer = new stdClass();
         $tenderer->id = $row->rkn_npwp;
@@ -1428,10 +1428,10 @@ class ApiBIRMS_contract extends Controller
         $id->legalName = $row->rkn_nama;
         $tenderer->identifier = $id; 
 
-        return $tenderer;
+        return $this->getOrganizationReferenceByName($year, $tenderer->name, "tenderer", $parties, $tenderer);
     }
 
-    private function getTenderers($lls_id)
+    private function getTenderers($year, $lls_id, &$parties)
     {
         $db = env('DB_CONTRACT');
         $sql = "SELECT * FROM ".$db.".lpse_peserta 
@@ -1445,7 +1445,7 @@ class ApiBIRMS_contract extends Controller
         } else {
             $tenderers = [];
             foreach ($results as $row) {
-                array_push($tenderers, $this->getTenderer($row));
+                array_push($tenderers, $this->getTenderer($year, $row, $parties));
             }
         }
         return $tenderers;
