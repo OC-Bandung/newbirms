@@ -200,7 +200,7 @@ class ApiBIRMS_contract extends Controller
 
         //if not found, read new organization from org table
         if (!isset($org)) {
-            if($competitive==null && isset($orgObj)) {
+            if(isset($orgObj)) {
                 $org=$orgObj;
             } else {
                 $org = $this->getOrganizationByName($year, $name, $competitive);
@@ -429,15 +429,19 @@ class ApiBIRMS_contract extends Controller
         $a->value = $this->getAmount($row->nilai_nego);
 
         $supl       = new stdClass();
+        $supl->id   = $row->perusahaannpwp;
         $supl->name = $row->perusahaannama;
-
-        $orgId      = new stdClass();
-        $orgId->legalName=$row->perusahaannama;
-        $supl->identifier=$orgId;
 
         $addr=new stdClass();
         $addr->streetAddress=$row->perusahaanalamat;
         $supl->address=$addr;
+
+        $supl->contactPoint = $this->getContactPoint($row); 
+
+        $orgId      = new stdClass();
+        $orgId->id  = $row->perusahaannpwp;
+        $orgId->legalName=$row->perusahaannama;
+        $supl->identifier=$orgId;
 
         $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->perusahaannama, "supplier", $parties, $supl, false)];
         return $a;
@@ -456,7 +460,8 @@ class ApiBIRMS_contract extends Controller
 
             $supl       = new stdClass();
             $supl->name = $row->pemenang;
-            
+            //$supl->id   = $row->id;
+
             $orgId      = new stdClass();
             $orgId->legalName=$row->pemenang;
             $supl->identifier=$orgId;
@@ -465,7 +470,7 @@ class ApiBIRMS_contract extends Controller
             $addr->streetAddress=$row->pemenangalamat;
             $supl->address=$addr;
 
-            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $orgId, true)];
+            $a->suppliers = [$this->getOrganizationReferenceByName($year, $row->pemenang, "supplier", $parties, $supl, true)];
         } else {
             $a->status = "pending";
         }
@@ -474,6 +479,8 @@ class ApiBIRMS_contract extends Controller
 
     function getNonCompetitiveAwards($year, $pekerjaanID, &$parties) {
         $db = env('DB_CONTRACT');
+        $dbeproc = env('DB_EPROC');
+        
         $sql = "SELECT
                     CONCAT(
                         REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
@@ -485,15 +492,19 @@ class ApiBIRMS_contract extends Controller
                     tbl_pekerjaan.namapekerjaan,
                     pilih_start,
                     nilai_nego,
-                    perusahaanid,
+                    tpengadaan_pemenang.perusahaanid,
                     perusahaannama,
                     perusahaanalamat,
-                    perusahaannpwp 
+                    perusahaannpwp,
+                    telepon,
+                    fax,
+                    email 
                 FROM
                     tbl_pekerjaan
                     LEFT JOIN ".$db.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
                     LEFT JOIN ".$db.".tpengadaan ON tpekerjaan.pid = tpengadaan.pid
                     LEFT JOIN ".$db.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
+                    LEFT JOIN ".$dbeproc.".tperusahaan ON tpengadaan_pemenang.perusahaanid = tperusahaan.perusahaanID 
                 WHERE
                     tbl_pekerjaan.pekerjaanID = ". $pekerjaanID . " AND tpekerjaan.pekerjaanstatus >= 4"; //4: Berjalan 7:Selesai
         //die($sql);
