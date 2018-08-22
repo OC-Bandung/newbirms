@@ -48,12 +48,13 @@ Route::get('graph/csv/2/{year}','ApiBIRMS@graph_csv2');
 Route::get('graph/csv/3/{year}','ApiBIRMS@graph_csv3');
 Route::get('graph/csv/4','ApiBIRMS@graph_csv4');
 
-Route::get('recent/perencanaan','ApiBIRMS@perencanaan');
+Route::get('recent/perencanaan','ApiBIRMS@get_recent_perencanaan');
 Route::get('recent/pengadaan','ApiBIRMS_Contract@get_recent_pengadaan');
-Route::get('recent/pemenang','ApiBIRMS@pemenang');
-Route::get('recent/kontrak','ApiBIRMS@kontrak');
+Route::get('recent/pemenang','ApiBIRMS@get_recent_pemenang');
+Route::get('recent/kontrak','ApiBIRMS@get_recent_kontrak');
 
 /* Request Diskominfo */
+Route::get('skpd/{year}', 'ApiBIRMS@get_skpd');
 Route::get('rencana/{year}/{organization}', 'ApiBIRMS@get_rencana');
 //Route::get('progres/{year}/{organization}', 'ApiBIRMS@get_progres');
 Route::get('progres/{year}/{organization}', 'ApiBIRMS@get_progres');

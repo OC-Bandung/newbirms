@@ -40,6 +40,6 @@
 <script type="text/javascript" src="{{ url('js/homepage/recent.js') }}"> </script>
 <script type="text/javascript" src="{{ url('js/homepage/ui.js') }}"> </script>
 
-<script type="text/javascript" src="{{ url('js/map.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/homepage/map.js') }}"></script>
 <script type="text/javascript" async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmGnhhccwog6j_hFmAo8zg1VaYWE_m7Ak&callback=initMap"></script>
 

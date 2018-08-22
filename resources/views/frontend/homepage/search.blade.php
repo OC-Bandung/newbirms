@@ -49,12 +49,12 @@
                 <div class="col">
                   <div class="form-group">
                      <h6> Klasifikasi </h6>
-                      <select class="form-control" name="klasifikasi" id="klasifikasi">
+                      <select class="form-control" name="jenis_pengadaanID" id="jenis_pengadaanID">
                         <option value="" disabled selected>Pilih Klasifikasi</option>
-                        <option value="01">Konstruksi</option>
-                        <option value="02">Pengadaan Barang</option>
-                        <option value="03">Jasa Konsultansi</option>
-                        <option value="04">Jasa Lainnya</option>
+                        <option value="1">Pengadaan Barang</option>
+                        <option value="2">Pekerjaan Konstruksi</option>
+                        <option value="3">Jasa Konsultansi</option>
+                        <option value="4">Jasa Lainnya</option>
                       </select>
                   </div>
                 </div>

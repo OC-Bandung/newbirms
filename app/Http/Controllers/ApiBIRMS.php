@@ -64,7 +64,7 @@ class ApiBIRMS extends Controller
 		$dbplanning = env('DB_PLANNING');
 
 		$sql = 'SELECT
-		CONCAT("'.env('OCID').'","s-",tahun,"-",sirupID) AS ocid,
+		CONCAT("'.$ocid.'","s-",tahun,"-",sirupID) AS ocid,
 		tahun AS year,
 		nama AS title,
 		CONCAT("'.env('API_ENDPOINT').'", "/'.$urlType.'/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
@@ -73,7 +73,7 @@ class ApiBIRMS extends Controller
 	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND pagu <> 0 
 	UNION 
 	SELECT
-		CONCAT("'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
+		CONCAT("'.$ocid.'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
 		'.$year.' AS year,
 		namapekerjaan AS title,
 		CONCAT("'.env('API_ENDPOINT').'", "/'.$urlType.'/", "'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS uri,
@@ -81,7 +81,6 @@ class ApiBIRMS extends Controller
 	FROM
 	'.$dbplanning.'.tbl_pekerjaan 
 	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1';
-
         $results = $this->arrayPaginator(DB::select($sql), request());
     	return response()
     			->json($results)
@@ -163,17 +162,26 @@ class ApiBIRMS extends Controller
 		$results = DB::select($sql, ['dbplanning'=> $dbplanning, 'dbcontract' => $dbcontract, 'dbmain' => $dbmain, 'year' => $year,'sktipeID' => $sktipeID]);*/
 
 		$sql = 'SELECT
-					*
+					TRIM(identity_no) AS nip ,
+					fullname AS nama ,
+					ringkasan AS kewenangan ,
+					tglsk ,
+					nosk ,
+					tbl_skpd.unitID ,
+					tbl_skpd.nama AS skpdnama
 				FROM
-					$dbplanning.tr_sk_user
-				LEFT OUTER JOIN tbl_sk ON tr_sk_user.skID = tbl_sk.skID 
-				LEFT OUTER JOIN tbl_sk_tipe ON tbl_sk.sktipeID = tbl_sk_tipe.sktipeID			
-				LEFT OUTER JOIN $dbmain.tbl_user ON tr_sk_user.usrID = $dbmain.tbl_user.usrID
-				LEFT OUTER JOIN $dbmain.tbl_skpd ON tbl_sk.skpdID = $dbmain.tbl_skpd.skpdID
-				LIMIT 10';
-		$results = DB::select($sql)->paginate(env('JSON_RESULTS_PER_PAGE', 40));
-    	return response()->json($results)->header('Access-Control-Allow-Origin', '*');
-	  
+					'.$dbplanning.'.tr_sk_user
+				LEFT OUTER JOIN '.$dbplanning.'.tbl_sk ON tr_sk_user.skID = tbl_sk.skID 
+				LEFT OUTER JOIN '.$dbplanning.'.tbl_sk_tipe ON tbl_sk.sktipeID = tbl_sk_tipe.sktipeID			
+				LEFT OUTER JOIN '.$dbmain.'.tbl_user ON tr_sk_user.usrID = tbl_user.usrID
+				LEFT OUTER JOIN '.$dbmain.'.tbl_skpd ON tbl_sk.skpdID = tbl_skpd.skpdID
+				WHERE YEAR(tglsk) = '.$year.' AND tbl_sk.sktipeID = '.$sktipeID.' AND identity_no <> \'\' 
+				GROUP BY nip, fullname, kewenangan, tglsk, nosk, unitID, skpdnama
+				ORDER BY unitID, TRIM(nip)';
+		$results = $this->arrayPaginator(DB::select($sql), request());
+		return response()
+				->json($results)
+				->header('Access-Control-Allow-Origin', '*');	  
 	}
 
 	/*--- Start Data Map Packet By Kecamatan  ---*/
@@ -596,9 +604,9 @@ class ApiBIRMS extends Controller
 								$sql .= " AND `tpengadaan`.ta = $tahun "; 
 							}
 
-							if (!empty($skpdID)) {
+							/*if (!empty($skpdID)) {
 								$sql .= " AND `tpengadaan`.skpdID = $skpdID"; 
-							}
+							}*/
 
 							if (!empty($klasifikasi)) {
 								$sql .= " AND LEFT(`tklasifikasi`.kode,2) = $klasifikasi"; 
@@ -611,6 +619,7 @@ class ApiBIRMS extends Controller
 							if (!empty($max)) {
 								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) "; 
 							}
+					die($sql);
 			    	$rspengadaan = DB::select($sql);
 			}
     	} else {
@@ -739,7 +748,8 @@ class ApiBIRMS extends Controller
 	}				
 
 	/*--- Recent Data ---*/
-	public function perencanaan() {
+	public function get_recent_perencanaan() 
+	{
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
@@ -894,7 +904,8 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function pengadaan() {
+	public function pengadaan() 
+	{
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
@@ -1010,13 +1021,59 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function pemenang() {
+	public function get_recent_pemenang() 
+	{
 		$dbplanning = env('DB_PLANNING');
 	    $dbcontract = env('DB_CONTRACT');
-	    $dbmain 	= env('DB_PRIME');
+		$dbmain 	= env('DB_PRIME');
+		
+		$year = date('Y');
+		$sql = '';
+		$rsdummy = DB::select($sql);
+
+		$rowdata = array();
+		$data = array();
+
+		/*foreach($rsdummy as $row) {
+			$sirupID = $row->sirupID;
+			$ocid = env('OCID') . $sirupID ;
+
+			$suppliers = array();
+			$data['ocid'] 		= $ocid;
+			$data['uri'] 		= env('LINK_SIRUP').$year."/".$sirupID;
+			$data['title'] 		= $row->namapekerjaan; 
+			$data['kode']		= $row->kode;
+			$data['activity']	= $row->namakegiatan;
+			$data['sirupID'] 	= $sirupID;
+			$data['SKPD']		= "";
+			$data['anggaran']	= "";m
+			$data['hps']		= $row->hps;
+			$data['nilai_penawaran']	= "";
+			$data['nilai_nego']			= $row->nilai_nego;
+			$data['suppliers']			= $suppliers;
+
+			$data['procurementMethod']		= "";
+			$data['procurementMethodDetails'] = "";
+			$data['awardCriteria']		= "";
+			$data['dateSigned'] = "";
+			$data['contract']	= array(
+					'startDate' => "",
+					'endDate' => ""
+			);
+			$data['created_at']		= "";
+			$data['updated_at']		= "";
+			array_push($rowdata, $data);
+        }*/
+
+		$results = $rowdata;
+
+		return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function kontrak() {
+	public function get_recent_kontrak() 
+	{
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
@@ -1070,18 +1127,40 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
+	public function get_skpd($year) 
+	{
+		$dbmain 	= env('DB_PRIME');
+		$dbmain_prev= env('DB_PRIME_PREV');
+
+		if ($year <= 2016) {
+			$sql = 'SELECT unitID, satker, nama, singkatan, alamat, telepon, email FROM '.$dbmain_prev.'.tbl_skpd ';
+		} else {
+			$sql = 'SELECT unitID, satker, nama, singkatan, alamat, telepon, email FROM '.$dbmain.'.tbl_skpd ';
+		}
+		$results = $this->arrayPaginator(DB::select($sql), request());
+    	return response()
+    			->json($results)
+    			->header('Access-Control-Allow-Origin', '*');		
+	}
+
 	public function get_progres($year, $organization) 
 	{
 	    $dbplanning = env('DB_PLANNING');
 	    $dbcontract = env('DB_CONTRACT');
-	    $dbmain 	= env('DB_PRIME');
+		$dbmain 	= env('DB_PRIME');
+		$dbmain_prev= env('DB_PRIME_PREV');
 
 		$sql = "SELECT 
 					CONCAT(REPLACE(tpekerjaan.tanggalrencana,'-',''),'.',tpengadaan.pid,'.',tpekerjaan.saltid) AS paketID, 
 					tpengadaan.pgid, 
 					tpengadaan.skpdID,
+					tbl_skpd.nama AS skpdnama, 
 					tpengadaan.kode AS koderekening,
 					tpengadaan.namapekerjaan,
+					tpengadaan.jenisID,
+					tbl_jenis.nama AS jenis_pengadaan,
+					tpengadaan.metodeID,
+					tbl_metode.nama AS metode_pengadaan,
 					tpengadaan.anggaran AS paguanggaran,
 					tpengadaan.hps AS hps,
 					tpengadaan.nilai_nego AS nilaikontrak,
@@ -1108,7 +1187,16 @@ class ApiBIRMS extends Controller
 					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',3),'|',-1) AS faktur_no,
 					SUBSTRING_INDEX(SUBSTRING_INDEX(tprogress_pembayaran_bukti.isian,'|',4),'|',-1) AS faktur_tgl
 				FROM ".$dbcontract.".tpengadaan 
-					LEFT JOIN ".$dbcontract.".tpekerjaan ON tpengadaan.pid = tpekerjaan.pid 
+					LEFT JOIN ".$dbcontract.".tpekerjaan ON tpengadaan.pid = tpekerjaan.pid ";
+				
+				if ($year <= 2016) {
+					$sql .= " LEFT JOIN ".$dbmain_prev.".tbl_skpd ON tpengadaan.skpdID = tbl_skpd.skpdID ";
+				} else {
+					$sql .= " LEFT JOIN ".$dbmain.".tbl_skpd ON tpengadaan.skpdID = tbl_skpd.skpdID ";
+				}
+
+				$sql .= " LEFT JOIN ".$dbplanning.".tbl_jenis ON tpengadaan.jenisID = tbl_jenis.jenisID
+					LEFT JOIN ".$dbplanning.".tbl_metode ON tpengadaan.metodeID = tbl_metode.metodeID
 					LEFT JOIN ".$dbcontract.".tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid 
 					LEFT JOIN ".$dbcontract.".tkontrak_penunjukan ON tpengadaan.pgid = tkontrak_penunjukan.pgid
 					LEFT JOIN ".$dbcontract.".tprogress_serahterima ON tpengadaan.pgid = tprogress_serahterima.pgid
@@ -1128,10 +1216,18 @@ class ApiBIRMS extends Controller
 	public function get_rencana($year, $organization)
     {
 		$dbplanning = env('DB_PLANNING');
-		
+		$dbmain 	= env('DB_PRIME');
+
 		if (strtoupper($organization) == 'ALL') {
 			$sql = 'SELECT * FROM '.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' ';
 		} else {
+			$sql = 'SELECT nama FROM '.$dbmain.'.tbl_skpd WHERE unitID = \''.$organization.'\'';	
+			$rsskpd = DB::select($sql);
+
+			if (sizeof($rsskpd) != 0) {
+				$rsskpd = $rsskpd[0];
+				$organization = $rsskpd->nama;
+			} 
 			$sql = 'SELECT * FROM '.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND satuan_kerja = \''.$organization.'\'';
 		}
 		$results = $this->arrayPaginator(DB::select($sql), request());

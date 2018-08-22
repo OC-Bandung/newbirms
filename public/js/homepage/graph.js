@@ -1,3 +1,7 @@
+var getUrl = window.location;
+var virtualUrl = "/newbirms_json/public";
+var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1]+virtualUrl;
+
 $(document).ready(function() {
 
        var options = {
@@ -39,9 +43,7 @@ $(document).ready(function() {
          series: []
        }
 
-       var getUrl = window.location;
-       var virtualUrl = "/newbirms_json/public";
-       var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1]+virtualUrl;
+        
 
        //console.log(baseUrl);
         $.getJSON(baseUrl+"/api/graph/1", function(list) {
@@ -108,7 +110,7 @@ $(document).ready(function() {
          series: []
        }
 
-       $.getJSON("https://birms.bandung.go.id/beta/api/graph/2/"+$currYear, function(list) {
+       $.getJSON(baseUrl+"/api/graph/2/"+$currYear, function(list) {
 
          console.log(list);
           var newseries, categories;
@@ -183,7 +185,7 @@ $(document).ready(function() {
         }]
        }
 
-       $.getJSON("https://birms.bandung.go.id/beta/api/graph/3/"+$currYear, function(list) {
+       $.getJSON(baseUrl+"/api/graph/3/"+$currYear, function(list) {
           var newdata;
 
           $.each(list, function (i, item) {
@@ -243,7 +245,7 @@ $(document).ready(function() {
          series: []
        }
 
-        $.getJSON("https://birms.bandung.go.id/beta/api/graph/4", function(list) {
+        $.getJSON(baseUrl+"/api/graph/4", function(list) {
           var newseries;
 
           $.each(list, function (i, item) {
