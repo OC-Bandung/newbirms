@@ -568,8 +568,6 @@ class HomeController extends Controller
 							if (!empty($max)) {
 								$sql .= " AND (tpengadaan.anggaran <= $max OR tpengadaan.nilai_nego <= $max) ";
 							}*/
-					//echo $sql;
-			    	$rspengadaan = DB::select($sql);
 			    	/*$rspengadaan = DB::table($dbecontract.'.tpengadaan AS pgd')
 			    						->addSelect(DB::raw('kodepekerjaan,
 			    							sirupID,
@@ -606,10 +604,14 @@ class HomeController extends Controller
 												    ['pgd.ta', 'LIKE', DB::raw('"%'.$tahun.'%"')]
 												]
 			    							)
-			    						->get();*/
+										->get();*/
+			//echo $sql;
+			$rspengadaan = DB::select($sql);										
+			$data['totalsearch'] = count($rspengadaan);
+			$rspengadaan = $this->arrayPaginator($rspengadaan, $request);
+
 			$data['pengadaan'] 	 = $rspengadaan;
 	    	//$data['pengadaan'] = $rspengadaan->toArray();
-	    	$data['totalsearch'] = count($rspengadaan);
     	} else {
     		$data['message'] = 'Silahkan isi kata yang ingin dicari terlebih dahulu';
     	}

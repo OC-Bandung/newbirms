@@ -10,6 +10,8 @@
     <div class="container">
       <div class="row">
         <form action="{{ url('search') }}" method="get">
+		{{ csrf_field() }}
+        <input type="hidden" name="per_page" value="10">
         <div class="col-12 bg-primary bg-opacity p-4 mt-4">
           <h4><span class="font-weight-700">Cari</span> Tender dan kontrak</h4>
           <div class="input-group w-50">
@@ -215,8 +217,8 @@
 
       <div class="row">
           <div class="col pt-3 text-center">
-          <?/*{{ $pengadaan->links() }}
-              <button type="button" class="btn btn-outline-dark font-primary">Load more</button>*/?>
+          {{ $pengadaan->links('pagination.limit_links') }}
+          <?/*  <button type="button" class="btn btn-outline-dark font-primary">Load more</button>*/?>
           </div>
       </div>
 

@@ -3,6 +3,8 @@
     <div class="row">
       <div class="col-12 bdg-city">
         <form action="{{ url('search') }}" method="get">
+		 {{ csrf_field() }}
+         <input type="hidden" name="per_page" value="10">
         <div class="img-bg" style="background-image:url('{{ url('img/bandung.png') }}')">
           <div class="row justify-content-md-center">
           	<div class="col-12 col-lg-6 bg-primary bg-opacity p-4 mt-4">
