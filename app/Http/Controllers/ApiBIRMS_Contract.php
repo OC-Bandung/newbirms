@@ -891,8 +891,8 @@ class ApiBIRMS_Contract extends Controller
         $publisher->uid = "1234"; //TODO: update ID
         $publisher->scheme = "SCHEME"; //TODO: update scheme
         $p->publisher = $publisher;
-        //$p->license = ""; //TODO: add license here from https://opendefinition.org/licenses/
-        $p->publicationPolicy=url("/api/publication-policy.txt"); //TODO: update publication policy
+        $p->license = "https://creativecommons.org/licenses/by-sa/4.0/";
+        $p->publicationPolicy=url("/api/publication-policy.txt");
         return $this->getValidatedOCDSWithCallback($p, $this->getOcdsPackageSchema());
     }
 

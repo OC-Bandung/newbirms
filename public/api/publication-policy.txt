@@ -1,17 +1,21 @@
-Regional Secretariat for the Procurement Section of Bandung City
+Bandung Integrated Resources Management System (BIRMS)
+Section for Procurement Services (BALAP)
+Office of Regional Secretariat of Bandung City Government
 ----------------------------------------------------------------
 
 Publication Policy
 ------------------
 
 
+About the data:
+The data in this portal covers Bandung City’s procurement and contracting processes conducted through both competitive and non-competitive procurement methods for years 2016, 2017 and 2018. Data is drawn from several procurement systems, including: SIMDA (e-budget), SiRUP (e-procurement planning), LPSE (e-tender), and e-kontrak (contract details for non-competitive procurement).
 
-Publisher contact in information:
+Licensing:
+The data is made available to the public under a Creative Commons Attribution Share-Alike 4.0 (CC-BY-SA-4.0) license (https://opendefinition.org/licenses/cc-by-sa/).
+This grants any user the freedom to explore, download, monitor and re-use the data for any purposes, including contract monitoring, analytics and research. The data is modeled according to the Open Contracting Data Standard (OCDS) (http://standard.open-contracting.org/latest/en/).
 
-How the data is generated, and how often:
+Future development plans:
+The Government of Bandung City encourages users from all sectors of society (government, private sector, civil society) to visit the website regularly, subscribe to updates on tender opportunities or information on specific contracts, and put this data into use. The Government of Bandung City is committed to improving the quality of the disclosed data over time, and welcomes any feedback from users on data quality. Bandung City is working to introduce geolocation data of procurement packages, and is currently piloting this initiative on 2018 data. Geolocation data is included in the 2018 dataset and API, and can also be visualized on the interactive map.
 
-Any exclusions from the data - such as information which is not disclosed for reasons of privacy and security:
-
-Any custom codelists used - or custom codes added to existing codelists:
-
-Future development plans - brief notes on the future plans of the publisher to improve their data:
+Publisher contact information:
+If you have questions, comments or ideas, please get in touch with us. General inquiries can be submitted to info@birms.bandung.go.id or through the online form. You can subscribe to updates on tender opportunities and information on specific contracts, and join the online conversation on twitter with the hashtag #BDGOpenContracting.
