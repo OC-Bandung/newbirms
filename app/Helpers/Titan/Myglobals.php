@@ -163,16 +163,17 @@ class Myglobals {
                         3 => 'milyar',
                         4 => 'trilyun');
         
-		$val = strval($val);
-	
+        $val = floatval($val);
 		$count = strlen($val);
-	
-		if (($count >= 13 ) && ($count <= 15 )) {
-			$result = "Rp. ". number_format($val/1000000000000,2,',','.')." T";
+
+        if (($count >= 16 ) && ($count <= 18 )) {
+			$result = "Rp. ". number_format($val/1000000000000000,1,',','.')." Kd";
+		} else if (($count >= 13 ) && ($count <= 15 )) {
+			$result = "Rp. ". number_format($val/1000000000000,1,',','.')." T";
 		} else if (($count >= 10 ) && ($count <= 12 )) {
-			$result = "Rp. ". number_format($val/1000000000,2,',','.')." M";
+			$result = "Rp. ". number_format($val/1000000000,1,',','.')." M";
 		} else {
-			$result = "Rp. ". number_format($val/1000000,2,',','.')." jt";
+			$result = "Rp. ". number_format($val/1000000,1,',','.')." jt";
 		}
 		return $result;
 	}

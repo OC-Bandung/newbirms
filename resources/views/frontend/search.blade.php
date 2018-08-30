@@ -197,7 +197,7 @@
               <small class="float-right">{{ $row->ocid }}</small>
               <div class="d-flex w-100 justify-content-between pt-1">
                 <span><h5 class="mb-1">{{ $row->namapekerjaan }}</h5></span>
-                <span class="float-right">Pagu: {{ MyGlobals::moneyDisplay($row->pagu_anggaran,0,',','.') }} </span>
+                <span class="float-right">Pagu: {{ MyGlobals::moneyDisplay($row->pagu_anggaran) }} </span>
               </div>
               <div>
                 <h6>SKPD : {{ $row->namaskpd }}</h6>
