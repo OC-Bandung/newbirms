@@ -957,7 +957,7 @@ class ApiBIRMS_Contract extends Controller
     {
         $p = new stdClass();
         $p->uri = request()->getUri();
-        $p->version = "1.3";
+        $p->version = "1.1";
         $release=$this->getReleaseObject($ocid);
         $p->releases = [$release];
         $p->publishedDate = $release->date;
