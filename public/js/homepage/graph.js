@@ -1,5 +1,5 @@
 var getUrl = window.location;
-var virtualUrl = "/newbirms_json/public";
+var virtualUrl = "";
 var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1]+virtualUrl;
 
 $(document).ready(function() {
@@ -10,7 +10,7 @@ $(document).ready(function() {
             type: 'column'
          },
          title: {
-             text: 'Lelang Umum vs Pengadaan Langsung'
+             text: 'Tender vs Non Tender'
          },
          credits: false,
          xAxis: {
@@ -76,7 +76,7 @@ $(document).ready(function() {
              text: 'SKPD Anggaran Terbesar Tahun Ini / Telah Berjalan'
          },
          subtitle: {
-            text: 'Lelang dan Pengadaan Langsung'
+            text: 'Tender dan Non Tender'
          },
          credits: false,
          xAxis: {
@@ -150,7 +150,7 @@ $(document).ready(function() {
             type: 'pie'
          },
          title: {
-            text: 'Pengadaan Langsung Tahun Ini / Telah Berjalan'
+            text: 'Non Tender Tahun Ini / Telah Berjalan'
         },
         subtitle: {
             text: 'Berdasarkan Jenis Pengadaan melalui BIRMS'
@@ -209,10 +209,10 @@ $(document).ready(function() {
             type: 'column'
          },
          title: {
-             text: 'Total Paket Pengadaan'
+             text: 'Total Kontrak'
          },
          subtitle: {
-            text: 'Lelang dan Pengadaan Langsung'
+            text: 'Tender dan Non Tender'
          },
          credits: false,
          xAxis: {

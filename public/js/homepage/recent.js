@@ -77,7 +77,6 @@ function get_planning(data) {
 
     json = data[i];
 
-
     html+= '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
     html+= '<div class="d-flex w-100 justify-content-between">';
     html+= '    <h5 class="mb-1">' + json.title + '</h5>';
@@ -85,54 +84,56 @@ function get_planning(data) {
     html+= '  </div>';
 
     html+= '  <div class="d-flex w-100 justify-content-between">';
-    html+= '      <h6>SirupID: ' +  json.sirupID + ' - Kota Bandung: ' + json.SKPD + ' </h6>';
+    html+= '      <h6>SirupID: ' +  json.sirupID + ' &mdash; Kota Bandung: ' + json.SKPD + ' </h6>';
     html+= '  </div>';
 
-    html+= '  <div class="d-flex w-100 justify-content-between pt-1">';
-    html+= '    <span class="h6">';
-    html+= '      <span class="font-weight-bold"> Pagu  </span>';
-    html+= '        <div class="h6 pt-1">' + json.budget.amount.amount / 1000000  + ' jt </div>';
-    html+= '    </span>';
+    html+= '  <div class="d-flex justify-content-between pt-1">';
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Pagu Anggaran </div>';
+    html+= '        <div class="pt-1">' + json.budget.amount.amount / 1000000  + ' jt </div>';
+    html+= '    </div>';
 
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Sumber Dana </div>';
+    html+= '        <div class="pt-1">' + json.budget.description + ' </div>';
+    html+= '    </div>';
 
-    html+= '    <span class="h6">';
-    html+= '       <span class="font-weight-bold"> Budget </span>';
-    html+= '      <div class="h6 pt-1">' +   json.budget.description + '</div>';
-    html+= '    </span>';
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Pengumuman </div>';
+    html+= '        <div class="pt-1">' + moment(json.tender.startDate).format('ll') + ' </div>';
+    html+= '    </div>';
 
-    html+= '    <span class="h6">';
-    html+= '    <span class="font-weight-bold"> Tender start </span>';
-    html+= '      <div class="h6 pt-1"> ' + moment(json.tender.startDate).format('ll') + '</div>';
-    html+= '    </span>';
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Penetapan Pemenang </div>';
+    html+= '        <div class="pt-1">' + moment(json.tender.endDate).format('ll') + ' </div>';
+    html+= '    </div>';
 
-    html+= '      <span class="h6">';
-    html+= '      <span class="font-weight-bold"> Tender end </span>';
-    html+= '      <div class="h6 pt-1">' +  moment(json.tender.endDate).format('ll') + '</div>';
-    html+= '    </span>';
-    html+= '    <span class="h6">';
-    html+= '      <span class="font-weight-bold"> Contract start </span>';
-    html+= '      <div class="h6 pt-1">' + moment(json.contract.startDate).format('ll') + '</div>';
-    html+= '    </span>';
-    html+= '    <span class="h6">';
-    html+= '      <span class="font-weight-bold"> Contract end </span>';
-    html+= '      <div class="h6 pt-1">' + moment(json.contract.endDate).format('ll') + '</div>';
-    html+= '    </span>';
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Mulai Kontrak / Pekerjaan  </div>';
+    html+= '        <div class="pt-1">' + moment(json.contract.endDate).format('ll') + ' </div>';
+    html+= '    </div>';
+
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Selesai Kontrak / Pekerjaan </div>';
+    html+= '        <div class="pt-1">' + moment(json.contract.endDate).format('ll') + ' </div>';
+    html+= '    </div>';
     html+= '  </div>';
 
+    html+= '  <div class="d-flex justify-content-between pt-1">';
+    html+= '    <div class="mb-0"><span class="hammer">Program: </span>' + json.project + '' ;
+    html+= '    </div>';
+    html+= '  </div>';
 
-    html+= '    <p class="mb-0"><span class="hammer">Program: </span>' + json.project + '' ;
-    html+= '  </p>';
 
     html+= '  <div class="d-flex w-100 justify-content-between">';
-    html+= '    <span><span class="hammer">Category</span>: <span class="text-capitalize">' + json.mainProcurementCategory + '</span></span>';
-    html+= '    <span><span class="hammer">Procurement method: </span>' +  json.procurementMethodDetails + '</span>';
-    html+= '    <span><span class="hammer">Award criteria: </span>' +  json.awardCriteria + '</span>';
+    html+= '    <div class="d-flex hammer">Klasifikasi: <span class="text-capitalize">' + json.mainProcurementCategory + '</span></div>';
+    html+= '    <div class="d-flex hammer">Metode Pengadaan: <span>' + json.procurementMethodDetails + '</span></div>';
+    html+= '    <div class="d-flex hammer">Award criteria: <span>' + json.awardCriteria + '</span></div>';
+
+    html+= '  </div>';
     html+= '  </div>';
 
     html+= '</a>';
-
-
-
   }
 
   $("#recent-from-api").html(html);
@@ -153,6 +154,69 @@ function get_tender(data) {
     json = data[i];
 
     html+= '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
+    html+= '<div class="d-flex w-100 justify-content-between">';
+    html+= '    <h5 class="mb-1">' + json.title + '</h5>';
+    html+= '    <small>OCID: ' + json.ocid + '</small>';
+    html+= '  </div>';
+
+    html+= '  <div class="d-flex w-100 justify-content-between">';
+    html+= '      <h6>SirupID: ' +  json.sirupID + ' &mdash; Kota Bandung: ' + json.SKPD + ' </h6>';
+    html+= '  </div>';
+
+    html+= '  <div class="d-flex justify-content-between pt-1">';
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Tanggal Pengumuman </div>';
+    html+= '        <div class="pt-1">' + json.anggaran + ' jt </div>';
+    html+= '    </div>';
+
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Metode </div>';
+    html+= '        <div class="pt-1">' + json.anggaran + ' jt </div>';
+    html+= '    </div>';
+
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> HPS </div>';
+    html+= '        <div class="pt-1">' + json.anggaran + ' jt </div>';
+    html+= '    </div>';
+
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Jumlah Penawar </div>';
+    html+= '        <div class="pt-1">' + json.anggaran + ' jt </div>';
+    html+= '    </div>';
+
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Nilai Penawar  </div>';
+    html+= '        <div class="pt-1">' + json.anggaran + ' jt </div>';
+    html+= '    </div>';
+
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Terkoreksi </div>';
+    html+= '        <div class="pt-1">' + json.anggaran + ' jt </div>';
+    html+= '    </div>';
+
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> Evaluasi </div>';
+    html+= '        <div class="pt-1">' + json.anggaran + ' jt </div>';
+    html+= '    </div>';
+    html+= '  </div>';
+
+    html+= '  <div class="d-flex justify-content-between pt-1">';
+    html+= '    <div class="d-flex flex-column h6">';
+    html+= '        <div class="font-weight-bold"> Kegiatan </div>';
+    html+= '      <div class="pt-1">' + json.activity + '' ;
+    html+= '    </div>';
+    html+= '    </div>';
+
+    html+= '    <div class="d-flex flex-column h6 text-center">';
+    html+= '        <div class="font-weight-bold"> # Suppliers </div>';
+    html+= '        <div class="pt-1">' + json.suppliers.length + ' </div>';
+    html+= '    </div>';
+
+    html+= '  </div>';
+    html+= '  </div>';
+
+    html+= '</a>';
+    /*html+= '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
     html+= '<div class="d-flex w-100 justify-content-between">';
     html+= '    <h5 class="mb-1">' + json.title + '</h5>';
     html+= '    <small>3 days ago</small>';
@@ -209,7 +273,7 @@ function get_tender(data) {
     html+= '    </span>';
     html+= '  </div>';
 
-    html+= '</a>';
+    html+= '</a>';*/
 
 
     // html += '<p>The activity is <i> <u> ' +  json.activity + '</u></i>. The following supplier(s) applied:   </p>';
