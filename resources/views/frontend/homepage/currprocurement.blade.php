@@ -8,7 +8,7 @@
           </div>
         </div>
 
-      <div class="row  pt-3">
+      <div class="row pt-3">
         <div class="col-4 pr-0">
               <ul id="load_recent-procurement" class="list-recent-proc sticky">
 

@@ -44,7 +44,6 @@ class ApiBIRMS extends Controller
             ['path' => $request->url(), 'query' => $request->query()]);
     }
 
-
     public function contractsPerYear($year)
     {
         return $this->itemsPerYear($year,"newcontract");
@@ -245,7 +244,7 @@ class ApiBIRMS extends Controller
         foreach($rs1 as $row) {
             array_push($data, array($row->tahun, (float)$row->nilaikontrak));
         }
-        array_push($rowdata, array("name"=>"Lelang", "data"=> $data));
+        array_push($rowdata, array("name"=>"Tender", "data"=> $data));
 
         $sql = 'SELECT tahun, (nilaikontrak/1000000000) AS nilaikontrak FROM '.env('DB_CONTRACT').'.vpl_bypaket ORDER BY tahun ASC';
         $rs1 = DB::select($sql);
@@ -254,7 +253,7 @@ class ApiBIRMS extends Controller
         foreach($rs1 as $row) {
             array_push($data, array($row->tahun, (float)$row->nilaikontrak));
         }
-        array_push($rowdata, array("name"=>"Pengadaan Langsung", "data"=> $data));
+        array_push($rowdata, array("name"=>"Non Tender", "data"=> $data));
         $results = $rowdata;
 
         return $results;
@@ -417,7 +416,7 @@ class ApiBIRMS extends Controller
 		foreach($rs1 as $row) {
 			array_push($data, array($row->tahun, (int)$row->paket));
 		}
-		array_push($rowdata, array("name"=>"Lelang", "data"=> $data));
+		array_push($rowdata, array("name"=>"Tender", "data"=> $data));
 
 		$sql = 'SELECT tahun, paket FROM '.env('DB_CONTRACT').'.vpl_bypaket ORDER BY tahun ASC';
 		$rs2 = DB::select($sql);
@@ -426,7 +425,7 @@ class ApiBIRMS extends Controller
 		foreach($rs2 as $row) {
 			array_push($data, array($row->tahun, (int)$row->paket));
 		}
-		array_push($rowdata, array("name"=>"Pengadaan Langsung", "data"=> $data));
+		array_push($rowdata, array("name"=>"Non Tender", "data"=> $data));
 		$results = $rowdata;
 
     	return response()
@@ -490,18 +489,20 @@ class ApiBIRMS extends Controller
 
 	public function graph_csv2()
 	{
+		//TODO :
 		return "CSV SKPD";
 	}
 
 	public function graph_csv3()
 	{
+		//TODO :
 		return "CSV Non Competitive";
 	}
 
 	public function graph_csv4()
 	{
+		//TODO :
 		return "CSV Total Procurement";
-
 	}
 	/*--- End Data Statistic ---*/
 
@@ -842,7 +843,7 @@ class ApiBIRMS extends Controller
 				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
 				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
 				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-				WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1 LIMIT 20';
+				WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1 LIMIT 5';
 		$rsdummy = DB::select($sql);
 
 		$rowdata = array();
@@ -899,7 +900,8 @@ class ApiBIRMS extends Controller
 
 		$results = $rowdata;
 
-		return response()
+		//$results = $this->arrayPaginator($rowdata, request());
+    	return response()
     			->json($results)
     			->header('Access-Control-Allow-Origin', '*');
 	}

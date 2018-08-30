@@ -14,8 +14,9 @@ class HomeController extends Controller
 {
     public function index()
     {
+		$dbplanning  = env('DB_PLANNING');
     	$dbecontract = env("DB_CONTRACT");
-    	$dbprime = env("DB_PRIME");
+    	$dbprime 	 = env("DB_PRIME");
 
     	/* Article ---- Start */
     	$sql = 	"SELECT tbl_post.pst_id,
@@ -38,7 +39,12 @@ class HomeController extends Controller
 		$rspost = DB::select($sql);
     	/* Article ---- Finish */
 
-    	/* Dashboard Data ---- Start --- Current Year */
+		/* Dashboard Data ---- Start --- Current Year */
+		/* get all sirup */
+		$sql = "SELECT COUNT(*) AS jumlah, SUM(pagu) AS pagu FROM ".$dbplanning.".tbl_sirup WHERE tahun = YEAR(NOW())";
+		$rssirup_select 		= DB::select($sql);
+		$rssirup 					= json_decode(json_encode($rssirup_select), true);
+
     	$sql = "SELECT SUM(anggaran) AS anggaran, SUM(nilai_nego) AS nilai_nego, SUM(IF (NOT ISNULL(tkontrak.sp_nosurat),nilai_nego,0)) AS realisasikontrak, SUM(IF (NOT ISNULL(tprogress_pembayaran.tgl_surat),nilai_nego,0)) AS realisasikeuangan FROM $dbecontract.tlelangumum
 				LEFT OUTER JOIN $dbecontract.tkontrak ON $dbecontract.tlelangumum.lgid = $dbecontract.tkontrak.lgid
 				LEFT OUTER JOIN $dbecontract.tprogress_pembayaran ON $dbecontract.tlelangumum.lgid = $dbecontract.tprogress_pembayaran.lgid
@@ -56,12 +62,11 @@ class HomeController extends Controller
 		$rspl_select 			= DB::select($sql);
 		$rspl 					= json_decode(json_encode($rspl_select), true);
 
-		$sql = "SELECT count(*) AS jumlah FROM $dbecontract.tlelangumum WHERE tlelangumum.ta =  YEAR(NOW())";
+		$sql = "SELECT count(*) AS jumlah, SUM(nilai_nego) AS kontrak FROM $dbecontract.tlelangumum WHERE tlelangumum.ta =  YEAR(NOW())";
 		$rsjmllelang_select 	= DB::select($sql);
 		$rsjmllelang 			= json_decode(json_encode($rsjmllelang_select), true);
 
-
-		$sql = "SELECT count(*) AS jumlah FROM $dbecontract.tpengadaan WHERE tpengadaan.ta =  YEAR(NOW())";
+		$sql = "SELECT count(*) AS jumlah, SUM(nilai_nego) AS kontrak FROM $dbecontract.tpengadaan WHERE tpengadaan.ta =  YEAR(NOW()) AND pekerjaanstatus = 7";
 		$rsjmlpl_select 		= DB::select($sql);
 		$rsjmlpl 				= json_decode(json_encode($rsjmlpl_select), true);
 
@@ -90,12 +95,11 @@ class HomeController extends Controller
 		$rspl_select 			= DB::select($sql);
 		$rspl_prev 				= json_decode(json_encode($rspl_select), true);
 
-		$sql = "SELECT count(*) AS jumlah FROM $dbecontract.tlelangumum WHERE tlelangumum.ta =  YEAR(NOW()) - 1";
+		$sql = "SELECT count(*) AS jumlah, SUM(nilai_nego) AS kontrak FROM $dbecontract.tlelangumum WHERE tlelangumum.ta =  YEAR(NOW()) - 1";
 		$rsjmllelang_select 	= DB::select($sql);
 		$rsjmllelang_prev 		= json_decode(json_encode($rsjmllelang_select), true);
 
-
-		$sql = "SELECT count(*) AS jumlah FROM $dbecontract.tpengadaan WHERE tpengadaan.ta =  YEAR(NOW()) - 1 ";
+		$sql = "SELECT count(*) AS jumlah, SUM(nilai_nego) AS kontrak FROM $dbecontract.tpengadaan WHERE tpengadaan.ta =  YEAR(NOW()) - 1 ";
 		$rsjmlpl_select 		= DB::select($sql);
 		$rsjmlpl_prev			= json_decode(json_encode($rsjmlpl_select), true);
 
@@ -270,28 +274,37 @@ class HomeController extends Controller
 		$rsskpd = DB::select($sql);
 		/* Search Reference ---- End */
 
-		$total_nilai_pengadaan 		= $rspgd[0]['nilai_nego'] + $rspl[0]['nilai_nego'];
-		$total_paket_lelang 		= number_format($rsjmllelang[0]['jumlah'],0,',','.');
-		$total_paket_pl 			= number_format($rsjmlpl[0]['jumlah'],0,',','.');
-		$total_nilai_pengumuman_pl 	= $rsjmlplselesai[0]['jumlah'];
-
 		$total_prev_nilai_pengadaan 	= $rspgd_prev[0]['nilai_nego'] + $rspl_prev[0]['nilai_nego'];
-		$total_prev_paket_lelang 		= number_format($rsjmllelang_prev[0]['jumlah'],0,',','.');
-		$total_prev_paket_pl 			= number_format($rsjmlpl_prev[0]['jumlah'],0,',','.');
+		$total_prev_paket_tender		= number_format($rsjmllelang_prev[0]['jumlah'],0,',','.');
+		$total_prev_nilai_tender		= number_format($rsjmllelang_prev[0]['kontrak'],0,',','.');
+		$total_prev_paket_nontender 	= number_format($rsjmlpl_prev[0]['jumlah'],0,',','.');
+		$total_prev_nilai_nontender 	= number_format($rsjmlpl_prev[0]['kontrak'],0,',','.');
 		$total_prev_nilai_pengumuman_pl = $rsjmlplselesai_prev[0]['jumlah'];
 
 		$data							= [];
 
 		$data['ref_skpd']				= $rsskpd;
+		
+		$data['total_paket_sirup']			= $rssirup[0]['jumlah'];
+		$data['total_nilai_sirup']			= $rssirup[0]['pagu'];
 
-    	$data['total_nilai_pengadaan'] 	= $total_nilai_pengadaan;
-		$data['total_paket_lelang'] 	= $total_paket_lelang;
-		$data['total_paket_pl'] 		= $total_paket_pl;
-		$data['total_nilai_pengumuman_pl'] = $total_nilai_pengumuman_pl;
+		$data['total_paket_tender'] 		= number_format($rsjmllelang[0]['jumlah'],0,',','.');
+		$data['total_nilai_tender'] 		= $rsjmllelang[0]['kontrak'];
+		$data['total_paket_nontender'] 		= number_format($rsjmlpl[0]['jumlah'],0,',','.');
+		$data['total_nilai_nontender'] 		= $rsjmlpl[0]['kontrak'];
+
+		$data['total_paket_kontrak'] 		= $rsjmllelang[0]['jumlah'] + $rsjmlpl[0]['jumlah'];
+		$data['total_nilai_kontrak'] 		= $rsjmllelang[0]['kontrak'] + $rsjmlpl[0]['kontrak'];
+
+		$data['total_nilai_pengumuman_pl'] = $rsjmlplselesai[0]['jumlah'];
 
 		$data['total_prev_nilai_pengadaan'] 	= $total_prev_nilai_pengadaan;
-		$data['total_prev_paket_lelang'] 	= $total_prev_paket_lelang;
-		$data['total_prev_paket_pl'] 		= $total_prev_paket_pl;
+		
+		$data['total_prev_paket_tender'] 		= $total_prev_paket_tender;
+		$data['total_prev_nilai_tender'] 		= $total_prev_nilai_tender;
+		$data['total_prev_paket_nontender'] 	= $total_prev_paket_nontender;
+		$data['total_prev_nilai_nontender'] 	= $total_prev_nilai_nontender;
+		
 		$data['total_prev_nilai_pengumuman_pl'] = $total_prev_nilai_pengumuman_pl;
 
 		$data['article']				= $rspost;
@@ -404,6 +417,7 @@ class HomeController extends Controller
 					FROM
 						(
 						SELECT
+							CONCAT("'.env('OCID').'","s-",tahun,"-",tbl_sirup.sirupID) AS ocid,
 							tbl_sirup.sirupID,
 							tbl_sirup.tahun,
 							tbl_sirup.nama AS namapekerjaan,
@@ -433,6 +447,7 @@ class HomeController extends Controller
 								'.$dbplanning.'.tbl_sirup
 								LEFT JOIN '.$dbecontract.'.tlelangumum ON tbl_sirup.sirupID = tlelangumum.sirupID UNION
 							SELECT
+								CONCAT( "'.env('OCID').'", "b-", tbl_pekerjaan.tahun, "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
 								tbl_pekerjaan.pekerjaanID AS sirupID,
 								tbl_pekerjaan.tahun,
 								tbl_pekerjaan.namapekerjaan,
@@ -616,5 +631,17 @@ class HomeController extends Controller
     		$data['message'] = 'Silahkan isi kata yang ingin dicari terlebih dahulu';
     	}
     	return View::make("frontend.search")->with($data);
+	}
+	
+	function contract()
+    {
+    	$data			 = [];
+    	return View::make("frontend.contract")->with($data);
+	}
+	
+	function watched()
+    {
+    	$data			 = [];
+    	return View::make("frontend.watched")->with($data);
     }
 }

@@ -44,7 +44,51 @@ class ApiBIRMS_Contract extends Controller
         $planning = new stdClass();
         $planning->budget = $this->getBudget($results);
 
+        $planning->milestones = $this->getPlanningMilestones($results); 
         return $planning;
+    }
+
+    function getPlanningMilestones($results)
+    {
+        $milestoneDateFormat = 'Y-m-d H:i:s';
+
+        //$milestones = new stdClass();
+        //$milestones[] = $this->getPlanningProcurement($results);
+        $milestones = [];
+        array_push($milestones, $this->getPlanningProcurement($results));
+        array_push($milestones, $this->getPlanningWork($results));
+
+        return $milestones;
+    }
+
+    function getPlanningProcurement($results)
+    {
+        $milestoneDateFormat = 'Y-m-d H:i:s';
+
+        $milestone = new stdClass();
+        $milestone->id = '1';
+        $milestone->title = 'Rencana Pengadaan';
+        $milestone->description = 'Rencana Pengadaan Road Map';
+        $milestone->dueDate = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
+        $milestone->dateMet = $this->getOcdsDateFromString($results->tanggal_akhir_pengadaan);
+        $milestone->status = $this->getMilestoneStatus($results->tanggal_akhir_pengadaan, $results->tanggal_awal_pengadaan);
+
+        return $milestone;   
+    }
+
+    function getPlanningWork($results)
+    {
+        $milestoneDateFormat = 'Y-m-d H:i:s';
+
+        $milestone = new stdClass();
+        $milestone->id = '2';
+        $milestone->title = 'Rencana Pekerjaan';
+        $milestone->description = 'Rencana Pekerjaan Road Map';
+        $milestone->dueDate = $this->getOcdsDateFromString($results->tanggal_awal_pekerjaan);
+        $milestone->dateMet = $this->getOcdsDateFromString($results->tanggal_akhir_pekerjaan);
+        $milestone->status = $this->getMilestoneStatus($results->tanggal_akhir_pengadaan, $results->tanggal_awal_pengadaan);
+
+        return $milestone;   
     }
 
     function getContactPoint($row)
@@ -227,6 +271,7 @@ class ApiBIRMS_Contract extends Controller
         $budget->amount = $this->getAmount($results->pagu);
         $budget->description = $results->sumber_dana_string;
         $budget->project = $results->nama;
+        //$budget->projectID = $results->mak;
         return $budget;
     }
 
@@ -240,11 +285,12 @@ class ApiBIRMS_Contract extends Controller
         return $reference;
     }
 
-    function getPeriod($startDate, $endDate)
+    function getPeriod($startDate, $endDate, $format = 'Y-m-d')
     {
         $period = new stdClass();
-        $period->startDate = $this->getOcdsDateFromString($startDate);
-        $period->endDate = $this->getOcdsDateFromString($endDate);
+        
+        $period->startDate = $this->getOcdsDateFromString($startDate, $format);
+        $period->endDate = $this->getOcdsDateFromString($endDate, $format);
         return $period;
     }
 
@@ -565,33 +611,54 @@ class ApiBIRMS_Contract extends Controller
     {
         $tender = new stdClass();
         $tender->procurementMethod = $this->getProcurementMethod($results->metode_pengadaan);
-        $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
-        $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
+        //$tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->mainProcurementCategory = $this->getMainProcurementCategory($results);
         $tender->procuringEntity = $this->getOrganizationReferenceByName($year, $results->satuan_kerja, "procuringEntity", $parties, null, null);
 
         return $tender;
     }
 
-    function getTender($year, $results, &$parties) {
+    function getTender($year, $results, &$parties) 
+    {
         $db = env('DB_CONTRACT');
+        $milestoneDateFormat = 'Y-m-d H:i:s';
         
         $tender = $this->getSharedTender($year, $results, $parties);
         $tender->id = $this->getLelangID($results->sirupID);
         $tender->milestones = $this->getTenderMilestones($results->sirupID);
 
         $sql = "SELECT * FROM " . $db . ".tlelangumum WHERE sirupID = " . $results->sirupID . " ";
-        $results = DB::select($sql);
+        $rslelang = DB::select($sql);
 
-        if (sizeof($results) == 0) {
+        if (sizeof($rslelang) == 0) {
             $tender->numberOfTenderers = 0;
         } else {
-            $tender->value=$this->getAmount($results[0]->nilai_nego);
-            $tender->tenderers=$this->getTenderers($year, $results[0]->lls_id, $parties);
+            //Pengumuman Lelang
+            $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
+            LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
+            WHERE lls_id = " . $rslelang[0]->lls_id . " AND lpse_aktivitas.akt_id = 102 ORDER BY akt_urut";
+            $rsperiod = DB::select($sql);
+
+            if (sizeof($rsperiod) != 0) {
+                $tender->tenderPeriod = $this->getPeriod($rsperiod[0]->dtj_tglawal, $rsperiod[0]->dtj_tglakhir, $milestoneDateFormat);
+            }
+
+            //Tandatangan Kontrak
+            $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
+            LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
+            WHERE lls_id = " . $rslelang[0]->lls_id . " AND lpse_aktivitas.akt_id = 115 ORDER BY akt_urut";
+            $rskontrak = DB::select($sql);
+
+            if (sizeof($rskontrak) != 0) {
+                $tender->contractPeriod = $this->getPeriod($rskontrak[0]->dtj_tglawal, $results->tanggal_akhir_pekerjaan. ' 00:00:00', $milestoneDateFormat);
+            }
+            
+            $tender->value=$this->getAmount($rslelang[0]->nilai_nego);
+            $tender->tenderers=$this->getTenderers($year, $rslelang[0]->lls_id, $parties);
             $tender->numberOfTenderers = sizeof($tender->tenderers);
-            $this->registerRegistrants($results[0]->lls_id, $year, $parties);
-            $tender->status=$this->getSharedTenderStatus($results[0]->pekerjaanstatus); //TODO: Check again mapping status
-            $tender->title=$results[0]->namapekerjaan;
+            $this->registerRegistrants($rslelang[0]->lls_id, $year, $parties);
+            $tender->status=$this->getSharedTenderStatus($rslelang[0]->pekerjaanstatus); //TODO: Check again mapping status
+            $tender->title=$rslelang[0]->namapekerjaan;
         }
 
         return $tender;
@@ -618,6 +685,8 @@ class ApiBIRMS_Contract extends Controller
 
         $tender = $this->getSharedTender($year, $results, $parties);
         $tender->id = $this->getNonLelangID($results->sirupID);
+        $tender->tenderPeriod = $this->getPeriod($results->tanggal_awal_pengadaan, $results->tanggal_akhir_pengadaan);
+        $tender->contractPeriod = $this->getPeriod($results->tanggal_awal_pekerjaan, $results->tanggal_akhir_pekerjaan);
         $tender->milestones = $this->getNonTenderMilestones($this->getNonLelangID($results->sirupID));
 
         $sql = "SELECT
@@ -850,7 +919,7 @@ class ApiBIRMS_Contract extends Controller
     /**
      * Converts string dates in bandung db into JSON compliant string using DATE_ATOM format
      * @param $date
-     * @param $format ? the format for the input date, default is 'Y-m-d'
+     * @param $format the format for the input date, default is 'Y-m-d'
      * @return string
      */
     function getOcdsDateFromString($date, $format = 'Y-m-d')
@@ -861,7 +930,7 @@ class ApiBIRMS_Contract extends Controller
     /**
      * Adds ocds tag based on existing data about phases
      *
-     * @param $r ? the release
+     * @param $r the release
      */
     function appendTag($r) 
     {

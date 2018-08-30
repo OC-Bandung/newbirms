@@ -1,18 +1,5 @@
- var expected = 500;
- var actual = 950;
 
- var highest = Math.max(expected, actual);
 
- var max = $("#vertical-chart").height();
-
- $("#expected").css('height', (expected/highest)*max);
- $("#actual").css('height', (actual/highest)*max);
-
- 
- $("li#expected").append(expected);
- $("li#actual").append(actual);
-
- 
 var max = $("#horizontal-chart").width();
 
 var budget = 920;
@@ -34,5 +21,5 @@ $("#chart-awards-amount").append(award);
 $("#chart-contract-amount").width((contract/highest)*max);
 $("#chart-contract-amount").append(contract);
 
+
  
-console.log(award);

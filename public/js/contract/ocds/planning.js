@@ -1,53 +1,52 @@
-function load_planning(planning) {
+function load_planning(data) {
 
-    if (planning.hasOwnProperty('budget')) {
+    planning = data.planning;
 
-        $("#stage-amount").text(release.planning.budget.amount.amount/1000000);
-        $("#planning-budget-amount-amount").text(planning.budget.amount.amount);
-
-        $("#planning-rationale").text(planning.rationale);
-        $("#planning-budget-description").text(planning.budget.description);
+    // if there is a buyer id in data.buyer, then go to parties and lookup the information to show
+    // sometimes data.id doesn't exist but the role of buyer is still there, so in the else statement, try to loop and see if there is a buyer.
 
 
-        $("#planning-budget-project-id").text(planning.budget.projectID);
-        $("#planning-budget-project-name").text(planning.budget.project);
+    if (data.buyer.name) {
+      $("#parties-buyer-name").text(data.buyer.name);
+      $("#parties-buyer-name-container").removeClass("d-none");
+    }
 
-        $("#planning-budget-id").text(planning.budget.id);
-
-        if (planning.status) {
-          $("#stage-status").text(planning.status);
-        } else {
-            $("#stage-status").hide();
-        }
-        // var d = new Date(tender.tenderPeriod.startDate);
-        //
-        // $("#planning-budget-year").text(d.getFullYear());
-
-
-        // progress
-        var month_data = [];
-        var mn;
-
-        if (planning.hasOwnProperty('forecasts')) {
-            for (i = 0; i < planning.forecasts.length; i++) {
-
-                for (j = 0; j < planning.forecasts[i].observations.length; j++) {
-                    mn = planning.forecasts[i].observations[j].period.startDate.substr(5, 2);
-                    month_data[mn] = planning.forecasts[i].observations[j].measure;
-                    if (planning.forecasts[i].id == "physicalProgress") {
-                        $(".planning-physicalProgress[mn='" + mn + "']").text(month_data[mn] + "%");
-                        $(".planning-physicalProgress[mn='" + mn + "']").prev().removeClass("hidden");
-                        $(".planning-physicalProgress[mn='" + mn + "']").parent().prev().addClass("active");
-                    } else if (planning.forecasts[i].id == "financialProgress") {
-
-                        $(".planning-financialProgress[mn='" + mn + "']").text(month_data[mn]);
-                        $(".planning-financialProgress[mn='" + mn + "']").prev().removeClass("hidden");
-
-                    }
-
-                }
-
-            }
+    if ( data.buyer.id ) {
+      $("#parties-buyer-address").text(getPartyByID(data.parties, data.buyer.id)[0].address.streetAddress);
+    } else {
+        buyer = findPartyByRole(data.parties, "buyer");
+        if (found.address) {
+            $("#parties-buyer-address").text(buyer.address.streetAddress);
         }
     }
+
+    procuringEntity = findPartyByRole(data.parties, "procuringEntity");
+    if (procuringEntity) {
+        if (procuringEntity.name) {
+          if (procuringEntity.name != data.buyer.name) {
+            $("#parties-proc-name").text(procuringEntity.name);
+            $("#parties-proc-name-container").removeClass("d-none");
+              if (procuringEntity.address.streetAddress) {
+                $("#parties-proc-address").text(procuringEntity.address.streetAddress);
+                $("#parties-proc-address").removeClass("d-none");
+
+              }
+          }
+        }
+
+    }
+
+
+    if (planning.hasOwnProperty('budget')) {
+        $("#page-title").text(planning.budget.project);
+
+        $("#planning-budget-project-name").text(planning.budget.project);
+
+        $("#planning-budget-amount-amount").text(planning.budget.amount.amount/1000000);
+
+        $("#planning-budget-description").text(planning.budget.description);
+
+        $("#planning-budget-project-name-container").hide();
+    }
+
 }

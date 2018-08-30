@@ -13,6 +13,10 @@ h1, .h1, h2, .h2, h3, .h3, h4 , .h4 , h5, .h5, h6 , .h6 {
 
 }
 
+.w100px {
+  width: 100px;
+}
+
  .text-highlight {
    font-family: 'Rubik', sans-serif;
    font-weight: 700;
@@ -28,9 +32,15 @@ h1, .h1, h2, .h2, h3, .h3, h4 , .h4 , h5, .h5, h6 , .h6 {
   fill:  #00cc99;
 }
 
+.inner-image-banner {
+  content: "";
+    background-image: url("../img/bandung-grayscale.png");
+    background-position: bottom right;
+    background-size: contain;
+    background-blend-mode: hard-light;
+}
 
 .separator-bottom {
-
     right: 0;
     bottom: 0px;
     left: 0;
@@ -128,7 +138,7 @@ a.nav-link {
 }
 
 .carousel-sp {
-  background-color: rgb(0,204,153,1);
+  background-color: rgba(0,204,153,1);
   width: 100px;
   height: 100px;
   border-radius: 100px;
@@ -213,6 +223,22 @@ a.nav-link {
 
 .list-implementation:hover , .list-implementation.active  {
 
+}
+
+.card-border-planning {
+  border-left: 15px solid orange;
+}
+
+.card-border-tender {
+  border-left: 15px solid #c6e9bc;
+}
+
+.card-border-award {
+  border-left: 15px solid #7ccdbd;
+}
+
+.card-border-contract {
+  border-left: 15px solid #679bc2;
 }
 
  .hammer {
@@ -320,6 +346,13 @@ body {
     z-index: 1;
 }
 
+.border-width-5 {
+  border-width: 10px;
+}
+
+.border-width-2 {
+  border-width: 5px;
+}
 
 .timeline-card::after {
   content: "";
@@ -349,4 +382,98 @@ body {
 .bdg-carousel-title {
   left: 0;
 }
- 
+
+.tender-timeline-line {
+  width: 30px;
+  height: 2px;
+  background-color: #000;
+  margin-top: 10px;;
+}
+
+.paginationjs-pages ul {
+ width: 100%;
+}
+.paginationjs-pages ul li {
+  display: inline;
+  float: left;
+  padding-left: 10px;
+
+}
+
+.vertical-line{
+  height: 50px;
+  width: 1px;
+
+  background-color: black;
+}
+
+.chart-label {
+  position: absolute;
+
+}
+
+.tender-timeline-counter{
+  font-weight: 700;
+  font-size: 2rem;
+  color: lightgray;
+
+}
+
+.bl-3px-black {
+  border-left: 3px solid black;
+}
+
+tbody#tender-tenderers-list tr td {
+  height: 63px;
+}
+
+#awards-suppliers-sample-container, #awards-contracts-sample-container, #list-group-item-sample {
+  display: none;
+}
+
+.watch-list-header {
+  background-color:#343a40;
+  z-index: 2;
+}
+
+ul#notificationList li {
+  cursor: pointer;
+}
+
+ul#notificationList li.added {
+color: darkgray;
+}
+
+.list-group-item-label {
+  font-size: .9rem;
+  padding: .5rem;
+}
+
+.sticky {
+  position: sticky;
+  top:10px;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

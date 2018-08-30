@@ -8,7 +8,14 @@
         <div class="img-bg" style="background-image:url('{{ url('img/bandung.png') }}')">
           <div class="row justify-content-md-center">
           	<div class="col-12 col-lg-6 bg-primary bg-opacity p-4 mt-4">
-            <h4><span class="font-weight-700">Cari</span> Tender dan kontrak</h4>
+              <div class="row">
+                  <div class="col"><h4><span class="font-weight-700">Cari</span> Tender dan Kontrak</h4></div>
+                  <div class="col">
+                    <div align="right">
+                        <span class="badge badge-success float-right">OC Explorer</span>
+                    </div>
+                  </div>
+              </div>
             <div class="input-group">
               <input type="text" class="form-control" name="q" placeholder="Isikan kata yang dicari" aria-label="Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
               <div class="input-group-append">

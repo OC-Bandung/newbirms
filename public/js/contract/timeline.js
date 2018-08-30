@@ -1,16 +1,23 @@
 
 function buildTimeline(timeline_stage, stage) {
 
+
     html = $("ul#main-timeline").html();
+
 
     if(!timeline_stage.hasOwnProperty('milestones')) {
         return;
     }
 
-    var timeline_stage = timeline_stage.milestones.filter(function(x) { return x.code == "timeline"; });
+
+    var timeline_stage = timeline_stage.milestones.filter(function(x) { return x.title == "PENGUMUMAN_LELANG"; });
+
     timeline_stage.sort(custom_sort);
 
+      console.log(timeline_stage);
+
     for (i = 0; i < timeline_stage.length; i++) {
+
 
         var dueDate = new Date(timeline_stage[i].dueDate);
         var oneDay = 24 * 60 * 60 * 1000;

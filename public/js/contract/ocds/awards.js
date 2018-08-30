@@ -1,66 +1,89 @@
-function load_awards(awards) {
+function load_awards(data) {
 
-    $(".tender-stage").removeClass("hidden");
-    $(".awards-stage").removeClass("hidden");
+awards = data.awards;
+$("#award-section").removeClass('d-none');
 
-    $("#stage-status").text(awards[0].status);
-    $("#stage-amount").text(awards[0].value.amount/1000000);
+$("#awards-count").text(awards.length );
 
-    $("#awards-supplier-name").text(awards[0].suppliers[0].name);
-    $("#awards-value-amount").text(awards[0].value.amount);
+// dynamically create UI.
+// dynamically create the json array//
+// display json in UI
+ for (award in awards) {
 
+   awards[award].id.toString().indexOf(".") != -1 ? element_id  = "awards-id-" + awards[award].id.split(".").join("") : element_id  = "awards-id-" + awards[award].id ;
 
-    winningSupplier = getPartyByID(parties, awards[0].suppliers[0].id);
+   $(".awards-sample-container").clone().addClass('awards-actual').attr("id" , element_id ).removeClass('d-none').removeClass('awards-sample-container').appendTo("#awards-parent-container");
 
-    $("#awards-supplier-taxid").text(winningSupplier[0].taxid);
-    $("#awards-supplier-address").text(winningSupplier[0].address.streetAddress);
+          var  myAwardsUI = [
+             {
+               "name": "id" ,
+               "ui_element":  "div#" + element_id +  " .awards-id",
+               "ui_container": "div#" + element_id + " .awards-id-container"
+             },
+             {
+               "name": "status",
+               "ui_element": "div#" + element_id + " .awards-status",
+               "ui_container":"div#" + element_id +  " .awards-status-container"
+             },
+             {
+               "name": "title",
+               "ui_element": "div#" + element_id + " .awards-title",
+               "ui_container": "div#" + element_id + " .awards-title-container"
+             },
+             {
+               "name": "date",
+               "ui_element": "div#" + element_id + " .awards-date",
+               "ui_container": "div#" + element_id + " .awards-date-container"
+             },
+             {
+               "name": "value.amount",
+               "ui_element": "div#" + element_id + " .awards-value-amount",
+               "ui_container": "div#" + element_id + " .awards-value-amount-container"
+             }
+           ];
 
-   
+         awardParent = "div#" + element_id + " div.awards-suppliers-parent-container";
 
-    html = "";
-    delete winningSupplier[0].roles;
-    var details = JSON.stringify(winningSupplier[0], null, 4);
-    details = details.replace(/["'{]/g, "");
-    details = details.replace(/[},]/g, "<br>");
-    html += "<br>";
-    html += details;
-
-    $("#awards-winner-info").html(html);
-
-
-
-    if (tender.tenderers) {
-      var html = "";
-      for (i = 0; i < tender.tenderers.length; i++) {
-
-          html = "<div class='mdc-layout-grid__cell mdc-layout-grid__cell--span-4 first'>";
-          supplierDetails = getPartyByID(parties, tender.tenderers[i].id);
-
-          for (j = 0; j < supplierDetails.length; j++) {
-
-              delete supplierDetails[j].roles;
-              delete supplierDetails[j].address;
-
-              for (var key in supplierDetails[j]) {
-                if (supplierDetails[j].hasOwnProperty(key)) {
-                  html+= "<strong>" + key + "</strong> : " + supplierDetails[j][key] + "<br>";
-                }
-              }
-
-
-          }
+         displayJsonInUI(myAwardsUI, awards[award]);
 
 
+         var suppliers =  awards[award].suppliers;
 
-          html += "</div>";
+         var eln = document.getElementById("awards-suppliers-sample-container");
+         var eln_copy =eln.cloneNode(true);
+
+         for ( supplier in suppliers) {
+
+           suppliers[supplier].id ?  supplier_id =  suppliers[supplier].id.split(".").join("").split("-").join("") :  supplier_id =  "supplier-fake-" + Math.floor(Math.random() * 100);
 
 
-          $("div#awards-bidders-info").append(html);
+           var mySupplierUI = [
+             {
+               "name": "id" ,
+               "ui_element":  awardParent + " div#awarded-supplier-" + supplier_id + " .awards-suppliers-id" ,
+               "ui_container": awardParent + " div#awarded-supplier-" + supplier_id + " div.awards-suppliers-id-container"
+             },
+             {
+               "name": "name",
+               "ui_element":  awardParent + " div#awarded-supplier-" + supplier_id + " .awards-suppliers-name" ,
+               "ui_container": awardParent + " div#awarded-supplier-" + supplier_id + " div.awards-suppliers-name-container"
+             }
+           ];
 
-      }
+           eln_copy.id = "awarded-supplier-" + supplier_id;
+
+           $(awardParent).html(eln_copy);
+
+           displayJsonInUI(mySupplierUI, suppliers[supplier]);
+
+         }
+         // end supplier loop
+
+         load_contracts(data, awards[award], awards[award].id);
+
+
     }
-
-
+    // end each award
 
 
 }

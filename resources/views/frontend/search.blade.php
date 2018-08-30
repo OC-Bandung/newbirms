@@ -194,6 +194,7 @@
           @foreach($pengadaan as $row) 
             <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
               <span class="badge badge-dark">{{ $row->pekerjaanstatus }}</span>
+              <small class="float-right">{{ $row->ocid }}</small>
               <div class="d-flex w-100 justify-content-between pt-1">
                 <span><h5 class="mb-1">{{ $row->namapekerjaan }}</h5></span>
                 <span class="float-right">Pagu: {{ MyGlobals::moneyDisplay($row->pagu_anggaran,0,',','.') }} </span>

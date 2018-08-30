@@ -1,0 +1,73 @@
+
+ul#vertical-chart li {
+    list-style: none;
+    display: inline-grid;
+    vertical-align: bottom;
+    margin-left: 10px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+     filter: alpha(opacity=50);
+}
+
+#vertical-chart {
+
+    height: 250px;
+    vertical-align: bottom;
+    text-align: center;
+    border-bottom: 1px solid lightgray;
+    background: linear-gradient( to bottom,
+    #fff,
+    #fff 99%,
+    lightgray 1%,
+    lightgray);
+    background-size: 100% 25px;
+}
+
+#horizontal-chart {
+	width: 250px;
+
+}
+
+
+
+#expected {
+    width: 60px;
+    background-color: orange;
+}
+
+#actual {
+    width: 60px;
+    background-color: #c6e9bc;
+}
+
+#horizontal-chart {
+	width:200px;
+
+}
+
+
+
+#chart-budget-amount {
+	background-color: orange;
+	padding: 5px;
+	margin-bottom: 10px;
+
+}
+
+#chart-tender-amount {
+	background-color: #c6e9bc;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+#chart-awards-amount {
+	background-color: #7ccdbd;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+#chart-contract-amount {
+	background-color: #0092bb;
+	padding: 5px;
+	margin-bottom: 10px;
+}

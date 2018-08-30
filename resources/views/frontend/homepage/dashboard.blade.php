@@ -1,25 +1,51 @@
 <section class="mt-5">
   <div class="container mt-5">
-    <div class="row mt-5">
-      <div class="col-3 bdg-summary  statistiktext">
-         <div class="statistiktext_content bg-primary "> {{ date("Y") }} </div>
-         <div class="h6"> Pengadaan Barang / Jasa </div>
-         <span class="h3"> {{MyGlobals::moneyDisplay($total_nilai_pengadaan) }}</span>
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="card text-center">
+          <div class="card-body">
+          <div class="statistiktext_content bg-primary "> {{ date("Y") }} </div>
+            <h5 class="card-title">PAKET</h5>
+            <span class="h3">{{ $total_paket_sirup}}</span> <span class="h5"> paket</span>
+            <div class="dropdown-divider"></div>
+            <span class="h3">{{MyGlobals::moneyDisplay($total_nilai_sirup) }}</span>
+          </div>
+        </div>
       </div>
-      <div class="col-2  bdg-summary">
-        <div class="statistiktext_content bg-primary "> {{ date("Y") }} </div>
-        <div class="h6"> Lelang Umum </div>
-        <span class="h3"> {{ $total_prev_paket_lelang }} </span>   <span class="h5">Paket </span>
+      <div class="col-sm-3">
+        <div class="card text-center">
+          <div class="card-body">
+          <div class="statistiktext_content bg-primary "> {{ date("Y") }} </div>
+            <h5 class="card-title">TENDER</h5>
+            <span class="h3">{{ $total_paket_tender }}</span> <span class="h5"> paket</span>
+            <div class="dropdown-divider"></div>
+            <span class="h3">{{MyGlobals::moneyDisplay($total_nilai_tender) }}</span>
+          </div>
+        </div>
       </div>
-      <div class="col-3  bdg-summary">
-        <div class="statistiktext_content bg-primary "> {{ date("Y") }} </div>
-        <div class="h6"> Pengadaan Langsung </div>
-        <span class="h3"> {{ $total_paket_pl }} </span> <span class="h5">Paket </span>
+      <div class="col-sm-3">
+        <div class="card text-center">
+          <div class="card-body">
+          <div class="statistiktext_content bg-primary "> {{ date("Y") }} </div>
+            <h5 class="card-title">NON-TENDER</h5>
+            <span class="h3">{{ $total_paket_nontender }}</span> <span class="h5"> paket</span>
+            <div class="dropdown-divider"></div>
+            <span class="h3">{{MyGlobals::moneyDisplay($total_nilai_nontender) }}</span>
+          </div>
+        </div>
       </div>
-      <div class="col-4 bdg-summary">
-        <div class="statistiktext_content bg-primary "> {{ date("Y") }} </div>
-        <div class="h6" title="Pengumuman Pengadaan Barang / Jasa">Pengumuman PBJ </div>
-        <span class="h3">{{ MyGlobals::moneyDisplay($total_nilai_pengumuman_pl) }}</span></div>
+      <div class="col-sm-3">
+        <div class="card text-center">
+          <div class="card-body">
+          <div class="statistiktext_content bg-primary "> {{ date("Y") }} </div>
+            <h5 class="card-title">KONTRAK</h5>
+            <span class="h3">{{ $total_paket_kontrak }}</span> <span class="h5"> paket</span>
+            <div class="dropdown-divider"></div>
+            <span class="h3">{{MyGlobals::moneyDisplay($total_nilai_kontrak) }}</span>
+          </div>
+        </div>
+      </div>
+      
     </div>
   </div>
 <section>

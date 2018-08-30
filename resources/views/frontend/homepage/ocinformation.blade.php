@@ -4,7 +4,9 @@
       <div class="row">
         <div class="col">
           <h3 class="color-white">Our commitment to Transparency and Open Data</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          <p>Since 2015, the National Public Procurement Agency (LKPP) and the Government of Bandung City (Pemkot Bandung) have been working with the World Bank to implement open contracting norms and practices. Open contracting refers to a set of principles for improving data disclosure and multi-stakeholder engagement across the entire chain of public procurement, from planning to delivery of goods, works and services.</p>
+          <p>Collaboration and data engagement are key to open contracting. The Government of Bandung City encourages users from all sectors of society (government, private sector, and civil society) to visit the website regularly, subscribe to updates on tender opportunities or information on specific contracts, and put this data into use.</p>
+</p>
         </div>
       </div>
 
@@ -15,11 +17,6 @@
               <p>We are committed to using Information Technology in order to support good governance, efficient, effective, transparent, accountable and orderly administration.</p>
               <footer class="blockquote-footer">Boss 1</footer>
             </blockquote>
-            <blockquote class="blockquote blockquote-2 boxed mt-5">
-                <p>Kami berkomitmen untuk menggunakan Teknologi Informasi untuk mendukung tata kelola yang baik, administrasi yang efisien, efektif, transparan, dapat dipertanggungjawabkan dan tertib.</p>
-                <footer class="blockquote-footer">Boss 2</footer>
-              </blockquote>
-
         </div>
 
         <div class="col-6 blockquote-list">
@@ -28,43 +25,39 @@
                 <p>Kami berkomitmen untuk menggunakan Teknologi Informasi untuk mendukung tata kelola yang baik, administrasi yang efisien, efektif, transparan, dapat dipertanggungjawabkan dan tertib.</p>
                 <footer class="blockquote-footer">Boss 2</footer>
               </blockquote>
-              <blockquote class="blockquote blockquote-2 boxed mt-5">
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
-                  <footer class="blockquote-footer">Michael Doe</footer>
-                </blockquote>
+
         </div>
 
 
         <div class="col-12 bg-dark mt-5">
-          <h3 class="text-light pl-2 pt-4">Open Contracting Process</h3>
-          <p class="text-white pl-2">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
+          <h3 class="text-light pl-2 pt-4">How to use Bandung’s Open Contracting data in 3 steps</h3>
+          <p class="text-white pl-2"></p>
           <hr class="pb-2 color-white">
           <div id="timeline" class="accordion bg-dark color-white" >
               <div class="card timeline-card no-border mt-3 ml-2">
                 <div class="card-header timeline-card-header " id="headingOne">
                     <button class="btn btn-link bdg-timeline" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      <h5 class="card-title color-white pl-5">Learn about Open Contracting</h5>
+                      <h5 class="card-title color-white pl-5">Learn about Bandung City’s open contracting data</h5>
                 </div>
 
                 <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#timeline">
                   <div class="card-body pt-0 pb-0">
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <p class="card-text">The data in this portal covers Bandung City’s procurement and contracting processes conducted through both competitive and non-competitive procurement methods for years 2016, 2017 and 2018. It is made available to the public under a <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">Creative Commons Attribution License (CC-BY)</a>. This grants any user the freedom to explore, download, monitor and re-use the data for any purposes, including contract monitoring, analytics and research. The data is modeled according to the <a href="http://standard.open-contracting.org/latest/en/" target="_blank">Open Contracting Data Standard (OCDS)</a>.</p>
                   </div>
                 </div>
               </div>
 
-              <div class="card timeline-card no-border ml-2">
+              <div class="card timeline-card no-border ml-2 pb-3">
                   <div class="card-header timeline-card-header" id="headingTwo">
                     <h5 class="mb-0">
                       <button class="btn btn-link collapsed bdg-timeline" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        <h5 class="card-title color-white  pl-5"> Ideate</h5>
+                        <h5 class="card-title color-white  pl-5"> Use the data and get creative</h5>
                       </button>
                     </h5>
                   </div>
                   <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#timeline">
                     <div class="card-body pt-0 pb-0">
-                      <p class="card-text">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                      </p>
+                      <p class="card-text">Government officials, firms, individual experts, citizens, journalists and developers can all be users of Bandung City’s open contracting data. The data can be visualized online on the BIRMS portal, <a href="https://birms.bandung.go.id/">downloaded</a> in CSV and JSON serialization, or accessed through <a href="https://birms.bandung.go.id/api">Bandung City’s OCDS Application Programming Interface (API)</a>. It can be used for a variety of use cases such as: searching for business opportunities, monitoring procurement processes and public contracts, and carrying out research and analysis.</p>
                     </div>
                   </div>
                 </div>
@@ -73,28 +66,13 @@
                 <div class="card-header timeline-card-header" id="headingThree">
                   <h5 class="mb-0">
                     <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                     <h5 class="card-title color-white  pl-5">Get the data & get creative</h5>
+                     <h5 class="card-title color-white pl-5">Share your insights and take action</h5>
                     </button>
                   </h5>
                 </div>
                 <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#timeline">
-                  <div class="card-body pt-0 pb-0">
-                    <p class="card-text">Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card timeline-card no-border ml-2 pb-3">
-                <div class="card-header timeline-card-header" id="headingFour">
-                  <h5 class="mb-0">
-                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                     <h5 class="card-title color-white  pl-5">Share you insight & take action</h5>
-                    </button>
-                  </h5>
-                </div>
-                <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#timeline">
                   <div class="card-body pt-0 pb-5">
-                      <p class="card-text"> Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS. </p>
+                    <p class="card-text">If you have questions, comments or ideas, please get in touch with us. General inquiries can be submitted to <a href="mailto:info@birms.bandung.go.id ">info@birms.bandung.go.id</a> or through the online form. You can subscribe to updates on tender opportunities and information on specific contracts, and join the online conversation on twitter with the hashtag #BDGopencontracting.</p>
                   </div>
                 </div>
               </div>

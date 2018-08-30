@@ -1,87 +1,104 @@
-$(".mdc-tab").click(function() {
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
 
-    $(this).parent().find('a.mdc-tab').removeClass("mdc-tab--active");
-    $(this).addClass("mdc-tab--active");
+$("#bdg-feedback-form").click(function() {
+  var lnk = "https://docs.google.com/forms/d/e/1FAIpQLScs-1715tHTn60Ncj85_1zW7TQg8vzTWjwajCJCEdBGEmSfJw/viewform?usp=pp_url";
+  lnk += "&entry.1755301375=" + $("#ocid").text();
+  lnk += "&entry.788440630=" +   $("#page-title").text() ;
+  lnk += "&entry.1796765524= ";
+  lnk += "&entry.439080160= ";
+  lnk += "&entry.831032170= ";
+  $(this).attr("href", lnk);
+});
 
+$(document).on('click', '[id^="watch-list-"]', function(e) {
+  e.preventDefault();
+  ocid = $("#ocid").text();
+  if (! $(this).hasClass('added')) {
+  var clickedList = $(this).attr("id");
+   if(localStorage && localStorage.getItem('ocds-birms-watchlist')){
+     var watchList = JSON.parse(localStorage.getItem('ocds-birms-watchlist'));
+     watchListSel =  getListByListCode(watchList, clickedList)[0]["listCode"];
+     newdata = [
+       { "ocid": ocid ,
+         "stage": $("#stage").text(),
+         "numberOfTenderers": $("#tender-numberOfTenderers").text(),
+         "title": $("#page-title").text()
+       }
+     ];
+     addItemsToListInLocalStorage(watchListSel, newdata[0] );
+     $(this).addClass('added');
+     $(this).html('<i class="material-icons small pr-2">check</i>' + $(this).text());
+     //var myList = getListByListCode(watchList, clickedList);
+   }
+    // if(localStorage && localStorage.getItem('ocds-birms-watchlist')){
+    //     var watchList = JSON.parse(localStorage.getItem('ocds-birms-watchlist'));
+    //     var myList = getListByListCode(watchList, clickedList);
+    //     listItems = watchList[0]["listItems"];
+    //     newdata = [{ "ocid": ocid}];
+    //     listItems.push(newdata[0]);
+    //     myList.push(listItems[0]);
+    //     // console.log(myList);
+    //     localStorage.setItem("ocds-birms-watchlist" , JSON.stringify(watchList) );
+    //     $(this).html('<i class="material-icons small pr-2">check</i>' + $(this).text());
+    //
+    // }
+  }
 });
 
 
-$("#planning-schedule").click(function(e) {
+
+$("#add-to-watchlist").click(function(e) {
     e.preventDefault();
-    $("#planning-schedule-inner").removeClass("hidden");
-    $("#planning-details-inner").addClass("hidden");
+    $("#notificationList").toggleClass("d-none");
+});
+
+$("#addNewList-submit").click(function(event) {
+    myListCode = "watch-list-" + genUniqueListCode();
+    myListName = $("input#watch-list-name").val();
+    if (addListToLocalStorage(myListCode, myListName) == true ) {
+      $('#addNewList').modal('hide');
+      var eln = document.getElementById("list-group-item-sample").cloneNode(true);
+      eln.id =  myListCode;
+      $("ul#notificationList").prepend(eln);
+      $("ul#notificationList li#" + myListCode ).text(  myListName );
+
+    }
+
 
 });
 
-$("#planning-details").click(function(e) {
-    e.preventDefault();
-    $("#planning-schedule-inner").addClass("hidden");
-    $("#planning-details-inner").removeClass("hidden");
-
+$("#addNewList").click(function() {
+  $("#watch-list-name").val('');
 });
 
+// $(document).ready(function() {
+//   load_list();
+// });
 
+$( window ).on( "load", function() {
+  load_list();
 
-$("#tender-schedule").click(function(e) {
-    e.preventDefault();
-    $("#tender-schedule-inner").removeClass("hidden");
-    $("#tender-details-inner").addClass("hidden");
+ })
 
-});
+function load_list() {
+  let myList = getOCLocalStorage();
+  if(myList) {
+    for ( item in myList) {
+      var eln = document.getElementById("list-group-item-sample").cloneNode(true);
+      eln.id =  myList[item].listCode;
+      $("ul#notificationList").prepend(eln);
 
-$("#tender-details").click(function(e) {
-    e.preventDefault();
-    console.log("sced");
-    $("#tender-schedule-inner").addClass("hidden");
-    $("#tender-details-inner").removeClass("hidden");
-
-});
-
-$("#awards-details").click(function(e) {
-    e.preventDefault();
-    $("#awards-winner-inner").addClass("hidden");
-    $("#awards-bidders-inner").addClass("hidden");
-    $("#awards-details-inner").removeClass("hidden");
-
-});
-
-$("#awards-winner").click(function(e) {
-    e.preventDefault();
-    $("#awards-details-inner").addClass("hidden");
-    $("#awards-bidders-inner").addClass("hidden");
-    $("#awards-winner-inner").removeClass("hidden");
-
-});
-
-$("#awards-bidders").click(function(e) {
-    e.preventDefault();
-    $("#awards-winner-inner").addClass("hidden");
-    $("#awards-details-inner").addClass("hidden");
-    $("#awards-bidders-inner").removeClass("hidden");
-
-});
-
-
-
-
-
-
-(function() {
-    [].slice.call(document.querySelectorAll('.checkout')).forEach(function(el) {
-        var openCtrl = el.querySelector('.checkout__button'),
-            closeCtrls = el.querySelectorAll('.checkout__cancel');
-
-        openCtrl.addEventListener('click', function(ev) {
-            ev.preventDefault();
-            classie.add(el, 'checkout--active');
-        });
-
-        [].slice.call(closeCtrls).forEach(function(ctrl) {
-            ctrl.addEventListener('click', function() {
-                classie.remove(el, 'checkout--active');
-            });
-        });
-    });
-})();
-
- 
+      ocid = $("#ocid").text();
+        $("ul#notificationList li#" + myList[item].listCode ).text( myList[item].listName);
+      // check if ocid already in list
+      for (j in  myList[item].listItems ) {
+        if (myList[item].listItems[j].ocid == ocid) {
+          $("ul#notificationList li#" + myList[item].listCode ).html( '<i class="material-icons small pr-2">check</i>' +  myList[item].listName);
+          $("ul#notificationList li#" + myList[item].listCode ).addClass("added");
+      }
+}
+     }
+  }
+}

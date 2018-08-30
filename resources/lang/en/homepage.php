@@ -1,9 +1,10 @@
 <?php
 return [
 	'welcome_title' => '<span class="f300">Welcome to</span> <span class="f900 color-primary ">BIRMS </span>',
-	'welcome_text' => '<p align="justify">The length of Bandung Integrated Resources Management System is an application of integrated government resources management in bureaucratic activities from upstream to downstream by utilizing Information Technology in order to support good governance, efficient, effective, transparent, accountable and orderly administration.</p><p align="justify">Formulated and developed since 2011 by the city government of Bandung until now, BIRMS has been successfully obtained various National awards and International appreciation.</p>',
+	'welcome_text' => '<p align="justify">The length of Bandung Integrated Resources Management System is an application of integrated government resources management in bureaucratic activities from upstream to downstream by utilizing Information Technology in order to support good governance, efficient, effective, transparent, accountable and orderly administration.</p>
+	<p align="justify">Formulated and developed since 2011 by the city government of Bandung until now, BIRMS has been successfully obtained various National awards and International appreciation.</p>',
 	'about_contactus' => 'Contact Us',
-	'about_guidelines' => 'Guidelines',
+	'about_publication' => 'Publication Policy',
 
 	'procurement_title' => 'Recent Procurement',
 	'procurement_shortdesc' => 'Recent Procurement in progress in Bandung City Government',
@@ -11,7 +12,7 @@ return [
 	'planning_title' => 'Planning',
 	'planning_shortdesc' => 'See What\'s in our pipeline',
 	'tender_title' => 'Tender',
-	'tender_shortdesc' => 'Prepate to bid',
+	'tender_shortdesc' => 'Tender and Non Tender',
 	'award_title' => 'Award',
 	'award_shortdesc' => 'See Who was awarded',
 	'contract_title' => 'Contract',
