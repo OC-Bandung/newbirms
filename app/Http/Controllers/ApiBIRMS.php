@@ -44,7 +44,19 @@ class ApiBIRMS extends Controller
             ['path' => $request->url(), 'query' => $request->query()]);
     }
 
+
     public function contractsPerYear($year)
+    {
+        return $this->itemsPerYear($year,"newcontract");
+    }
+
+    public function packagesPerYear($year)
+    {
+        return $this->itemsPerYear($year,"package");
+    }
+
+
+    public function itemsPerYear($year, $urlType)
     {
 		//$results = Sirup::where("tahun", $year)->paginate(100);
 		$ocid = env('OCID');
@@ -55,7 +67,7 @@ class ApiBIRMS extends Controller
 		CONCAT("'.$ocid.'","s-",tahun,"-",sirupID) AS ocid,
 		tahun AS year,
 		nama AS title,
-		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
+		CONCAT("'.env('API_ENDPOINT').'", "/'.$urlType.'/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
 		pagu AS value
 	FROM
 	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND pagu <> 0 
@@ -64,7 +76,7 @@ class ApiBIRMS extends Controller
 		CONCAT("'.$ocid.'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
 		'.$year.' AS year,
 		namapekerjaan AS title,
-		CONCAT("'.env('API_ENDPOINT').'", "/newcontract/", "'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS uri,
+		CONCAT("'.env('API_ENDPOINT').'", "/'.$urlType.'/", "'.env('OCID').'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS uri,
 		anggaran AS value
 	FROM
 	'.$dbplanning.'.tbl_pekerjaan 

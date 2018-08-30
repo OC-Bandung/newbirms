@@ -2,64 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Dto\CustomDtoServiceContainer;
 use DateTime;
-use Dto\JsonSchemaRegulator;
-use Dto\ServiceContainer;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Dto\Dto;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Dto\OCDSValidatable;
 use stdClass;
 
-
-class OcdsRelease extends Dto
+class ApiBIRMS_Contract extends Controller
 {
-    /**
-     * Receives a response factory from laravel and returns this object as json.
-     * We do not use the response()->json here since the Dto knows how to print itself as json and converts
-     * structures stored internally to json compliant (scalars as 1 index arrays).
-     * @param $response
-     * @return mixed
-     */
-    function getJsonResponse(ResponseFactory $response)
-    {
-        return $response->make($this->toJson(true))->header('Content-Type', 'application/json');
-    }
-
-    function getJsonpResponse(ResponseFactory $response, Request $request)
-    {
-        $callback=$request->get("callback");
-        return $response->make($callback.'('.$this->toJson(true).')')
-            ->header('Content-Type', 'application/javascript');
-    }
-
-    /**
-     * We override the getDefaultRegulator to provide a different service provider
-     * @param mixed $regulator
-     * @return JsonSchemaRegulator|\Dto\RegulatorInterface|mixed
-     */
-    protected function getDefaultRegulator($regulator)
-    {
-        if (is_null($regulator)) {
-            return new JsonSchemaRegulator(new CustomDtoServiceContainer(), get_called_class());
-        }
-        return $regulator;
-    }
-}
-
-
-class ApiBIRMS_contract extends Controller
-{
-
 
     /**
      * Gets the ocds schema loaded from local storage.
      * Ensures additional properties are set to false, to fail if unknown properties are used
      * @return schema
      */
-    function getOcdsSchema()
+    function getOcdsReleaseSchema()
     {
         $schema = json_decode(Storage::disk('public')->get('release-schema.json'), true);
         //ensure no extra properties allowed in root entity
@@ -67,6 +24,14 @@ class ApiBIRMS_contract extends Controller
         //ensure no extra properties allowed in any definitions within root entity
         foreach ($schema['definitions'] as &$definition)
             $definition['additionalProperties'] = false;
+        return $schema;
+    }
+
+    function getOcdsPackageSchema()
+    {
+        $schema = json_decode(Storage::disk('public')->get('release-package-schema.json'), true);
+        //ensure no extra properties allowed in root entity
+        $schema['additionalProperties'] = false;
         return $schema;
     }
 
@@ -104,9 +69,15 @@ class ApiBIRMS_contract extends Controller
         return $a;
     }
 
+    function removeExtraSpaces($name) {
+        if(empty($name))
+            return $name;
+        return preg_replace('/\s+/', ' ', $name);
+    }
+
     function getOrganizationByName($year, $name, $competitive)
     {
-        $name = preg_replace('/\s+/', ' ', $name);
+        $name = $this->removeExtraSpaces($name);
 
         if ($year <= 2016) {
             $db = env('DB_PRIME_PREV');
@@ -190,6 +161,7 @@ class ApiBIRMS_contract extends Controller
 
     function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj, $competitive = null)
     {
+        $name=$this->removeExtraSpaces($name);
         //first check if organization is within parties array
         foreach ($parties as &$o) {
             if (strcasecmp($o->name, $name) == 0) {
@@ -878,7 +850,7 @@ class ApiBIRMS_contract extends Controller
     /**
      * Converts string dates in bandung db into JSON compliant string using DATE_ATOM format
      * @param $date
-     * @param $format the format for the input date, default is 'Y-m-d'
+     * @param $format ? the format for the input date, default is 'Y-m-d'
      * @return string
      */
     function getOcdsDateFromString($date, $format = 'Y-m-d')
@@ -889,7 +861,7 @@ class ApiBIRMS_contract extends Controller
     /**
      * Adds ocds tag based on existing data about phases
      *
-     * @param $r the release
+     * @param $r ? the release
      */
     function appendTag($r) 
     {
@@ -906,8 +878,36 @@ class ApiBIRMS_contract extends Controller
         }
     }
 
-    function getNewContract($ocid)
+    /**
+     * Returns release wrapped into an ocds package object.
+     * See http://standard.open-contracting.org/latest/en/schema/reference/#package-metadata
+     * @param $ocid
+     * @return OCDSValidatable|mixed
+     */
+    function getPackage($ocid)
     {
+        $p = new stdClass();
+        $p->uri = request()->getUri();
+        $p->version = "1.3";
+        $release=$this->getReleaseObject($ocid);
+        $p->releases = [$release];
+        $p->publishedDate = $release->date;
+        $publisher = new stdClass();
+        $publisher->name = "Regional Secretariat for the Procurement Section of Bandung City";
+        $publisher->uri = "https://www.kemenkeu.go.id/";
+        $publisher->uid = "4.05.4.05.02.08";
+        $publisher->scheme = "Ministry of Finance of the Republic of Indonesia (Kementerian Keuangan)";
+        $p->publisher = $publisher;
+        $p->license = "https://creativecommons.org/licenses/by-sa/4.0/";
+        $p->publicationPolicy=url("/api/publication-policy.txt");
+        return $this->getValidatedOCDSWithCallback($p, $this->getOcdsPackageSchema());
+    }
+
+    function getReleaseObject($ocid)
+    {
+        if (substr($ocid, 0, 11) !== "ocds-afzrfb")
+            abort(404, "Invalid OCID prefix!");
+
         $r = new stdClass();
         $r->ocid = $ocid;
 
@@ -1022,13 +1022,25 @@ class ApiBIRMS_contract extends Controller
         }
 
         $this->appendTag($r);
+        return $r;
+    }
 
-                //this creates real OCDS release object and runs basic schema validation
-        $validatedRelease = new OcdsRelease($r, $this->getOcdsSchema());
+    function getNewContract($ocid) {
+        return $this->getValidatedOCDSWithCallback($this->getReleaseObject($ocid), $this->getOcdsReleaseSchema());
+    }
+
+
+    /**
+     * @param $input ? input json
+     * @param $schema ? validation schema
+     * @return mixed|OCDSValidatable validated object
+     */
+    function getValidatedOCDSWithCallback($input, $schema) {
+        $validatedOCDS = new OCDSValidatable($input, $schema);
         if(is_null(request()->get("callback"))) {
-            return $validatedRelease->getJsonResponse(response());
+            return $validatedOCDS->getJsonResponse(response());
         } else {
-            return $validatedRelease->getJsonpResponse(response(), request());
+            return $validatedOCDS->getJsonpResponse(response(), request());
         }
     }
 
