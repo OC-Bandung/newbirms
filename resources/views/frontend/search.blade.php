@@ -192,7 +192,7 @@
         <div class="col">
           <div id="search-results" class="list-group">
           @foreach($pengadaan as $row) 
-            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+            <a href="{{ url('contract?ocid='.$row->ocid) }}" class="list-group-item list-group-item-action flex-column align-items-start">
               <span class="badge badge-dark">{{ $row->pekerjaanstatus }}</span>
               <small class="float-right">{{ $row->ocid }}</small>
               <div class="d-flex w-100 justify-content-between pt-1">

@@ -46,7 +46,6 @@
                </a>
              </div>
            </li>
-           <li class="nav-item list-inline-item"><a class="nav-link" href="#">OC Explorer</a></li>
            <!--<li class="nav-item list-inline-item">
              <a class="nav-link dropdown-toggle" class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
               Public Dashboard
