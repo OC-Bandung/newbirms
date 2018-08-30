@@ -69,9 +69,15 @@ class ApiBIRMS_Contract extends Controller
         return $a;
     }
 
+    function removeExtraSpaces($name) {
+        if(empty($name))
+            return $name;
+        return preg_replace('/\s+/', ' ', $name);
+    }
+
     function getOrganizationByName($year, $name, $competitive)
     {
-        $name = preg_replace('/\s+/', ' ', $name);
+        $name = $this->removeExtraSpaces($name);
 
         if ($year <= 2016) {
             $db = env('DB_PRIME_PREV');
@@ -155,6 +161,7 @@ class ApiBIRMS_Contract extends Controller
 
     function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj, $competitive = null)
     {
+        $name=$this->removeExtraSpaces($name);
         //first check if organization is within parties array
         foreach ($parties as &$o) {
             if (strcasecmp($o->name, $name) == 0) {

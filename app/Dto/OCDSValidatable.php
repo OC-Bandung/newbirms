@@ -6,7 +6,6 @@ use Dto\Dto;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Dto\JsonSchemaRegulator;
-use App\Dto\CustomDtoServiceContainer;
 
 
 /**
@@ -49,5 +48,31 @@ class OCDSValidatable extends Dto
             return new JsonSchemaRegulator(new CustomDtoServiceContainer(), get_called_class());
         }
         return $regulator;
+    }
+
+    /**
+     * @param bool $pretty
+     *
+     * @return string
+     */
+    public function toJson($pretty = false)
+    {
+        // JSON can represent scalars!
+        if ($this->storage_type === 'scalar') {
+            return json_encode(parent::offsetGet(0), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        }
+
+        $data = $this->toArray();
+
+        // Disambiguate between empty arrays [] and empty objects {}
+        if (empty($data)) {
+            if ($this->regulator->isArray()) {
+                return '[]';
+            }
+            return '{}';
+        }
+
+        return ($pretty) ? json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) :
+            json_encode($data, JSON_UNESCAPED_SLASHES);
     }
 }
