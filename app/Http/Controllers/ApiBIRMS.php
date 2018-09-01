@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Illuminate\Pagination\ArrayLengthAwarePaginator;
 use Illuminate\Http\Request;
 use App\Sirup;
 use App\Paketlng;
 use App\Paketpl;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
@@ -31,7 +31,7 @@ class ApiBIRMS extends Controller
      *
      * @param $array
      * @param $request
-     * @return LengthAwarePaginator
+     * @return ArrayLengthAwarePaginator
      */
     public function arrayPaginator($array, $request)
     {
@@ -39,7 +39,7 @@ class ApiBIRMS extends Controller
         $perPage = Input::get('per_page', env('JSON_RESULTS_PER_PAGE', 40));
         $offset = ($page * $perPage) - $perPage;
 
-        return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true),
+        return new ArrayLengthAwarePaginator(array_slice($array, $offset, $perPage, true),
             count($array), $perPage, $page,
             ['path' => $request->url(), 'query' => $request->query()]);
     }
