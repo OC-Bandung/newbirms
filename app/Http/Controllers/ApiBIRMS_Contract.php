@@ -839,7 +839,8 @@ class ApiBIRMS_Contract extends Controller
                      satuan 
                 FROM " . $db . ".tpengadaan_rincian 
                 LEFT JOIN " . $db . ".tpenawaran_rincian ON tpengadaan_rincian.ID = tpenawaran_rincian.pengadaan_rincian_id
-                WHERE pid = " . $pid . " AND nilai_akhir <> 0";
+                WHERE pid = " . $pid . " AND (SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 1), '|' ,-1) *
+                SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 2), '|' ,-1)) <> 0 ";
         $results = DB::select($sql);
 
         $items = [];
