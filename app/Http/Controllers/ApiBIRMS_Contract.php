@@ -841,13 +841,16 @@ class ApiBIRMS_Contract extends Controller
                 LEFT JOIN " . $db . ".tpenawaran_rincian ON tpengadaan_rincian.ID = tpenawaran_rincian.pengadaan_rincian_id
                 WHERE pid = " . $pid . " AND (SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 1), '|' ,-1) *
                 SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 2), '|' ,-1)) <> 0 ";
+                //"" AND nilai_akhir <> 0";
         $results = DB::select($sql);
 
         $items = [];
-        foreach ($results as $row) {
-            array_push($items, $this->getItem($row));
+        if (sizeof($results) <> 0) {
+            foreach ($results as $row) {
+                array_push($items, $this->getItem($row));
+            }
         }
-
+        
         return $items;
     }
 
