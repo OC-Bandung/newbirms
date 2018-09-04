@@ -831,7 +831,7 @@ class ApiBIRMS_Contract extends Controller
     function getNonCompetitiveItems($pid) 
     {
         $db = env('DB_CONTRACT');
-        $sql = "SELECT 
+        $sql = "SELECT DISTINCT
                     tpengadaan_rincian.ID,
                     nama,
                     (SUBSTRING_INDEX(SUBSTRING_INDEX(volume ,'|' , 1), '|' ,-1) *
