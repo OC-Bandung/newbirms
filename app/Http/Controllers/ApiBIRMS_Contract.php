@@ -206,6 +206,9 @@ class ApiBIRMS_Contract extends Controller
     function getOrganizationReferenceByName($year, $name, $role, &$parties, $orgObj, $competitive = null)
     {
         $name=$this->removeExtraSpaces($name);
+        if (isset($orgObj) && isset($orgObj->name)) {
+            $orgObj->name = $this->removeExtraSpaces($orgObj->name);
+        }
         //first check if organization is within parties array
         foreach ($parties as &$o) {
             if (strcasecmp($o->name, $name) == 0) {
@@ -850,7 +853,11 @@ class ApiBIRMS_Contract extends Controller
                 array_push($items, $this->getItem($row));
             }
         }
-        
+
+        if (sizeof($items) == 0) {
+            return null;
+        }
+
         return $items;
     }
 
