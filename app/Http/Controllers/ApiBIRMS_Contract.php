@@ -1116,6 +1116,12 @@ class ApiBIRMS_Contract extends Controller
      * @return mixed|OCDSValidatable validated object
      */
     function getValidatedOCDSWithCallback($input, $schema) {
+        if(request()->get("validate") == "false") {
+
+            return response()->make(json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+                ->header('Content-Type', 'application/json');
+        }
+
         $validatedOCDS = new OCDSValidatable($input, $schema);
         if(is_null(request()->get("callback"))) {
             return $validatedOCDS->getJsonResponse(response());
