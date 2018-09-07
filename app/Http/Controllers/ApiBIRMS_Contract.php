@@ -826,7 +826,10 @@ class ApiBIRMS_Contract extends Controller
             'endDate' => $this->getOcdsDateFromString($row->spk_tgl_slskontrak, $ContractDateFormat)
             );
         $a->value = $this->getAmount($row->nilai_nego);
-        $a->items = $this->getNonCompetitiveItems($row->pid);
+        $items = $this->getNonCompetitiveItems($row->pid);
+        if (!is_null($items)) {
+            $a->items = $items;
+        }
         $a->dateSigned = $this->getOcdsDateFromString($row->spk_tgl_surat, $ContractDateFormat);
         return $a;
     }
