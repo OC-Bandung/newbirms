@@ -639,7 +639,7 @@ class ApiBIRMS_Contract extends Controller
             //Pengumuman Lelang
             $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
             LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
-            WHERE lls_id = " . $rslelang[0]->lls_id . " AND lpse_aktivitas.akt_id = 102 ORDER BY akt_urut";
+            WHERE lls_id = " . $rslelang[0]->lls_id . " AND lpse_aktivitas.akt_urut = 1 ORDER BY akt_urut";
             $rsperiod = DB::select($sql);
 
             if (sizeof($rsperiod) != 0) {
@@ -649,7 +649,7 @@ class ApiBIRMS_Contract extends Controller
             //Tandatangan Kontrak
             $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
             LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
-            WHERE lls_id = " . $rslelang[0]->lls_id . " AND lpse_aktivitas.akt_id = 115 ORDER BY akt_urut";
+            WHERE lls_id = " . $rslelang[0]->lls_id . " AND lpse_aktivitas.akt_jenis = 'TANDATANGAN_KONTRAK' ORDER BY akt_urut";
             $rskontrak = DB::select($sql);
 
             if (sizeof($rskontrak) != 0) {
@@ -658,7 +658,11 @@ class ApiBIRMS_Contract extends Controller
             
             $tender->value=$this->getAmount($rslelang[0]->nilai_nego);
             $tender->tenderers=$this->getTenderers($year, $rslelang[0]->lls_id, $parties);
-            $tender->numberOfTenderers = sizeof($tender->tenderers);
+            if (sizeof($tender->tenderers) != 0) {
+                $tender->numberOfTenderers = sizeof($tender->tenderers);
+            } else {
+                $tender->numberOfTenderers = $rslelang[0]->jumlah_peserta;
+            }
             $this->registerRegistrants($rslelang[0]->lls_id, $year, $parties);
             $tender->status=$this->getSharedTenderStatus($rslelang[0]->pekerjaanstatus); //TODO: Check again mapping status
             $tender->title=$rslelang[0]->namapekerjaan;
@@ -1535,7 +1539,7 @@ class ApiBIRMS_Contract extends Controller
     private function getTenderers($year, $lls_id, &$parties)
     {
         $db = env('DB_CONTRACT');
-        $sql = "SELECT * FROM ".$db.".lpse_peserta 
+        $sql = "SELECT DISTINCT rkn_npwp, rkn_nama, rkn_alamat, rkn_email, rkn_telepon FROM ".$db.".lpse_peserta 
                 LEFT JOIN ".$db.".lpse_rekanan ON lpse_peserta.rkn_id = lpse_rekanan.rkn_id
                 WHERE lls_id = ". $lls_id ." ORDER BY lpse_peserta.auditupdate ASC";
         //      WHERE lls_id = ". $lls_id ." AND (TRIM(psr_harga) <> '' AND TRIM(psr_harga_terkoreksi) <> '') ORDER BY lpse_peserta.auditupdate ASC";

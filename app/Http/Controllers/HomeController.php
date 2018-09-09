@@ -505,18 +505,18 @@ class HomeController extends Controller
 						WHERE true ';
 
 						if (!empty($q)) {
-							$sql .= ' AND pengadaan.namapekerjaan LIKE \'%'.$q.'%\' ';
+							$sql .= ' AND LOWER(pengadaan.namapekerjaan) LIKE \'%'.$q.'%\' ';
 						}
 
 						if (!empty($tahun)) {
 							$sql .= ' AND tahun = '.$tahun.' ';
 						}
 
-						if (!empty($tahap)) {
+						if (!empty($tahap) && ($tahap != 0)) {
 							$sql .= ' AND pengadaan.pekerjaanstatus = '.$tahap.' ';
 						}
 
-						if (!empty($jenis_pengadaanID)) {
+						if (!empty($jenis_pengadaanID) && ($jenis_pengadaanID != 0)) {
 							$sql .= ' AND pengadaan.jenis_pengadaanID = '.$jenis_pengadaanID.' ';
 						}
 

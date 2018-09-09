@@ -41,7 +41,7 @@
                   <div class="form-group">
                     <h6> Tahapan </h6>
                     <select class="form-control" name="tahap" id="tahap">
-                                <option value="" disabled selected>Pilih Tahapan</option>
+                                <option value="0">-Semua Tahapan-</option>
                                 @if (app('request')->input('tahap') == '1')
                                 <option value="1" selected>Perencanaan</option>
                                 @else
@@ -69,7 +69,7 @@
                   <div class="form-group">
                     <h6> Klasifikasi </h6>
                     <select class="form-control" name="jenis_pengadaanID" id="jenis_pengadaanID">
-                                <option value="" disabled selected>- Klasifikasi -</option>
+                                <option value="0">-Semua Klasifikasi-</option>
                                 @if (app('request')->input('jenis_pengadaanID') == '1')
                                 <option value="1" selected>Pengadaan Barang</option>
                                 @else

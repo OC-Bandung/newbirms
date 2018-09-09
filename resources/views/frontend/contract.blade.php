@@ -235,12 +235,12 @@
                         </div>
 
                         <div id="tender-procurementMethod-container" class="col d-none pt-3">
-                          <h6>Procurement Method</h6>
+                          <h6>Metode Pengadaan</h6>
                           <h5 id="tender-procurementMethod" class="text-capitalize"></h5>
                         </div>
 
                         <div id="tender-numberOfTenderers-container" class="col d-none text-center pt-3">
-                          <h6># Tenderers</h6>
+                          <h6># Peserta</h6>
                           <h5 id="tender-numberOfTenderers" class="text-capitalize"></h5>
                         </div>
 
@@ -305,14 +305,14 @@
                             <div class="row">
                               <div id="tender-budget-amount-container" class="col-12  d-none border-left">
                                 <div>
-                                  <h6>Budget Amount <i class="material-icons small">info</i></h6>
-                                  <span class="h5 pr-1">Rp. </span> <span class="h4" id="tender-budget-amount"></span><span class="h5 pl-1"> M</span>
+                                  <h6>Pagu Anggaran <i class="material-icons small">info</i></h6>
+                                  <span class="h5 pr-1">Rp. </span> <span class="h4" id="tender-budget-amount"></span><span class="h5 pl-1"> Jt</span>
                                 </div>
                               </div>
                               <div id="tender-value-diff-container" class="col-12 d-none border-left">
                                 <ul class="list-group small pr-3 pt-3 pb-3  w-75 list-group-flush">
                                   <li class="list-group-item p-2 d-flex align-items-center">
-                                    <span class="pr-1">Rp. </span> <span id="tender-value-diff"></span><span class="pl-1"> M</span>
+                                    <span class="pr-1">Rp. </span> <span id="tender-value-diff"></span><span class="pl-1"> Jt</span>
                                   </li>
                                   <li id="tender-amount-flag" class="list-group-item p-2 d-flex "> </li>
                                 </ul>
@@ -378,9 +378,9 @@
                           <thead class="thead-dark">
                             <tr>
                               <th scope="col">#</th>
-                              <th scope="col">ID</th>
-                              <th scope="col">Name</th>
-                              <th scope="col">Address</th>
+                              <th scope="col">NPWP</th>
+                              <th scope="col">Nama Peserta</th>
+                              <th scope="col">Alamat</th>
                             </tr>
                           </thead>
                           <tbody id="tender-tenderers-list"></tbody>
@@ -431,7 +431,7 @@
     <div class="container mt-3">
       <div class="row pb-2 pt-3">
         <div class="col">
-          <span class="h3">Awards & Contracts</span><span><sup>( <span id="awards-count"> </span> awards)</sup>
+          <span class="h3">Pemenang & Kontrak</span><span><sup>( <span id="awards-count"> </span> kontrak)</sup>
           </span>
         </div>
       </div>
@@ -461,11 +461,11 @@
                     <div class="awards-status h5"> </div>
                   </div>
                   <div class="col awards-date-container d-none">
-                    <div class="h6">Award Date</div>
+                    <div class="h6">Penetapan Pemenang</div>
                     <div class="awards-date h5"> </div>
                   </div>
                   <div class="col awards-value-amount-container d-none">
-                    <div class="h6">Amount</div>
+                    <div class="h6">Nilai Kontrak</div>
                     <div class="awards-value-amount h5"></div>
                   </div>
                 </div>
@@ -478,11 +478,11 @@
 
               <div id="awards-suppliers-sample-container" class="row mt-2">
                 <div class="col-5 awards-suppliers-id-container d-none">
-                  <div class="h6 ">Tax ID/Registration ID</div>
+                  <div class="h6 ">NPWP</div>
                   <div class="awards-suppliers-id h5"> </div>
                 </div>
                 <div class="col awards-suppliers-name-container d-none ">
-                  <div class="h6">Supplier Name</div>
+                  <div class="h6">Perusahaan Pemenang</div>
                   <div class="awards-suppliers-name h5"> </div>
                 </div>
               </div>
