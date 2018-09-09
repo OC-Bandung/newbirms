@@ -69,7 +69,9 @@ class ApiBIRMS extends Controller
 		CONCAT("'.env('API_ENDPOINT').'", "/'.$urlType.'/", "'.env('OCID').'","s-",tahun,"-",sirupID) AS uri,
 		pagu AS value
 	FROM
-	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' AND pagu <> 0 
+	'.$dbplanning.'.tbl_sirup WHERE tahun = '.$year.' 
+		AND pagu <> 0 AND metode_pengadaan IN (1,2,3,4,5,6,10,11,12)
+		AND isswakelola = 0 
 	UNION 
 	SELECT
 		CONCAT("'.$ocid.'","b-",'.$year.',"-",tbl_pekerjaan.pekerjaanID) AS ocid,
@@ -79,7 +81,7 @@ class ApiBIRMS extends Controller
 		anggaran AS value
 	FROM
 	'.$dbplanning.'.tbl_pekerjaan 
-	WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1';
+	WHERE tahun = '.$year.' AND iswork = 1';
         $results = $this->arrayPaginator(DB::select($sql), request());
     	return response()
     			->json($results)

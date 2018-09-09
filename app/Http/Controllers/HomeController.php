@@ -416,13 +416,26 @@ class HomeController extends Controller
 			$sql = 'SELECT *
 					FROM
 						(
-						SELECT
+							SELECT
 							CONCAT("'.env('OCID').'","s-",tahun,"-",tbl_sirup.sirupID) AS ocid,
+							tlelangumum.lls_id AS lelangID,
 							tbl_sirup.sirupID,
 							tbl_sirup.tahun,
 							tbl_sirup.nama AS namapekerjaan,
 							1 AS iswork,
-							IF(tlelangumum.nilai_nego <> 0, "7", "1") AS pekerjaanstatus,
+							IF((ISNULL(pekerjaanstatus) OR (pekerjaanstatus = 0)), "1", pekerjaanstatus) AS pekerjaanstatus,
+							CASE
+									WHEN (pekerjaanstatus = 4 OR pekerjaanstatus = 5) THEN 2
+									WHEN pekerjaanstatus = 6 THEN 3
+									WHEN pekerjaanstatus = 7 THEN 4
+									ELSE 1
+								END AS tahap,
+							CASE
+								WHEN (pekerjaanstatus = 4 OR pekerjaanstatus = 5) THEN "Aktif"
+								WHEN pekerjaanstatus = 6 THEN "Gagal"
+								WHEN pekerjaanstatus = 7 THEN "Selesai"
+								ELSE "Perencanaan"
+							END AS tahapan,
 							tbl_sirup.pagu AS pagu_anggaran,
 							tbl_sirup.sumber_dana_string,
 							tbl_sirup.jenis_pengadaan AS jenis_pengadaanID, 
@@ -445,14 +458,32 @@ class HomeController extends Controller
 								tlelangumum.nilai_nego 
 							FROM
 								'.$dbplanning.'.tbl_sirup
-								LEFT JOIN '.$dbecontract.'.tlelangumum ON tbl_sirup.sirupID = tlelangumum.sirupID UNION
+								LEFT JOIN '.$dbecontract.'.tlelangumum ON tbl_sirup.sirupID = tlelangumum.sirupID 
+							WHERE tbl_sirup.pagu <> 0 AND tbl_sirup.metode_pengadaan IN (1,2,3,4,5,6,10,11,12)
+								AND tbl_sirup.isswakelola = 0 
+							
+							UNION
+							
 							SELECT
 								CONCAT( "'.env('OCID').'", "b-", tbl_pekerjaan.tahun, "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
+								tpengadaan.pgid AS lelangID,
 								tbl_pekerjaan.pekerjaanID AS sirupID,
 								tbl_pekerjaan.tahun,
 								tbl_pekerjaan.namapekerjaan,
 								iswork,
 								tpengadaan.pekerjaanstatus,
+								CASE
+									WHEN (tpengadaan.pekerjaanstatus = 4 OR tpengadaan.pekerjaanstatus = 5) THEN 2
+									WHEN tpengadaan.pekerjaanstatus = 6 THEN 3
+									WHEN tpengadaan.pekerjaanstatus = 7 THEN 4
+									ELSE 1
+								END AS tahap,
+								CASE
+									WHEN (tpengadaan.pekerjaanstatus = 4 OR tpengadaan.pekerjaanstatus = 5) THEN "Aktif"
+									WHEN tpengadaan.pekerjaanstatus = 6 THEN "Gagal"
+									WHEN tpengadaan.pekerjaanstatus = 7 THEN "Selesai"
+									ELSE "Perencanaan"
+								END AS tahapan,
 								tbl_pekerjaan.anggaran AS pagu_anggaran,
 								tbl_sumberdana.sumberdana AS sumber_dana_string,
 								tbl_jenis.jenisID AS jenis_pengadaanID, 
@@ -469,7 +500,8 @@ class HomeController extends Controller
 								LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
 								LEFT JOIN '.$dbecontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
 								LEFT JOIN '.$dbecontract.'.tpengadaan ON tpekerjaan.pid = tpengadaan.pid 
-							) AS pengadaan 
+							WHERE tbl_pekerjaan.iswork = 1 
+								) AS pengadaan 
 						WHERE true ';
 
 						if (!empty($q)) {
@@ -496,130 +528,6 @@ class HomeController extends Controller
 							$sql .= ' AND (pengadaan.pagu_anggaran <= '.$max.' OR pengadaan.nilai_nego <= '.$max.') ';
 						}
 			
-			/* switch ($tahap) {
-			    case 1: //Perencanaan
-			        $sql = "";
-			        break;
-			    case 2: //Pengadaan
-			        $rspengadaan = DB::table($dbecontract.'.tpengadaan')
-			    						->select('tpengadaan.kode', 'tpengadaan.namakegiatan', 'tpengadaan.namapekerjaan', 'tpengadaan.nilai_nego','sirupID')
-			    						->leftJoin($dbecontract.'.tpekerjaan', 'tpengadaan.pid', '=', 'tpekerjaan.pid')
-										->leftJoin('tbl_pekerjaan', 'tpekerjaan.pekerjaanID', '=', 'tbl_pekerjaan.pekerjaanID')
-			    						->where([
-												    ['tpengadaan.namapekerjaan', 'LIKE', '%makanan%'],
-												    ['nilai_nego', '>=', 100],
-												    ['nilai_nego', '<=', 200],
-												]
-			    							)
-			    						->get();
-			        break;
-			    case 3: //Pemenang
-			        $sql = "";
-			        break;
-			    case 4: //Kontrak
-			        $sql = "";
-			        break;
-			    case 5: //Implementasi
-			        $sql = "";
-			        break;
-			    default:
-			    	$sql = "SELECT
-								`tbl_pekerjaan`.`kodepekerjaan` ,
-								`tbl_pekerjaan`.`sirupID`,
-								`tbl_metode`.`nama` AS metodepengadaan,
-								`tpengadaan`.`namakegiatan` ,
-								`tpengadaan`.`namapekerjaan` ,
-								`tpengadaan`.`nilai_nego` ,
-								`tpengadaan`.skpdID,
-								`tbl_skpd`.unitID,
-								`tbl_skpd`.nama AS namaskpd,
-								`tpengadaan`.ta,
-								`tpengadaan`.anggaran,
-								`tsumberdana`.sumberdana,
-								`tpengadaan`.klasifikasiID,
-								LEFT(`tklasifikasi`.kode,2) AS kodeklasifikasi,
-								  CASE
-								     WHEN LEFT(`tklasifikasi`.kode,2) = 1 THEN 'Konstruksi'
-								     WHEN LEFT(`tklasifikasi`.kode,2) = 2 THEN 'Pengadaan Barang'
-								     WHEN LEFT(`tklasifikasi`.kode,2) = 3 THEN 'Jasa Konsultansi'
-								     WHEN LEFT(`tklasifikasi`.kode,2) = 4 THEN 'Jasa Lainnya'
-								     ELSE 'N/A'
-								  END AS klasifikasi,
-								`tbl_pekerjaan`.pilih_start,
-								`tbl_pekerjaan`.pilih_end,
-								`tbl_pekerjaan`.laksana_start,
-								`tbl_pekerjaan`.laksana_end,
-								`tpekerjaan`.pekerjaanstatus
-							FROM
-								`$dbecontract`.`tpengadaan`
-							LEFT JOIN `$dbecontract`.`tpekerjaan` ON `tpengadaan`.`pid` = `tpekerjaan`.`pid`
-							LEFT JOIN `tbl_pekerjaan` ON `tpekerjaan`.`pekerjaanID` = `tbl_pekerjaan`.`pekerjaanID`
-							LEFT JOIN `tbl_metode` ON `tpekerjaan`.`metodeID` = `tbl_metode`.`metodeID`
-							LEFT JOIN `$dbprime`.`tbl_skpd` ON `tpengadaan`.`skpdID` = `tbl_skpd`.`skpdID`
-							LEFT JOIN `$dbecontract`.`tsumberdana` ON `tpengadaan`.sumberdanaid = `tsumberdana`.sumberdanaid
-							LEFT JOIN `$dbecontract`.`tklasifikasi` ON `tpengadaan`.klasifikasiID = `tklasifikasi`.klasifikasiID
-							WHERE true ";
-
-							if (!empty($q)) {
-								$sql .= " AND tpengadaan.namapekerjaan LIKE '%$q%' ";
-							}
-
-							if (!empty($tahun)) {
-								$sql .= " AND tpengadaan.ta = $tahun ";
-							}
-
-							/*if (!empty($skpdID)) {
-								$sql .= " AND tpengadaan.skpdID = $skpdID";
-							}
-
-							if (!empty($klasifikasi)) {
-								$sql .= " AND LEFT(tklasifikasi.kode,2) = $klasifikasi";
-							}
-
-							if (!empty($min)) {
-								$sql .= " AND (tpengadaan.anggaran >= $min OR tpengadaan.nilai_nego >= $min) ";
-							}
-
-							if (!empty($max)) {
-								$sql .= " AND (tpengadaan.anggaran <= $max OR tpengadaan.nilai_nego <= $max) ";
-							}*/
-			    	/*$rspengadaan = DB::table($dbecontract.'.tpengadaan AS pgd')
-			    						->addSelect(DB::raw('kodepekerjaan,
-			    							sirupID,
-			    							tbl_metode.nama AS metodepengadaan,
-			    							pgd.namakegiatan,
-			    							pgd.namapekerjaan,
-			    							pgd.nilai_nego,
-			    							pgd.skpdID,
-			    							unitID,
-			    							tbl_skpd.nama AS namaskpd,
-			    							pgd.ta,
-			    							pgd.anggaran,
-			    							tsumberdana.sumberdana,
-			    							pgd.klasifikasiID,
-											LEFT(tklasifikasi.kode,2) AS kodeklasifikasi,
-											CASE
-								     			WHEN LEFT(`tklasifikasi`.kode,2) = 1 THEN "Konstruksi"
-								     			WHEN LEFT(`tklasifikasi`.kode,2) = 2 THEN "Pengadaan Barang"
-								     			WHEN LEFT(`tklasifikasi`.kode,2) = 3 THEN "Jasa Konsultansi"
-								     			WHEN LEFT(`tklasifikasi`.kode,2) = 4 THEN "Jasa Lainnya"
-								     		ELSE "N/A"
-								  			END AS klasifikasi,
-			    							tbl_pekerjaan.pilih_start,
-											tbl_pekerjaan.pilih_end,
-											tbl_pekerjaan.laksana_start,
-											tbl_pekerjaan.laksana_end'))
-			    						->leftJoin($dbecontract.'.tpekerjaan', 'pgd.pid', '=', 'tpekerjaan.pid')
-										->leftJoin($dbplanning.'.tbl_pekerjaan', 'tpekerjaan.pekerjaanID', '=', 'tbl_pekerjaan.pekerjaanID')
-										->leftJoin($dbplanning.'.tbl_metode', 'tpekerjaan.metodeID', '=', 'tbl_metode.metodeID')
-										->leftJoin($dbprime.'.tbl_skpd', 'pgd.skpdID', '=', 'tbl_skpd.skpdID')
-										->leftJoin($dbecontract.'.tsumberdana', 'pgd.sumberdanaid', '=', 'tsumberdana.sumberdanaid')
-										->leftJoin($dbecontract.'.tklasifikasi', 'pgd.klasifikasiID', '=', 'tklasifikasi.klasifikasiID')
-			    						->where([
-												    ['pgd.ta', 'LIKE', DB::raw('"%'.$tahun.'%"')]
-												]
-			    							)
-										->get();*/
 			//echo $sql;
 			$rspengadaan = DB::select($sql);										
 			$data['totalsearch'] = count($rspengadaan);

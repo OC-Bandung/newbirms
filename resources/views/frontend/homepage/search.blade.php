@@ -46,12 +46,11 @@
                   <div class="form-group">
                      <h6> Tahapan </h6>
                       <select class="form-control" name="tahap" id="tahap">
-                        <option value="" disabled selected>Pilih Tahapan</option>
+                        <option value="0" disabled selected>Pilih Tahapan</option>
                         <option value="1">Perencanaan</option>
-                        <option value="2">Pengadaan</option>
-                        <option value="3">Pemenang</option>
-                        <option value="4">Kontrak</option>
-                        <option value="5">Implementasi</option>
+                        <option value="2">Aktif</option>
+                        <option value="3">Gagal</option>
+                        <option value="4">Selesai</option>
                       </select>
                   </div>
                 </div>

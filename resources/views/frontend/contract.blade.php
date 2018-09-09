@@ -8,11 +8,11 @@
 
 <section class="bg-primary inner-image-banner">
     <div class="container">
-      <div class="row  pt-3 pb-5">
+      <div class="row pt-3 pb-5">
         <div class="col">
           <div class="text-white">
             <div id="ocid" class="h6 d-inline-block"></div>
-            <i data-placement="right" data-toggle="tooltip" data-original-title="The Open Contracting ID. A unique identifier." class="material-icons small">info</i>
+            <i data-placement="right" data-toggle="tooltip" data-original-title="ID Unik Open Contracting." class="material-icons small">info</i>
           </div>
           <div class="text-white">
             <div id="page-title" class="h3 d-inline-block"> </div>
@@ -26,11 +26,11 @@
     <div class="container mt-5">
       <div class="row">
         <div class="col">
-          <h6>Stage</h6>
+          <h6>Tahapan</h6>
           <h5 id="stage" class="text-capitalize"></h5>
         </div>
         <div class="col" data-placement="left" data-toggle="tooltip" data-original-title="The date the procurement plan was approved.">
-          <h6 class="d-inline">Date</h6>
+          <h6 class="d-inline">Tanggal</h6>
           <i class="material-icons small">info</i>
           <h5 id="ocdate"></h5>
         </div>
@@ -101,19 +101,19 @@
         <div class="col-12">
           <ul class="list-inline">
             <li class="padding-right-large">
-              <a href="#planning"> <img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Planning </span></a>
+              <a href="#planning"> <img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Perencanaan </span></a>
             </li>
             <li class="tender-stage hidden padding-right-large">
-              <a href="#tender"> <img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Tender </span> </a>
+              <a href="#tender"> <img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Pengadaan </span> </a>
             </li>
             <li class="awards-stage hidden padding-right-large">
-              <a href="#award"> <img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Award </span> </a>
+              <a href="#award"> <img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Pemenang </span> </a>
             </li>
             <li class="contract-stage hidden padding-right-large">
-              <a href="#contract"> <img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Contract </span></a>
+              <a href="#contract"> <img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Kontrak </span></a>
             </li>
             <li class="implementation-stage hidden padding-right-large">
-              <a href="#implementation"><img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Implementation </span></a>
+              <a href="#implementation"><img src="img/icon-arrow-down.png" alt="down arrow"> <span class="mdc-typography--title"> Implementasi </span></a>
             </li>
           </ul>
         </div>
@@ -134,7 +134,7 @@
         <div class="col">
           <div class="row pb-2 pt-3">
             <div class="col">
-              <h3>Planning</h3>
+              <h3>Perencanaan</h3>
             </div>
           </div>
           <div class="card card-border-planning">
@@ -142,15 +142,15 @@
               <div class="row">
 
                 <div class="col-3 pt-2">
-                  <h6>Budget Code</h6>
+                  <h6>Sumber Dana</h6>
                   <h5 id="planning-budget-description" class="text-capitalize">Budget Code</h5>
                 </div>
 
                 <div id="planning-budget-amount-container" class="col-3 pt-2">
-                  <h6>Budget Amount</h6>
+                  <h6>Pagu Anggaran</h6>
                   <span class="h5">Rp</span>
                   <span class="h3" id="planning-budget-amount-amount"></span>
-                  <span class="h5"> M</span>
+                  <span class="h5"> Jt</span>
                 </div>
 
                 <div id="planning-budget-year-container" class="col-3 pt-2 d-none">
@@ -164,12 +164,12 @@
                 </div>
 
                 <div id="parties-buyer-container" class="col-6 pt-4 ">
-                  <h6>Buyer Name</h6>
+                  <h6>SKPD</h6>
                   <h5 id="parties-buyer-name" class="text-capitalize"></h5>
                 </div>
 
                 <div id="parties-address-buyer-container" class="col-6 pt-4">
-                  <h6>Buyer Address</h6>
+                  <h6>Alamat SKPD</h6>
                   <h5 id="parties-buyer-address" class="text-capitalize"></h5>
                 </div>
 
@@ -203,20 +203,20 @@
     <div class="container">
       <div class="row pb-2 pt-3">
         <div class="col">
-          <span class="h3">Tender</span> <span id="tender-status-container" class="h6 ml-3"> <i class="material-icons">outlined_flag</i>status: <span id="tender-status"></span></span>
+          <span class="h3">Pengadaan</span> <span id="tender-status-container" class="h6 ml-3"> <i class="material-icons">outlined_flag</i>status: <span id="tender-status"></span></span>
         </div>
       </div>
       <div class="row">
         <div class="col">
           <ul class="nav nav-tabs card-border-tender " id="tenderTab" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active border-left-0" id="tender-details-tab" data-toggle="tab" href="#tender-details" role="tab" aria-controls="tender-details" aria-selected="true">Details</a>
+              <a class="nav-link active border-left-0" id="tender-details-tab" data-toggle="tab" href="#tender-details" role="tab" aria-controls="tender-details" aria-selected="true">Detail</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-none" id="tender-milestones-tab" data-toggle="tab" href="#tender-milestones" role="tab" aria-controls="tender-milestones" aria-selected="false">Milestones <sup id="tender-milestone-count">()</sup></a>
+              <a class="nav-link d-none" id="tender-milestones-tab" data-toggle="tab" href="#tender-milestones" role="tab" aria-controls="tender-milestones" aria-selected="false">Tahap Pengadaan <sup id="tender-milestone-count">()</sup></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-none" id="tender-registered-bidders-tab" data-toggle="tab" href="#tender-registered-bidders" role="tab" aria-controls="tender-registered-bidders" aria-selected="false">Registered Bidders <sup id="tender-registered-bidders-counter">()</sup></a>
+              <a class="nav-link d-none" id="tender-registered-bidders-tab" data-toggle="tab" href="#tender-registered-bidders" role="tab" aria-controls="tender-registered-bidders" aria-selected="false">Peserta Terdaftar <sup id="tender-registered-bidders-counter">()</sup></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" id="tender-help-tab" data-toggle="tab" href="#tender-help" role="tab" aria-controls="tender-help" aria-selected="false">Engagement Stats</a>
@@ -230,7 +230,7 @@
                     <div class="card-body">
                       <div class="row ">
                         <div id="tender-mainProcurementCategory-container" class="col d-none pt-3">
-                          <h6>Procurement Category</h6>
+                          <h6>Klasifikasi Pengadaan</h6>
                           <h5 id="tender-mainProcurementCategory" class="text-capitalize"></h5>
                         </div>
 

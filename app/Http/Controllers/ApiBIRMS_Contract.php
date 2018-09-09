@@ -826,7 +826,10 @@ class ApiBIRMS_Contract extends Controller
             'endDate' => $this->getOcdsDateFromString($row->spk_tgl_slskontrak, $ContractDateFormat)
             );
         $a->value = $this->getAmount($row->nilai_nego);
-        $a->items = $this->getNonCompetitiveItems($row->pid);
+        $items = $this->getNonCompetitiveItems($row->pid);
+        if (!is_null($items)) {
+            $a->items = $items;
+        }
         $a->dateSigned = $this->getOcdsDateFromString($row->spk_tgl_surat, $ContractDateFormat);
         return $a;
     }
@@ -1534,7 +1537,8 @@ class ApiBIRMS_Contract extends Controller
         $db = env('DB_CONTRACT');
         $sql = "SELECT * FROM ".$db.".lpse_peserta 
                 LEFT JOIN ".$db.".lpse_rekanan ON lpse_peserta.rkn_id = lpse_rekanan.rkn_id
-                WHERE lls_id = ". $lls_id ." AND (TRIM(psr_harga) <> '' AND TRIM(psr_harga_terkoreksi) <> '') ORDER BY lpse_peserta.auditupdate ASC";
+                WHERE lls_id = ". $lls_id ." ORDER BY lpse_peserta.auditupdate ASC";
+        //      WHERE lls_id = ". $lls_id ." AND (TRIM(psr_harga) <> '' AND TRIM(psr_harga_terkoreksi) <> '') ORDER BY lpse_peserta.auditupdate ASC";
         $results = DB::select($sql);
 
         if (sizeof($results) == 0) {
