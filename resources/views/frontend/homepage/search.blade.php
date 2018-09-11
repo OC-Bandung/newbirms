@@ -12,7 +12,7 @@
                   <div class="col"><h4><span class="font-weight-700">Cari</span> Tender dan Kontrak</h4></div>
                   <div class="col">
                     <div align="right">
-                        <span class="badge badge-success float-right">OC Explorer</span>
+                        OC Explorer
                     </div>
                   </div>
               </div>

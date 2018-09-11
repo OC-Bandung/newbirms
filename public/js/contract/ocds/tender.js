@@ -56,23 +56,32 @@ function load_tender(data) {
 
 
   // custom if conditions for calculated fields
+  $("#sirup-link").attr("href", "https://sirup.lkpp.go.id/sirup/rup/detailPaketPenyedia2018?idPaket=" + data.id + "");
+  $("#lpse-link").attr("href", "http://lpse.bandung.go.id/eproc4/lelang/" + data.tender.id + "/pengumumanlelang");
+  $("#birms-link").attr("href", "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c");
 
   if (data.tender.tenderPeriod.endDate && data.tender.tenderPeriod && data.tender.tenderPeriod.startDate ) {
       $("#tender-tender-days-diff").text("Duration: " + moment(data.tender.tenderPeriod.endDate).diff( moment(data.tender.tenderPeriod.startDate), 'days') + " days");
       $("#tender-tender-days-diff-container").removeClass('d-none') ;
+      var Dates = data.tender.tenderPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.tenderPeriod.endDate.replace(/-|:|\+\0000/g, "");
+
+      $("#tender-tenderPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
   }
 
   if (data.tender.contractPeriod.endDate && data.tender.contractPeriod && data.tender.contractPeriod.startDate ) {
      $("#tender-contract-days-diff").text("Duration: " +  moment(data.tender.contractPeriod.endDate).diff( moment(data.tender.contractPeriod.startDate), 'days') + " days" );
+     var Dates = data.tender.contractPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.contractPeriod.endDate.replace(/-|:|\+\0000/g, "");
+
+     $("#tender-contractPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
   }
 
   if ( data.planning.budget.amount.amount &&  data.planning.budget) {
-      $("#tender-budget-amount").text(data.planning.budget.amount.amount/1000000);
+      $("#tender-budget-amount").text(numberWithCommas(data.planning.budget.amount.amount));
       $("#tender-budget-amount-container").removeClass("d-none");
   }
 
   if ( data.tender.value &&  data.tender.value.amount) {
-       $("#tender-value-amount").text(data.tender.value.amount/1000000);
+       $("#tender-value-amount").text(numberWithCommas(data.tender.value.amount));
        $("#tender-value-amount-container").removeClass("d-none");
    }
 
@@ -90,17 +99,17 @@ function load_tender(data) {
       $("#tender-value-diff-container").removeClass("d-none");
 
       if (diff_tb <= 0 ) {
-        $("#tender-amount-flag").html('<span class="badge badge-pill badge-success">Tender is less than budget</span>');
+        $("#tender-amount-flag").html('<span class="badge badge-pill badge-success">Tender kurang dari pagu anggaran</span>');
       } else {
-        $("#tender-amount-flag").html('<span class="badge badge-pill badge-danger">Tender is more than budget</span>');
+        $("#tender-amount-flag").html('<span class="badge badge-pill badge-danger">Tender melebihi pagu anggaran</span>');
       }
 
-      $("#tender-value-diff").text( diff_tb /1000000);
+      $("#tender-value-diff").text(numberWithCommas(diff_tb));
 
       if (diff_tb_perc <= 0 ) {
-        $("#tender-value-diff-percentage").append("<div class='text-success'><i class='material-icons'>arrow_downward</i>" + diff_tb_perc + " % </div>");
+        $("#tender-value-diff-percentage").append("<div class='text-success'><i class='material-icons'>arrow_downward</i>" + numberWithCommas(diff_tb_perc) + " % </div>");
       } else {
-        $("#tender-value-diff-percentage").append("<div class='text-danger'><i class='material-icons'>arrow_upward</i>" + diff_tb_perc + " % </div>");
+        $("#tender-value-diff-percentage").append("<div class='text-danger'><i class='material-icons'>arrow_upward</i>" + numberWithCommas(diff_tb_perc) + " % </div>");
       }
 
       var highest = Math.max(myBudget, myTender);
@@ -111,8 +120,8 @@ function load_tender(data) {
       $("#actual").css('height', (myTender/highest)*max);
 
 
-      $("li#expected").append('<span class="chart-label mt-5 h6 bg-dark text-white p-2" style="margin-left:-120px;"> Budget: ' + myBudget/1000000 + ' M<span>');
-      $("li#actual").append( '<span class="chart-label mt-5 ml-5 h6 bg-dark text-white p-2"> Tender: ' + myTender/1000000 + ' M<span>');
+      $("li#expected").append('<span class="chart-label mt-5 h6 bg-dark text-white p-2" style="margin-left:-120px;"> Pagu Anggaran: Rp. ' + numberWithCommas(myBudget) + '<span>');
+      $("li#actual").append( '<span class="chart-label mt-5 ml-5 h6 bg-dark text-white p-2"> Penawaran: Rp. ' + numberWithCommas(myTender) + '<span>');
 
    }
 
@@ -141,8 +150,8 @@ function load_tender(data) {
               html +='<h5 class="card-title">' +   data.tender.milestones[i].title +   '</h5>';
                 html += '<div class="row">';
                 html += '<div class="col-6">';
-                    html+= '<div class="h6">Due Date: ' + moment(data.tender.milestones[i].dueDate).format('ll')  + '</div>';
-                    html+=  '<div class="h6">Date Met: ' + moment(data.tender.milestones[i].dateMet).format('ll')  + '</div>';
+                    html+= '<div class="h6">Batas Akhir: ' + moment(data.tender.milestones[i].dueDate).format('ll')  + '</div>';
+                    html+=  '<div class="h6">Mulai : ' + moment(data.tender.milestones[i].dateMet).format('ll')  + '</div>';
                 html += '</div>';
                 if (diff_milestone <=0) {
                   html += '<div class="col-6 h6 pt-3 text-success float-right">' +  diff_milestone +  '<small> days before deadline</small></div>';

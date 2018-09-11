@@ -758,7 +758,7 @@ class ApiBIRMS_Contract extends Controller
     function getNonCompetitiveContracts($year, $pekerjaanID, &$parties) 
     {
         $db  = env('DB_CONTRACT');
-        $sql = "SELECT DISTINCT
+        $sql = "SELECT 
                     tpekerjaan.pid,
                     CONCAT(
                         REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
@@ -798,7 +798,9 @@ class ApiBIRMS_Contract extends Controller
                     GROUP BY tpekerjaan.pid, awardid, namapekerjaan, deskripsi, tkontrak_penunjukan.spk_nosurat,
                     tkontrak_penunjukan.spk_tgl_surat,
                     tkontrak_penunjukan.spk_tgl_slskontrak,
-                    tpengadaan.nilai_nego";
+                    tpengadaan.nilai_nego 
+                    ORDER BY tkontrak_penunjukan.spk_nosurat
+                    LIMIT 1	";
         $results = DB::select($sql);
 
         $contracts = [];

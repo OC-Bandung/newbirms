@@ -1,0 +1,17 @@
+div.list-group-dark a {
+  background-color: #343a40!important;
+  color: white;
+  cursor: pointer;
+}
+
+a.list-group-item.active  {
+  background-color: #00cc99!important;
+  color: #fff;
+  border-color: #00cc99;
+  cursor: pointer;
+
+}
+
+#documentation-content {
+  min-height: 100vh;
+}

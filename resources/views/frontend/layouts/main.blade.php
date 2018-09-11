@@ -12,6 +12,7 @@
       <link rel="stylesheet" href="{{ url('css/contract/charts.css') }}">
       <link rel="stylesheet" href="{{ url('css/map.css') }}">
       <link rel="stylesheet" href="{{ url('css/style.css') }}">
+      <link rel="stylesheet" href="{{ url('css/documentation.css') }}">
   </head>
 
 <body>

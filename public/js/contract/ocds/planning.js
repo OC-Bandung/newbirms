@@ -1,4 +1,11 @@
+const numberWithCommas = (x) => {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return parts.join(".");
+  }
+
 function load_planning(data) {
+    
 
     planning = data.planning;
 
@@ -42,7 +49,7 @@ function load_planning(data) {
 
         $("#planning-budget-project-name").text(planning.budget.project);
 
-        $("#planning-budget-amount-amount").text(planning.budget.amount.amount/1000000);
+        $("#planning-budget-amount-amount").text(numberWithCommas(planning.budget.amount.amount));
 
         $("#planning-budget-description").text(planning.budget.description);
 

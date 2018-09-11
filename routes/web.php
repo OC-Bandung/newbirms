@@ -20,6 +20,7 @@ Route::get('/post/{id}', 'HomeController@post');
 Route::get('/search', 'HomeController@search');
 Route::get('/contract', 'HomeController@contract');
 Route::get('/watched', 'HomeController@watched');
+Route::get('/documentation', 'HomeController@documentation');
 
 /*Route::group(['prefix' => 'id', 'namespace' => 'id', 'middleware' => 'locale:id'], function() {
     Route::get('/', 'HomeController@index')->name('idHome');

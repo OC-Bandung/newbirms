@@ -69,7 +69,7 @@
            </li>-->
            <li class="nav-item list-inline-item"><a class="nav-link" target="_blank" href="#">Berita</a></li>
            <li class="nav-item list-inline-item"><a class="nav-link" target="_blank" href="{{ url('../archive') }}">BIRMS Arsip</a></li>
-           <li class="nav-item list-inline-item"><a class="nav-link" target="_blank" href="#">Developer</a></li>
+           <li class="nav-item list-inline-item"><a class="nav-link" target="_blank" href="{{ url('documentation') }}">Developer</a></li>
         </ul>
 
 

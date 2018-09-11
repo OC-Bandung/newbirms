@@ -285,7 +285,7 @@ class HomeController extends Controller
 
 		$data['ref_skpd']				= $rsskpd;
 		
-		$data['total_paket_sirup']			= $rssirup[0]['jumlah'];
+		$data['total_paket_sirup']			= number_format($rssirup[0]['jumlah'],0,',','.');
 		$data['total_nilai_sirup']			= $rssirup[0]['pagu'];
 
 		$data['total_paket_tender'] 		= number_format($rsjmllelang[0]['jumlah'],0,',','.');
@@ -551,5 +551,11 @@ class HomeController extends Controller
     {
     	$data			 = [];
     	return View::make("frontend.watched")->with($data);
-    }
+	}
+	
+	function documentation()
+    {
+    	$data			 = [];
+    	return View::make("frontend.documentation")->with($data);
+	}
 }

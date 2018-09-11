@@ -1,4 +1,4 @@
-<section class="bg-primary">
+<?/*<section class="bg-primary">
   <div class="container pt-5">
     <div class="row">
       <div class="col-4">
@@ -53,4 +53,4 @@
     </div>
   </div>
 
-</section>
+</section>*/?>

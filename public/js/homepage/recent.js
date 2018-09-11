@@ -77,7 +77,7 @@ function get_planning(data) {
 
     json = data[i];
 
-    html+= '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
+    html+= '<a href="contract?ocid=' + json.ocid +'" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
     html+= '<div class="d-flex w-100 justify-content-between">';
     html+= '    <h5 class="mb-1">' + json.title + '</h5>';
     html+= '    <small>OCID: ' + json.ocid + '</small>';
@@ -153,7 +153,7 @@ function get_tender(data) {
 
     json = data[i];
 
-    html+= '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
+    html+= '<a href="contract?ocid=' + json.ocid +'" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
     html+= '<div class="d-flex w-100 justify-content-between">';
     html+= '    <h5 class="mb-1">' + json.title + '</h5>';
     html+= '    <small>OCID: ' + json.ocid + '</small>';
@@ -306,7 +306,7 @@ html = "";
     json = data[i];
 
 
-    html+= '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
+    html+= '<a href="contract?ocid=' + json.ocid +'" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
     html+= '<div class="d-flex w-100 justify-content-between">';
     html+= '    <h5 class="mb-1">' + json.title + '</h5>';
     html+= '    <small>3 days ago</small>';
@@ -371,7 +371,7 @@ html = "";
     json = data[i];
 
 
-    html+= '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
+    html+= '<a href="contract?ocid=' + json.ocid +'" class="list-group-item list-group-item-action flex-column align-items-start rounded-0">';
     html+= '<div class="d-flex w-100 justify-content-between">';
     html+= '    <h5 class="mb-1">' + json.title + '</h5>';
     html+= '    <small>3 days ago</small>';

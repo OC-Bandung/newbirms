@@ -56,6 +56,4 @@ Route::get('recent/kontrak','ApiBIRMS@get_recent_kontrak');
 /* Request Diskominfo */
 Route::get('skpd/{year}', 'ApiBIRMS@get_skpd');
 Route::get('rencana/{year}/{organization}', 'ApiBIRMS@get_rencana');
-//Route::get('progres/{year}/{organization}', 'ApiBIRMS@get_progres');
 Route::get('progres/{year}/{organization}', 'ApiBIRMS@get_progres');
-

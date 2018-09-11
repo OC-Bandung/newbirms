@@ -12,7 +12,7 @@
         <div class="col">
           <div class="text-white">
             <div id="ocid" class="h6 d-inline-block"></div>
-            <i data-placement="right" data-toggle="tooltip" data-original-title="ID Unik Open Contracting." class="material-icons small">info</i>
+            <i data-placement="right" data-toggle="tooltip" data-original-title="ID Open Contracting" class="material-icons small">info</i>
           </div>
           <div class="text-white">
             <div id="page-title" class="h3 d-inline-block"> </div>
@@ -29,13 +29,13 @@
           <h6>Tahapan</h6>
           <h5 id="stage" class="text-capitalize"></h5>
         </div>
-        <div class="col" data-placement="left" data-toggle="tooltip" data-original-title="The date the procurement plan was approved.">
+        <div class="col" data-placement="left" data-toggle="tooltip" data-original-title="Tanggal Rencana Pengadaan">
           <h6 class="d-inline">Tanggal</h6>
           <i class="material-icons small">info</i>
           <h5 id="ocdate"></h5>
         </div>
         <div class="col float-right  h6  float-right">
-          <div class="text-right text-uppercase"><a target="_blank" href="#">email</a></div>
+          <!--<div class="text-right text-uppercase"><a target="_blank" href="#">email</a></div>-->
           <div class="text-right text-uppercase"><a id="oc-json" target="_blank" href="#">json</a></div>
           <div  class="float-right text-right">
             <div>
@@ -150,7 +150,7 @@
                   <h6>Pagu Anggaran</h6>
                   <span class="h5">Rp</span>
                   <span class="h3" id="planning-budget-amount-amount"></span>
-                  <span class="h5"> Jt</span>
+                  <span class="h5"></span>
                 </div>
 
                 <div id="planning-budget-year-container" class="col-3 pt-2 d-none">
@@ -218,9 +218,9 @@
             <li class="nav-item">
               <a class="nav-link d-none" id="tender-registered-bidders-tab" data-toggle="tab" href="#tender-registered-bidders" role="tab" aria-controls="tender-registered-bidders" aria-selected="false">Peserta Terdaftar <sup id="tender-registered-bidders-counter">()</sup></a>
             </li>
-            <li class="nav-item">
+            <!--<li class="nav-item">
               <a class="nav-link" id="tender-help-tab" data-toggle="tab" href="#tender-help" role="tab" aria-controls="tender-help" aria-selected="false">Engagement Stats</a>
-            </li>
+            </li>-->
           </ul>
           <div class="tab-content" id="tenderTabContent">
             <div class="tab-pane fade show active" id="tender-details" role="tabpanel" aria-labelledby="tender-details-tab">
@@ -253,7 +253,7 @@
                         <div class="col">
                           <div id="tender-tenderPeriod-startDate-container" class="col-12 border-left">
                             <div data-toggle="tooltip" title="The period when the tender is open for submissions.">
-                              <h6>Tender Start   <i class="material-icons small lightgray">info</i></h6>
+                              <h6>Tender Mulai <i class="material-icons small lightgray">info</i></h6>
                               <h5 id="tender-tenderPeriod-startDate" class="text-capitalize mb-0"></h5>
                             </div>
                           </div>
@@ -263,13 +263,13 @@
                                 <span id="tender-tender-days-diff"></span>
                               </li>
                               <li class="list-group-item  p-2 d-flex justify-content-between align-items-center">
-                                + add to calendar
+                              <a href="#" id="tender-tenderPeriod-add" target="_blank" rel="nofollow">+ add to calendar</a>
                               </li>
                             </ul>
                           </div>
                           <div id="tender-tenderPeriod-endDate-container" class="col-12 border-left">
                             <div class="">
-                              <h6>Tender End   <i class="material-icons small">info</i></h6>
+                              <h6>Tender Selesai <i class="material-icons small">info</i></h6>
                               <h5 id="tender-tenderPeriod-endDate" class="text-capitalize "></h5>
                             </div>
                           </div>
@@ -279,7 +279,7 @@
                             <div class="row">
                               <div id="tender-contractPeriod-startDate-container" class="col-12 border-left">
                                 <div>
-                                  <h6>Estimated Contract Start   <i class="material-icons small">info</i></h6>
+                                  <h6>Estimasi Pekerjaan Mulai <i class="material-icons small">info</i></h6>
                                   <h5 id="tender-contractPeriod-startDate" class="text-capitalize"></h5>
                                 </div>
                               </div>
@@ -287,13 +287,13 @@
                                 <ul class="list-group small pr-3 pt-3 pb-3  w-75 list-group-flush">
                                   <li id="tender-contract-days-diff" class="list-group-item p-2 d-flex justify-content-between align-items-center"></li>
                                   <li class="list-group-item p-2 d-flex justify-content-between align-items-center">
-                                    + add to calendar
+                                  <a href="#" id="tender-contractPeriod-add" target="_blank" rel="nofollow">+ add to calendar</a>
                                   </li>
                                 </ul>
                               </div>
                               <div id="tender-contractPeriod-endDate-container" class="col-12 border-left">
                                 <div>
-                                  <h6>Estimated Contract End   <i class="material-icons small">info</i></h6>
+                                  <h6>Estimasi Pekerjaan Selesai <i class="material-icons small">info</i></h6>
                                   <h5 id="tender-contractPeriod-endDate" class="text-capitalize"></h5>
                                 </div>
                               </div>
@@ -306,13 +306,13 @@
                               <div id="tender-budget-amount-container" class="col-12  d-none border-left">
                                 <div>
                                   <h6>Pagu Anggaran <i class="material-icons small">info</i></h6>
-                                  <span class="h5 pr-1">Rp. </span> <span class="h4" id="tender-budget-amount"></span><span class="h5 pl-1"> Jt</span>
+                                  <span class="h5 pr-1">Rp. </span> <span class="h4" id="tender-budget-amount"></span>
                                 </div>
                               </div>
                               <div id="tender-value-diff-container" class="col-12 d-none border-left">
                                 <ul class="list-group small pr-3 pt-3 pb-3  w-75 list-group-flush">
                                   <li class="list-group-item p-2 d-flex align-items-center">
-                                    <span class="pr-1">Rp. </span> <span id="tender-value-diff"></span><span class="pl-1"> Jt</span>
+                                    <span class="pr-1">Rp. </span> <span id="tender-value-diff"></span>
                                   </li>
                                   <li id="tender-amount-flag" class="list-group-item p-2 d-flex "> </li>
                                 </ul>
@@ -320,11 +320,10 @@
                               <div id="tender-value-amount-container" class="col-12 d-none border-left">
                                 <!-- The total upper estimated value of the procurement -->
                                 <div>
-                                  <h6> Tender value <i class="material-icons small">info</i></h6>
+                                  <h6> Nilai Penawaran <i class="material-icons small">info</i></h6>
                                   <div>
                                       <span class="h5">Rp.</span>
                                       <span class="h4" id="tender-value-amount"> </span>
-                                      <span class="h5">M</span>
                                   </div>
                                 </div>
                               </div>
@@ -334,14 +333,14 @@
                       </div>
                       <div class="row mt-5">
                         <div class="col">
-                          <h6>Documents & Links</h6>
+                          <h6>Dokumen & Link</h6>
                           <dl class="small">
-                            <dt>FAQ</dt>
-                            <dd>A list of all the frequently asked questions about the tender process can be found <a href="#"> here.</a></dd>
-                            <dt>Short list </dt>
-                            <dd>Pre-Qualification report</dd>
                             <dt>SIRUP Links</dt>
-                            <dd>Read the procurement documents on <a href="#">this link</a>. </dd>
+                            <dd>Lihat Data asli dari sirup di <a href="#" id="sirup-link" target="_blank">sini</a>. </dd>
+                            <dt>LPSE Links</dt>
+                            <dd>Lihat Data asli dari lpse LKPP di <a href="#" id="lpse-link" target="_blank">sini</a>. </dd>
+                            <dt>BIRMS Links</dt>
+                            <dd>Lihat Data asli dari BIRMS di <a href="#" id="birms-link" target="_blank">sini</a>. </dd>
                           </dl>
                         </div>
                         <div id="vertical-chart-container" class="col-5 d-none">

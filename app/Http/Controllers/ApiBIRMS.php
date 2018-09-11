@@ -1165,6 +1165,11 @@ class ApiBIRMS extends Controller
 					tbl_jenis.nama AS jenis_pengadaan,
 					tpengadaan.metodeID,
 					tbl_metode.nama AS metode_pengadaan,
+					tbl_user.identity_no AS ppk_nip,
+					tbl_user.fullname AS ppk_nama,
+					tpengadaan.lokasi, 
+					tpekerjaan.lat,
+					tpekerjaan.lng,
 					tpengadaan.anggaran AS paguanggaran,
 					tpengadaan.hps AS hps,
 					tpengadaan.nilai_nego AS nilaikontrak,
@@ -1195,8 +1200,10 @@ class ApiBIRMS extends Controller
 				
 				if ($year <= 2016) {
 					$sql .= " LEFT JOIN ".$dbmain_prev.".tbl_skpd ON tpengadaan.skpdID = tbl_skpd.skpdID ";
+					$sql .= " LEFT JOIN ".$dbmain_prev.".tbl_user ON tpengadaan.ppkm_userid = tbl_user.usrid ";
 				} else {
 					$sql .= " LEFT JOIN ".$dbmain.".tbl_skpd ON tpengadaan.skpdID = tbl_skpd.skpdID ";
+					$sql .= " LEFT JOIN ".$dbmain.".tbl_user ON tpengadaan.ppkm_userid = tbl_user.usrid ";
 				}
 
 				$sql .= " LEFT JOIN ".$dbplanning.".tbl_jenis ON tpengadaan.jenisID = tbl_jenis.jenisID
@@ -1211,6 +1218,7 @@ class ApiBIRMS extends Controller
 		if (strtoupper($organization) <> 'ALL') {
 			$sql .= "AND tpengadaan.skpdID = (SELECT skpdID FROM ".$dbmain.".tbl_skpd WHERE nama = '".$organization."' OR unitID = '".$organization."')";
 		}
+		//die($sql);
 		$results = $this->arrayPaginator(DB::select($sql), request());
     	return response()
     			->json($results)
