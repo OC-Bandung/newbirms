@@ -24,12 +24,14 @@
             </div>
 
             <div class="pt-2">
-              <span><small>* Gunakan Filter Sebagai Pilihan <!-- Use advanced filters for more options.--></small></span>
-              <span id="show-search-filters" class="float-right"><a class="h6 no-underline " href="#">Tampilkan Filter <i class="material-icons align-middle"> arrow_drop_down </i> </a></span>
+              <span><small>* Gunakan <strong>Filter</strong> Tingkat Lanjut Untuk Pilihan lainnya <!-- Use advanced filters for more options.--></small></span>
+              <div class="float-right">
+              		<a class="h6 no-underline" href="#" data-toggle="collapse" data-target="#search-filters">Filter <i class="material-icons align-middle"> arrow_drop_down </i> </a>
+				      </div>              
             </div>
 
 
-            <div id="search-filters" class="pt-3 d-none">
+            <div id="search-filters" class="pt-3 collapse">
 
               <div class="row">
                 <div class="col">

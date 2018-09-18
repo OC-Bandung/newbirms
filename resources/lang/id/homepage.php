@@ -1,17 +1,18 @@
 <?php
 return [
-	'welcome_title' => 'Selamat Datang di <span class="text-highlight"> <span class="color-primary">BI</span>RMS </span>',
+	'welcome_title' => 'Selamat Datang di <span class="text-highlight"> <span class="color-primary">bi</span>rms </span>',
 	'welcome_text' => '<p>Kepanjangan dari <span class="text-highlight"> Bandung Integrated Resources Management System </span> merupakan sebuah aplikasi Pengelolaan sumber daya pemerintahan yang terintegrasi dalam aktifitas birokrasi dari hulu hingga hilir dengan memanfaatkan Teknologi Informasi dalam rangka menunjang tata kelola pemerintahan yang <span class="text-highlight"> baik, efisien, efektif, transparan, akuntabel dan tertib administrasi. </span></p>
 	<p align="justify">Dirumuskan dan dikembangkan sejak tahun 2011 oleh pemerintah kota Bandung sampai dengan saat ini, BIRMS telah telah berhasil mendapatkan berbagai macam penghargaan Nasional maupun apresiasi Internasional. </p>',
 	'about_contactus' => 'Kontak Kami',
 	'about_publication' => 'Kebijakan Publikasi',
+	'about_how_to_use' => 'Cara Penggunaan Bandung Open Contracting dalam 3 langkah',
 
 	'procurement_title' => 'Pengadaan Terkini',
 	'procurement_shortdesc' => 'Pengadaan saat ini yang sedang dilakukan di pemerintah Kota Bandung',
 
 	'planning_title' => 'Perencanaan',
 	'planning_shortdesc' => 'Rencana Umum Pengadaan',
-	'tender_title' => 'Pengadaan',
+	'tender_title' => 'Pemilihan',
 	'tender_shortdesc' => 'Tender maupun Non Tender',
 	'award_title' => 'Pemenang',
 	'award_shortdesc' => 'Penetapan Penyedia',

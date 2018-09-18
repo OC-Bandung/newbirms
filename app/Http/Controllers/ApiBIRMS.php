@@ -600,7 +600,7 @@ class ApiBIRMS extends Controller
 							WHERE true ";
 
 							if (!empty($q)) {
-								$sql .= " AND `tpengadaan`.`namapekerjaan` LIKE '%$q%' "; 
+								$sql .= " AND (`tpengadaan`.`namapekerjaan` LIKE '%$q%' OR `tbl_skpd`.nama LIKE  '%$q%')"; 
 							}
 
 							if (!empty($tahun)) {
@@ -622,7 +622,7 @@ class ApiBIRMS extends Controller
 							if (!empty($max)) {
 								$sql .= " AND (`tpengadaan`.anggaran <= $max OR `tpengadaan`.nilai_nego <= $max) "; 
 							}
-					die($sql);
+					echo $sql;
 			    	$rspengadaan = DB::select($sql);
 			}
     	} else {
@@ -845,7 +845,7 @@ class ApiBIRMS extends Controller
 				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
 				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
 				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-				WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1 LIMIT 5';
+				WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1 ORDER BY tanggal_awal_pengadaan DESC LIMIT 5';
 		$rsdummy = DB::select($sql);
 
 		$rowdata = array();
@@ -886,7 +886,7 @@ class ApiBIRMS extends Controller
 			} else {
 				$data['procurementMethodDetails']	= "";
 			}
-			$data['awardCriteria']					= "priceOnly";
+			$data['awardCriteria']					= "priceOnly"; //To Do List Check Source
 			$data['tender']		= array(
 					'startDate' => $row->tanggal_awal_pengadaan,
 					'endDate' => $row->tanggal_akhir_pengadaan
@@ -908,104 +908,107 @@ class ApiBIRMS extends Controller
     			->header('Access-Control-Allow-Origin', '*');
 	}
 
-	public function pengadaan() 
-	{
-		$dbplanning = env('DB_PLANNING');
+	function get_recent_pemilihan() 
+    {
+        $dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
-		
-		$year = date('Y');
-		$sql = 'SELECT
-						CONCAT("'.env('OCID').'","s-",tahun,"-",sirupID) AS ocid,
-						NULL AS koderekening,
-						sirupID,
-						tahun,
-						nama,
-						pagu,
-						sumber_dana_string,
-						jenis_belanja,
-						jenis_pengadaan,
-						metode_pengadaan,
-						NULL AS procurementMethodDetails,
-						NULL AS awardCriteria,
-						jenis,
-						tanggal_awal_pengadaan,
-						tanggal_akhir_pengadaan,
-						tanggal_awal_pekerjaan,
-						tanggal_akhir_pekerjaan,
-						id_satker,
-						kldi,
-						satuan_kerja,
-						lokasi,
-						isswakelola, 
-						NULL AS isready,
-						NULL AS pekerjaanstatus,
-						NULL AS created_at,
-						NULL AS updated_at
-				FROM
-				'.$dbplanning.'.tbl_sirup
-				WHERE tahun = '.$year.' AND pagu <> 0 
-					UNION
-					SELECT
-					CONCAT( "'.env('OCID').'", "b-", '.$year.', "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
-					kodepekerjaan AS koderekening,
-					sirupID,
-					'.$year.' AS tahun ,
-					tbl_pekerjaan.namapekerjaan AS nama ,
-					tbl_pekerjaan.anggaran AS pagu ,
-					tbl_sumberdana.sumberdana AS sumber_dana_string ,
-					1 AS jenis_belanja ,
-					tbl_metode.jenisID AS jenis_pengadaan ,
-					(
-						CASE
-						WHEN tbl_metode.nama = "Belanja Sendiri" THEN
-							9
-						WHEN tbl_metode.nama = "Kontes / Sayembara" THEN
-							10
-						WHEN tbl_metode.nama = "Pelelangan Sederhana" THEN
-							2
-						WHEN tbl_metode.nama = "Pelelangan Umum" THEN
-							1
-						WHEN tbl_metode.nama = "Pembelian Secara Elektronik" THEN
-							9
-						WHEN tbl_metode.nama = "Pemilihan Langsung" THEN
-							6
-						WHEN tbl_metode.nama = "Pengadaan Langsung" THEN
-							8
-						WHEN tbl_metode.nama = "Penunjukan Langsung" THEN
-							7
-						WHEN tbl_metode.nama = "Swakelola" THEN
-							21
-						ELSE
-							0
-						END
-					) AS metode_pengadaan ,
-					NULL AS procurementMethodDetails,
-					NULL AS awardCriteria,
-					2 AS jenis ,
-					pilih_start AS tanggal_awal_pengadaan ,
-					pilih_end AS tanggal_akhir_pengadaan ,
-					laksana_start AS tanggal_awal_pekerjaan ,
-					laksana_end AS tanggal_akhir_pekerjaan ,
-					satker AS id_satker ,
-					"Kota Bandung" AS kldi ,
-					tbl_skpd.nama AS satuan_kerja ,
-					tbl_skpd.alamat AS lokasi ,
-					IF (tbl_metode.nama = "Swakelola" , 1 , 0) AS isswakelola,
-					IF (ISNULL(tpekerjaan.pid),0,1) AS isready, 
-					tpekerjaan.pekerjaanstatus,
-					tbl_pekerjaan.created AS created_at,
-					tbl_pekerjaan.updated AS updated_at
-				FROM
-					'.$dbplanning.'.tbl_pekerjaan
-				LEFT JOIN '.$dbplanning.'.tbl_sumberdana ON tbl_pekerjaan.sumberdanaID = tbl_sumberdana.sumberdanaID
-				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
-				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
-				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-				WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1 LIMIT 20';
-		$rsdummy = DB::select($sql);
-
-		$rspengadaan = DB::select($sql);
+        
+        $year = date('Y');
+        $sql = 'SELECT
+                    CONCAT("'.env('OCID').'","s-",tahun,"-",tbl_sirup.sirupID) AS ocid,
+					tbl_sirup.sirupID,
+					tlelangumum.skpdID,
+                    satuan_kerja,
+                    tahun,
+                    tlelangumum.kode AS koderekening,
+                    lls_id AS lelangID,
+                    namakegiatan,
+                    nama AS title,
+                    tanggal_awal_pekerjaan,
+                    tanggal_akhir_pekerjaan,
+                    metode_pengadaan,
+                    pagu,
+                    hps,
+                    jumlah_peserta,
+                    jenis, 
+                    jenis_belanja,
+                    jenis_pengadaan,
+                    penawaran,
+                    nilai_nego,
+					tlelangumum.pekerjaanstatus,
+					tlelangumum.created,
+                    tlelangumum.updated
+                FROM
+                    '.$dbplanning.'.tbl_sirup                
+                    LEFT JOIN '.$dbcontract.'.tlelangumum ON tbl_sirup.sirupID = tlelangumum.sirupID 
+                WHERE
+                    tbl_sirup.tahun = '.$year.'  
+                    AND tlelangumum.hps <> 0 
+                    AND tlelangumum.penawaran <> 0 
+                    AND tlelangumum.nilai_nego <> 0 
+                    AND tlelangumum.pekerjaanstatus = 4
+                    AND (NOT ISNULL(tlelangumum.namakegiatan) AND TRIM(tlelangumum.namakegiatan) <> "")	
+                    AND metode_pengadaan IN (1,2,3,4,5,6,10,11,12)
+                UNION 
+                SELECT
+                        CONCAT("'.env('OCID').'","b-",tahun,"-",tbl_pekerjaan.pekerjaanID) AS ocid,
+						tbl_pekerjaan.pekerjaanID AS sirupID, 
+						tbl_pekerjaan.skpdID,
+                        tbl_skpd.nama AS satuan_kerja,
+                        tahun,
+                        tbl_pekerjaan.kodepekerjaan AS koderekening,
+                        tbl_pekerjaan.pekerjaanID AS lelangID,
+                        tpekerjaan.namakegiatan,
+                        tbl_pekerjaan.namapekerjaan AS title,
+                        tbl_pekerjaan.pilih_start AS tanggal_awal_pekerjaan,
+                        tbl_pekerjaan.pilih_end AS tanggal_akhir_pekerjaan,
+                        (
+                            CASE
+                            WHEN tbl_metode.nama = "Belanja Sendiri" THEN
+                                9
+                            WHEN tbl_metode.nama = "Kontes / Sayembara" THEN
+                                10
+                            WHEN tbl_metode.nama = "Pelelangan Sederhana" THEN
+                                2
+                            WHEN tbl_metode.nama = "Pelelangan Umum" THEN
+                                1
+                            WHEN tbl_metode.nama = "Pembelian Secara Elektronik" THEN
+                                9
+                            WHEN tbl_metode.nama = "Pemilihan Langsung" THEN
+                                6
+                            WHEN tbl_metode.nama = "Pengadaan Langsung" THEN
+                                8
+                            WHEN tbl_metode.nama = "Penunjukan Langsung" THEN
+                                7
+                            WHEN tbl_metode.nama = "Swakelola" THEN
+                                21
+                            ELSE
+                                0
+                            END
+                        ) AS metode_pengadaan ,
+                        tbl_pekerjaan.anggaran AS pagu,
+                        tpekerjaan.hps,
+                        1 AS jumlah_peserta,
+                        NULL AS jenis, 
+                        1 AS jenis_belanja ,
+                        tbl_metode.jenisID AS jenis_pengadaan,
+					    tpengadaan_pemenang.nilai AS penawaran,
+                        tpengadaan.nilai_nego,
+						tpengadaan.pekerjaanstatus,
+						tpengadaan.created,
+                        tpengadaan.updated
+                FROM
+                    '.$dbplanning.'.tbl_pekerjaan 
+                    LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+                    LEFT JOIN '.$dbcontract.'.tpengadaan ON tpekerjaan.pid = tpengadaan.pid
+                    LEFT JOIN '.$dbcontract.'.tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid
+                    LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+                    LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+                    WHERE tahun = '.$year.' AND iswork = 1 AND tpengadaan.pekerjaanstatus = 4
+                ORDER BY updated DESC, created DESC LIMIT 10';
+        //die($sql);
+        $rspengadaan = DB::select($sql);
 
 		$rowdata = array();
 		$data = array();
@@ -1014,7 +1017,39 @@ class ApiBIRMS extends Controller
 			$pieces = explode("-", $row->ocid);
 			$source    = $pieces[2];
 
-			$data['ocid'] 		= $row->ocid;
+            $data['ocid'] 		= $row->ocid;
+            if ($source == "s") {
+				$data['uri'] 		= env('LINK_SIRUP18').$row->sirupID;
+			} else {
+				$data['uri'] 		= "";
+			}
+            $data['title'] 		    = $row->title; 
+            $data['namakegiatan']   = $row->namakegiatan;
+			$data['koderekening']   = $row->koderekening;
+            $data['project'] 	    = $this->get_program($row->tahun, $row->koderekening);
+			
+            $data['sirupID'] 	    = $row->sirupID;
+            $data['SKPD']		    = $row->satuan_kerja;
+            $data['anggaran']       = $row->pagu;
+            $data['hps']            = $row->hps;
+            $data['nilai_penawaran']= $row->penawaran;
+            
+            $data['nilai_nego']     = $row->nilai_nego;
+            $data['jumlah_peserta'] = $row->jumlah_peserta;
+            $data['procurementMethod']				= $row->metode_pengadaan;
+			if ($row->metode_pengadaan != 0) {
+				$data['procurementMethodDetails']		= $this->metode_pengadaan($row->metode_pengadaan);
+			} else {
+				$data['procurementMethodDetails']		= "";
+            }
+            $data['awardCriteria']	   = "priceOnly"; //To Do List Check Source
+            $data['dateSigned']        = "";
+            $data['contract']	= array(
+                'startDate' => $row->tanggal_awal_pekerjaan,
+                'endDate' => $row->tanggal_akhir_pekerjaan
+            );
+            $data['updated']		= $row->updated;
+
 			array_push($rowdata, $data);
         }
 
@@ -1023,51 +1058,162 @@ class ApiBIRMS extends Controller
 		return response()
     			->json($results)
     			->header('Access-Control-Allow-Origin', '*');
-	}
+    }
 
 	public function get_recent_pemenang() 
 	{
 		$dbplanning = env('DB_PLANNING');
-	    $dbcontract = env('DB_CONTRACT');
-		$dbmain 	= env('DB_PRIME');
-		
-		$year = date('Y');
-		$sql = '';
-		$rsdummy = DB::select($sql);
+        $dbcontract = env('DB_CONTRACT');
+        $dbprime    = env('DB_PRIME');
+        
+        $year = date('Y');
+        $sql = 'SELECT
+                    CONCAT("'.env('OCID').'","s-",tahun,"-",tbl_sirup.sirupID) AS ocid,
+					tbl_sirup.sirupID,
+					tlelangumum.skpdID,
+                    satuan_kerja,
+                    tahun,
+                    tlelangumum.kode AS koderekening,
+                    lls_id AS lelangID,
+                    namakegiatan,
+                    nama AS title,
+                    tanggal_awal_pekerjaan,
+                    tanggal_akhir_pekerjaan,
+                    metode_pengadaan,
+                    pagu,
+                    hps,
+                    jumlah_peserta,
+                    jenis, 
+                    jenis_belanja,
+					jenis_pengadaan,
+					pemenang AS perusahaannama,
+					pemenangalamat AS perusahaanalamat,
+					pemenangnpwp AS perusahaannpwp,
+                    penawaran,
+                    nilai_nego,
+					tlelangumum.pekerjaanstatus,
+					tlelangumum.created,
+                    tlelangumum.updated
+                FROM
+                    '.$dbplanning.'.tbl_sirup                
+                    LEFT JOIN '.$dbcontract.'.tlelangumum ON tbl_sirup.sirupID = tlelangumum.sirupID 
+                WHERE
+                    tbl_sirup.tahun = '.$year.'  
+                    AND tlelangumum.hps <> 0 
+                    AND tlelangumum.penawaran <> 0 
+                    AND tlelangumum.nilai_nego <> 0 
+                    AND tlelangumum.pekerjaanstatus = 7
+                    AND (NOT ISNULL(tlelangumum.namakegiatan) AND TRIM(tlelangumum.namakegiatan) <> "")	
+                    AND metode_pengadaan IN (1,2,3,4,5,6,10,11,12)
+                UNION 
+                SELECT
+                        CONCAT("'.env('OCID').'","b-",tahun,"-",tbl_pekerjaan.pekerjaanID) AS ocid,
+						tbl_pekerjaan.pekerjaanID AS sirupID, 
+						tbl_pekerjaan.skpdID,
+                        tbl_skpd.nama AS satuan_kerja,
+                        tahun,
+                        tbl_pekerjaan.kodepekerjaan AS koderekening,
+                        tbl_pekerjaan.pekerjaanID AS lelangID,
+                        tpekerjaan.namakegiatan,
+                        tbl_pekerjaan.namapekerjaan AS title,
+                        tbl_pekerjaan.pilih_start AS tanggal_awal_pekerjaan,
+                        tbl_pekerjaan.pilih_end AS tanggal_akhir_pekerjaan,
+                        (
+                            CASE
+                            WHEN tbl_metode.nama = "Belanja Sendiri" THEN
+                                9
+                            WHEN tbl_metode.nama = "Kontes / Sayembara" THEN
+                                10
+                            WHEN tbl_metode.nama = "Pelelangan Sederhana" THEN
+                                2
+                            WHEN tbl_metode.nama = "Pelelangan Umum" THEN
+                                1
+                            WHEN tbl_metode.nama = "Pembelian Secara Elektronik" THEN
+                                9
+                            WHEN tbl_metode.nama = "Pemilihan Langsung" THEN
+                                6
+                            WHEN tbl_metode.nama = "Pengadaan Langsung" THEN
+                                8
+                            WHEN tbl_metode.nama = "Penunjukan Langsung" THEN
+                                7
+                            WHEN tbl_metode.nama = "Swakelola" THEN
+                                21
+                            ELSE
+                                0
+                            END
+                        ) AS metode_pengadaan ,
+                        tbl_pekerjaan.anggaran AS pagu,
+                        tpekerjaan.hps,
+                        1 AS jumlah_peserta,
+                        NULL AS jenis, 
+                        1 AS jenis_belanja ,
+						tbl_metode.jenisID AS jenis_pengadaan,
+						tpengadaan_pemenang.perusahaannama,
+						tpengadaan_pemenang.perusahaanalamat,
+						tpengadaan_pemenang.perusahaannpwp,						
+					    tpengadaan_pemenang.nilai AS penawaran,
+                        tpengadaan.nilai_nego,
+						tpengadaan.pekerjaanstatus,
+						tpengadaan.created,
+                        tpengadaan.updated
+                FROM
+                    '.$dbplanning.'.tbl_pekerjaan 
+                    LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+                    LEFT JOIN '.$dbcontract.'.tpengadaan ON tpekerjaan.pid = tpengadaan.pid
+                    LEFT JOIN '.$dbcontract.'.tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid
+                    LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+                    LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+                    WHERE tahun = '.$year.' AND iswork = 1 AND tpengadaan.pekerjaanstatus = 7
+                ORDER BY updated DESC, created DESC LIMIT 10';
+        //die($sql);
+        $rspengadaan = DB::select($sql);
 
 		$rowdata = array();
 		$data = array();
 
-		/*foreach($rsdummy as $row) {
-			$sirupID = $row->sirupID;
-			$ocid = env('OCID') . $sirupID ;
+		foreach($rspengadaan as $row) {
+			$pieces = explode("-", $row->ocid);
+			$source    = $pieces[2];
 
-			$suppliers = array();
-			$data['ocid'] 		= $ocid;
-			$data['uri'] 		= env('LINK_SIRUP').$year."/".$sirupID;
-			$data['title'] 		= $row->namapekerjaan; 
-			$data['kode']		= $row->kode;
-			$data['activity']	= $row->namakegiatan;
-			$data['sirupID'] 	= $sirupID;
-			$data['SKPD']		= "";
-			$data['anggaran']	= "";m
-			$data['hps']		= $row->hps;
-			$data['nilai_penawaran']	= "";
-			$data['nilai_nego']			= $row->nilai_nego;
-			$data['suppliers']			= $suppliers;
+            $data['ocid'] 		= $row->ocid;
+            if ($source == "s") {
+				$data['uri'] 		= env('LINK_SIRUP18').$row->sirupID;
+			} else {
+				$data['uri'] 		= "";
+			}
+            $data['title'] 		    = $row->title; 
+            $data['namakegiatan']   = $row->namakegiatan;
+			$data['koderekening']   = $row->koderekening;
+            $data['project'] 	    = $this->get_program($row->tahun, $row->koderekening);
+			
+            $data['sirupID'] 	    = $row->sirupID;
+            $data['SKPD']		    = $row->satuan_kerja;
+            $data['anggaran']       = $row->pagu;
+            $data['hps']            = $row->hps;
+			$data['nilai_penawaran']= $row->penawaran;
+			
+			$data['perusahaannama']	= $row->perusahaannama;
+			$data['perusahaanalamat']= $row->perusahaanalamat;
+			$data['perusahaannpwp']	= $row->perusahaannpwp;
+            
+            $data['nilai_nego']     = $row->nilai_nego;
+            $data['jumlah_peserta'] = $row->jumlah_peserta;
+            $data['procurementMethod']				= $row->metode_pengadaan;
+			if ($row->metode_pengadaan != 0) {
+				$data['procurementMethodDetails']		= $this->metode_pengadaan($row->metode_pengadaan);
+			} else {
+				$data['procurementMethodDetails']		= "";
+            }
+            $data['awardCriteria']					= "priceOnly"; //To Do List Check Source
+            $data['dateSigned']        = "";
+            $data['contract']	= array(
+                'startDate' => $row->tanggal_awal_pekerjaan,
+                'endDate' => $row->tanggal_akhir_pekerjaan
+            );
+            $data['updated']		= $row->updated;
 
-			$data['procurementMethod']		= "";
-			$data['procurementMethodDetails'] = "";
-			$data['awardCriteria']		= "";
-			$data['dateSigned'] = "";
-			$data['contract']	= array(
-					'startDate' => "",
-					'endDate' => ""
-			);
-			$data['created_at']		= "";
-			$data['updated_at']		= "";
 			array_push($rowdata, $data);
-        }*/
+        }
 
 		$results = $rowdata;
 
@@ -1081,46 +1227,153 @@ class ApiBIRMS extends Controller
 		$dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
         $dbprime    = env('DB_PRIME');
-
-		$year = date('Y');
-		$sql =  'SELECT sirupID, tpengadaan.kode, tpengadaan.namakegiatan, tpengadaan.namapekerjaan, tpengadaan.anggaran, tpengadaan.hps, tpengadaan.nilai_nego FROM '.env('DB_CONTRACT').'.tpengadaan
-				LEFT JOIN '.env('DB_CONTRACT').'.tpekerjaan ON tpengadaan.pid = tpekerjaan.pid
-				LEFT JOIN '.env('DB_PLANNING').'.tbl_pekerjaan ON tpekerjaan.pekerjaanID = tbl_pekerjaan.pekerjaanID
-				WHERE
-				tpengadaan.pekerjaanstatus = 7 AND tpengadaan.ta = '.$year;
-		$rsdummy = DB::select($sql);
+        
+        $year = date('Y');
+        $sql = 'SELECT
+                    CONCAT("'.env('OCID').'","s-",tahun,"-",tbl_sirup.sirupID) AS ocid,
+					tbl_sirup.sirupID,
+					tlelangumum.skpdID,
+                    satuan_kerja,
+                    tahun,
+                    tlelangumum.kode AS koderekening,
+                    lls_id AS lelangID,
+                    namakegiatan,
+                    nama AS title,
+                    tanggal_awal_pekerjaan,
+                    tanggal_akhir_pekerjaan,
+                    metode_pengadaan,
+                    pagu,
+                    hps,
+                    jumlah_peserta,
+                    jenis, 
+                    jenis_belanja,
+					jenis_pengadaan,
+					pemenang AS perusahaannama,
+					pemenangalamat AS perusahaanalamat,
+					pemenangnpwp AS perusahaannpwp,
+                    penawaran,
+                    nilai_nego,
+					tlelangumum.pekerjaanstatus,
+					tlelangumum.created,
+                    tlelangumum.updated
+                FROM
+                    '.$dbplanning.'.tbl_sirup                
+                    LEFT JOIN '.$dbcontract.'.tlelangumum ON tbl_sirup.sirupID = tlelangumum.sirupID 
+                WHERE
+                    tbl_sirup.tahun = '.$year.'  
+                    AND tlelangumum.hps <> 0 
+                    AND tlelangumum.penawaran <> 0 
+                    AND tlelangumum.nilai_nego <> 0 
+                    AND tlelangumum.pekerjaanstatus = 7
+                    AND (NOT ISNULL(tlelangumum.namakegiatan) AND TRIM(tlelangumum.namakegiatan) <> "")	
+                    AND metode_pengadaan IN (1,2,3,4,5,6,10,11,12)
+                UNION 
+                SELECT
+                        CONCAT("'.env('OCID').'","b-",tahun,"-",tbl_pekerjaan.pekerjaanID) AS ocid,
+						tbl_pekerjaan.pekerjaanID AS sirupID, 
+						tbl_pekerjaan.skpdID,
+                        tbl_skpd.nama AS satuan_kerja,
+                        tahun,
+                        tbl_pekerjaan.kodepekerjaan AS koderekening,
+                        tbl_pekerjaan.pekerjaanID AS lelangID,
+                        tpekerjaan.namakegiatan,
+                        tbl_pekerjaan.namapekerjaan AS title,
+                        tbl_pekerjaan.pilih_start AS tanggal_awal_pekerjaan,
+                        tbl_pekerjaan.pilih_end AS tanggal_akhir_pekerjaan,
+                        (
+                            CASE
+                            WHEN tbl_metode.nama = "Belanja Sendiri" THEN
+                                9
+                            WHEN tbl_metode.nama = "Kontes / Sayembara" THEN
+                                10
+                            WHEN tbl_metode.nama = "Pelelangan Sederhana" THEN
+                                2
+                            WHEN tbl_metode.nama = "Pelelangan Umum" THEN
+                                1
+                            WHEN tbl_metode.nama = "Pembelian Secara Elektronik" THEN
+                                9
+                            WHEN tbl_metode.nama = "Pemilihan Langsung" THEN
+                                6
+                            WHEN tbl_metode.nama = "Pengadaan Langsung" THEN
+                                8
+                            WHEN tbl_metode.nama = "Penunjukan Langsung" THEN
+                                7
+                            WHEN tbl_metode.nama = "Swakelola" THEN
+                                21
+                            ELSE
+                                0
+                            END
+                        ) AS metode_pengadaan ,
+                        tbl_pekerjaan.anggaran AS pagu,
+                        tpekerjaan.hps,
+                        1 AS jumlah_peserta,
+                        NULL AS jenis, 
+                        1 AS jenis_belanja ,
+						tbl_metode.jenisID AS jenis_pengadaan,
+						tpengadaan_pemenang.perusahaannama,
+						tpengadaan_pemenang.perusahaanalamat,
+						tpengadaan_pemenang.perusahaannpwp,						
+					    tpengadaan_pemenang.nilai AS penawaran,
+                        tpengadaan.nilai_nego,
+						tpengadaan.pekerjaanstatus,
+						tpengadaan.created,
+                        tpengadaan.updated
+                FROM
+                    '.$dbplanning.'.tbl_pekerjaan 
+                    LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
+                    LEFT JOIN '.$dbcontract.'.tpengadaan ON tpekerjaan.pid = tpengadaan.pid
+                    LEFT JOIN '.$dbcontract.'.tpengadaan_pemenang ON tpengadaan.pgid = tpengadaan_pemenang.pgid
+                    LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
+                    LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
+                    WHERE tahun = '.$year.' AND iswork = 1 AND tpengadaan.pekerjaanstatus = 7
+                ORDER BY updated DESC, created DESC LIMIT 10';
+        //die($sql);
+        $rspengadaan = DB::select($sql);
 
 		$rowdata = array();
 		$data = array();
 
-		foreach($rsdummy as $row) {
-			$sirupID = $row->sirupID;
-			$ocid = env('OCID') . $sirupID ;
+		foreach($rspengadaan as $row) {
+			$pieces = explode("-", $row->ocid);
+			$source    = $pieces[2];
 
-			$suppliers = array();
-			$data['ocid'] 		= $ocid;
-			$data['uri'] 		= env('LINK_SIRUP').$year."/".$sirupID;
-			$data['title'] 		= $row->namapekerjaan; 
-			$data['kode']		= $row->kode;
-			$data['activity']	= $row->namakegiatan;
-			$data['sirupID'] 	= $sirupID;
-			$data['SKPD']		= "";
-			$data['anggaran']	= "";
-			$data['hps']		= $row->hps;
-			$data['nilai_penawaran']	= "";
-			$data['nilai_nego']			= $row->nilai_nego;
-			$data['suppliers']			= $suppliers;
+            $data['ocid'] 		= $row->ocid;
+            if ($source == "s") {
+				$data['uri'] 		= env('LINK_SIRUP18').$row->sirupID;
+			} else {
+				$data['uri'] 		= "";
+			}
+            $data['title'] 		    = $row->title; 
+            $data['namakegiatan']   = $row->namakegiatan;
+			$data['koderekening']   = $row->koderekening;
+            $data['project'] 	    = $this->get_program($row->tahun, $row->koderekening);
+			
+            $data['sirupID'] 	    = $row->sirupID;
+            $data['SKPD']		    = $row->satuan_kerja;
+            $data['anggaran']       = $row->pagu;
+            $data['hps']            = $row->hps;
+			$data['nilai_penawaran']= $row->penawaran;
+			
+			$data['perusahaannama']	= $row->perusahaannama;
+			$data['perusahaanalamat']= $row->perusahaanalamat;
+			$data['perusahaannpwp']	= $row->perusahaannpwp;
+            
+            $data['nilai_nego']     = $row->nilai_nego;
+            $data['jumlah_peserta'] = $row->jumlah_peserta;
+            $data['procurementMethod']				= $row->metode_pengadaan;
+			if ($row->metode_pengadaan != 0) {
+				$data['procurementMethodDetails']		= $this->metode_pengadaan($row->metode_pengadaan);
+			} else {
+				$data['procurementMethodDetails']		= "";
+            }
+            $data['awardCriteria']					= "priceOnly"; //To Do List Check Source
+            $data['dateSigned']        = "";
+            $data['contract']	= array(
+                'startDate' => $row->tanggal_awal_pekerjaan,
+                'endDate' => $row->tanggal_akhir_pekerjaan
+            );
+            $data['updated']		= $row->updated;
 
-			$data['procurementMethod']		= "";
-			$data['procurementMethodDetails'] = "";
-			$data['awardCriteria']		= "";
-			$data['dateSigned'] = "";
-			$data['contract']	= array(
-					'startDate' => "",
-					'endDate' => ""
-			);
-			$data['created_at']		= "";
-			$data['updated_at']		= "";
 			array_push($rowdata, $data);
         }
 

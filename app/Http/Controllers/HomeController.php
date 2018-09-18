@@ -110,153 +110,7 @@ class HomeController extends Controller
 
 		/* Dashboard Data ---- End --- Previous Year */
 
-		/* Link ---- Start */
-		$birms_app[0] = array(	'Name' => "e-Musrenbang",
-                      			'Link' => "http://bappeda.bandung.go.id/musrenbang",
-                      			'Title' => "e-City Planning [e-Musrenbang]",
-								'Icon' => "fa-building",
-							  	'Iconimg' => "0.png",
-								'Desc' => "Musyawarah Rencana Pembangunan melalui e-musrenbang Online",
-								'Active' => 0,
-								'Sub' => 0
-	                    );
-		$birms_app[1] = array(	'Name' => "e-Budgeting",
-                      			'Link' => url('ebudgeting'),
-                      			'Title' => "ebudgeting [SIMDA]",
-								'Icon' => "fa-money",
-							  	'Iconimg' => "1.png",
-								'Desc' => "e-budgeting melalui SIMDA",
-								'Active' => 0,
-								'Sub' => 0
-	                    );
-		$birms_app[2] = array(	'Name' => "e-RUP [SIRUP]",
-                      			'Link' => "https://sirup.lkpp.go.id/sirup/rekapKldi/D99",
-                      			'Title' => "e-RUP [SiRUP]",
-								'Icon' => "fa-history",
-							  	'Iconimg' => "2.png",
-								'Desc' => "Rencana Umum Pengadaan",
-								'Active' => 0,
-								'Sub' => 0
-	                    );
-		$birms_app[3] = array(	'Name' => "e-Project",
-                      			'Link' => url('eproject'),
-                      			'Title' => "e-Project Planning",
-								'Icon' => "fa-calendar",
-							  	'Iconimg' => "3.png",
-								'Desc' => "Perencanaan Pekerjaan",
-								'Active' => 0,
-								'Sub' => 0
-	                    );
-		/*$birms_app[4] = array(	'Name' => "e-Pengadaan",
-                      			'Link' => "",
-                      			'Title' => "e-Pengadaan",
-								'Icon' => "fa-balance-scale",
-							  	'Iconimg' => "4.png",
-								'Desc' => "Elektronik Pengadaan Barang / Jasa Secara Elektronik",
-								'Active' => 0,
-								'Sub' => array(
-											array(	'Name' => "e-BLP",
-					                      			'Link' => url('eulp'),
-					                      			'Title' => "e-ULP",
-													'Icon' => "fa-calendar",
-												  	'Iconimg' => "11.png",
-													'Desc' => "Pengajuan Lelang Umum melalui ULP",
-													'Active' => 0
-						                    ),
-						                    array(	'Name' => "e-Proc [LPSE]",
-					                      			'Link' => "http://lpse.bandung.go.id",
-					                      			'Title' => "e-Procurement [LPSE]",
-													'Icon' => "fa-balance-scale",
-												  	'Iconimg' => "4.png",
-													'Desc' => "Pengadaan Barang/Jasa melalui Lelang Umum",
-													'Active' => 0
-						                    ),
-						                    array(	'Name' => "e-Kontrak",
-					                      			'Link' => url('econtract'),
-					                      			'Title' => "e-Kontrak",
-													'Icon' => "fa-file-text-o",
-												  	'Iconimg' => "5.png",
-													'Desc' => "Pengadaan Barang/Jasa melalui Pengadaan/Penunjukan Langsung dan Manajemen Kontrak",
-													'Active' => 0
-						                    ),
-						                    array(	'Name' => "e-Swakelola",
-					                      			'Link' => url('eswakelola'),
-					                      			'Title' => "e-Swakelola",
-													'Icon' => "fa-users",
-												  	'Iconimg' => "6.png",
-													'Desc' => "Pengadaan Melalui Swakelola",
-													'Active' => 0
-						                    )
-										)
-
-	                    );*/
-
-		$birms_app[4] = array(	'Name' => "e-BLP",
-                      			'Link' => url('eulp'),
-                      			'Title' => "e-ULP",
-								'Icon' => "fa-calendar",
-							  	'Iconimg' => "11.png",
-								'Desc' => "Pengajuan Lelang Umum melalui ULP",
-								'Active' => 0,
-								'Sub' => 0
-	                    );
-
-		$birms_app[5] = array(	'Name' => "e-Proc [LPSE]",
-                      			'Link' => "http://lpse.bandung.go.id",
-                      			'Title' => "e-Procurement [LPSE]",
-								'Icon' => "fa-balance-scale",
-							  	'Iconimg' => "4.png",
-								'Desc' => "Pengadaan Barang/Jasa melalui Lelang Umum",
-								'Active' => 0,
-								'Sub' => 0
-						);
-		$birms_app[6] = array(	'Name' => "e-Kontrak",
-                      			'Link' => url('econtract'),
-                      			'Title' => "e-Kontrak",
-								'Icon' => "fa-file-text-o",
-							  	'Iconimg' => "5.png",
-								'Desc' => "Pengadaan Barang/Jasa melalui Pengadaan/Penunjukan Langsung dan Manajemen Kontrak",
-								'Active' => 0,
-								'Sub' => 0
-						);
-		$birms_app[7] = array(	'Name' => "e-Swakelola",
-                      			'Link' => url('eswakelola'),
-                      			'Title' => "e-Swakelola",
-								'Icon' => "fa-users",
-							  	'Iconimg' => "6.png",
-								'Desc' => "Pengadaan Melalui Swakelola",
-								'Active' => 0,
-								'Sub' => 0
-						);
-
-		$birms_app[8] = array(	'Name' => "e-Progress",
-                      			'Link' => url('eprogress'),
-                      			'Title' => "e-Progress",
-								'Icon' => "fa-tasks",
-							  	'Iconimg' => "7.png",
-								'Desc' => "Progress Pengadaan Barang/Jasa",
-								'Active' => 0,
-								'Sub' => 0
-	                    );
-		$birms_app[9] = array(	'Name' => "e-Performance",
-                      			'Link' => url('eperformance'),
-                      			'Title' => "e-Performance",
-								'Icon' => "fa-bar-chart",
-							  	'Iconimg' => "8.png",
-								'Desc' => "Performance Pengadaan Barang/Jasa",
-								'Active' => 0,
-								'Sub' => 0
-	                    );
-		$birms_app[10] = array(	'Name' => "e-Asset",
-                      			'Link' => url('easset'),
-                      			'Title' => "e-Asset",
-								'Icon' => "fa-bank",
-							  	'Iconimg' => "9.png",
-								'Desc' => "Asset melalui Pengadaan Barang/Jasa",
-								'Active' => 0,
-								'Sub' => 0
-	                    );
-		/* Link ---- End */
+		
 
 		/* Chart ---- Start */
 		$sql = "SELECT * FROM $dbecontract.vlelang_bypaket";
@@ -308,7 +162,7 @@ class HomeController extends Controller
 		$data['total_prev_nilai_pengumuman_pl'] = $total_prev_nilai_pengumuman_pl;
 
 		$data['article']				= $rspost;
-		$data['app']					= $birms_app;
+		$data['app']					= $this->birms_applist();
 
 		$data['paket_lelang']			= $rspaketlelang;
 		$data['paket_pl']				= $rspaketpl;
@@ -316,6 +170,112 @@ class HomeController extends Controller
     	return View::make("frontend.home")->with($data);
     }
 
+	public function birms_applist()
+	{
+		/* Link ---- Start */
+
+		$birms_app[0] = array(	'Name' => "e-planning (SIRA)",
+                      			'Link' => "http://apbd.bandung.go.id",
+                      			'Title' => "e-planning (SIRA)",
+								'Icon' => "fa-money",
+							  	'Iconimg' => "1.png",
+								'Desc' => "Sistem Informasi Perencanaan & Penganggaran",
+								'Active' => 0,
+								'Sub' => 0
+						);
+		$birms_app[1] = array(	'Name' => "e-finance (SIMDA)",
+								'Link' => "http://bpka.bandung.go.id",
+								'Title' => "e-finance (SIMDA)",
+								'Icon' => "fa-money",
+								'Iconimg' => "1.png",
+								'Desc' => "Sistem Informasi Manajemen Keuangan Daerah",
+								'Active' => 0,
+								'Sub' => 0
+						);						
+		$birms_app[2] = array(	'Name' => "e-RUP (SIRUP)",
+                      			'Link' => "https://sirup.lkpp.go.id/sirup/home/rekapKldi?idKldi=D99",
+                      			'Title' => "e-RUP (SiRUP)",
+								'Icon' => "fa-history",
+							  	'Iconimg' => "2.png",
+								'Desc' => "Rencana Umum Pengadaan",
+								'Active' => 0,
+								'Sub' => 0
+	                    );
+		$birms_app[3] = array(	'Name' => "e-Project Planning",
+                      			'Link' => url('eproject'),
+                      			'Title' => "e-Project Planning",
+								'Icon' => "fa-calendar",
+							  	'Iconimg' => "3.png",
+								'Desc' => "Perencanaan Paket Pekerjaan",
+								'Active' => 0,
+								'Sub' => 0
+	                    );
+		$birms_app[4] = array(	'Name' => "e-Balap",
+                      			'Link' => url('ebalap'),
+                      			'Title' => "e-Balap",
+								'Icon' => "fa-calendar",
+							  	'Iconimg' => "11.png",
+								'Desc' => "Pengajuan Tender melalui UKPBJ",
+								'Active' => 0,
+								'Sub' => 0
+	                    );
+		$birms_app[5] = array(	'Name' => "e-Proc [LPSE]",
+                      			'Link' => "http://lpse.bandung.go.id",
+                      			'Title' => "e-Procurement [LPSE]",
+								'Icon' => "fa-balance-scale",
+							  	'Iconimg' => "4.png",
+								'Desc' => "PBJ Tender",
+								'Active' => 0,
+								'Sub' => 0
+						);
+		$birms_app[6] = array(	'Name' => "e-Kontrak",
+                      			'Link' => url('econtract'),
+                      			'Title' => "e-Kontrak",
+								'Icon' => "fa-file-text-o",
+							  	'Iconimg' => "5.png",
+								'Desc' => "PBJ Pengadaan/Penunjukan Langsung & Kontrak",
+								'Active' => 0,
+								'Sub' => 0
+						);
+		$birms_app[7] = array(	'Name' => "e-Swakelola",
+                      			'Link' => url('eswakelola'),
+                      			'Title' => "e-Swakelola",
+								'Icon' => "fa-users",
+							  	'Iconimg' => "6.png",
+								'Desc' => "Pengadaan Melalui Swakelola",
+								'Active' => 0,
+								'Sub' => 0
+						);
+		$birms_app[8] = array(	'Name' => "e-Progress",
+                      			'Link' => url('eprogress'),
+                      			'Title' => "e-Progress",
+								'Icon' => "fa-tasks",
+							  	'Iconimg' => "7.png",
+								'Desc' => "Progress Pengadaan Barang/Jasa",
+								'Active' => 0,
+								'Sub' => 0
+	                    );
+		$birms_app[9] = array(	'Name' => "e-Performance",
+                      			'Link' => url('eperformance'),
+                      			'Title' => "e-Performance",
+								'Icon' => "fa-bar-chart",
+							  	'Iconimg' => "8.png",
+								'Desc' => "Performance Pengadaan Barang/Jasa",
+								'Active' => 0,
+								'Sub' => 0
+	                    );
+		$birms_app[10] = array(	'Name' => "e-Asset",
+                      			'Link' => url('easset'),
+                      			'Title' => "e-Asset",
+								'Icon' => "fa-bank",
+							  	'Iconimg' => "9.png",
+								'Desc' => "Asset melalui Pengadaan Barang/Jasa",
+								'Active' => 0,
+								'Sub' => 0
+	                    );
+		/* Link ---- End */
+		return $birms_app;
+	}
 	/**
      * Creates paginator from a simple array coming from DB::select
      * https://stackoverflow.com/a/44090541
@@ -505,7 +465,7 @@ class HomeController extends Controller
 						WHERE true ';
 
 						if (!empty($q)) {
-							$sql .= ' AND LOWER(pengadaan.namapekerjaan) LIKE \'%'.$q.'%\' ';
+							$sql .= ' AND (LOWER(pengadaan.namapekerjaan) LIKE \'%'.$q.'%\' OR LOWER(namaskpd) LIKE \'%'.$q.'%\')';
 						}
 
 						if (!empty($tahun)) {
@@ -537,25 +497,36 @@ class HomeController extends Controller
 	    	//$data['pengadaan'] = $rspengadaan->toArray();
     	} else {
     		$data['message'] = 'Silahkan isi kata yang ingin dicari terlebih dahulu';
-    	}
+		}
+		$data['app']	= $this->birms_applist();		
     	return View::make("frontend.search")->with($data);
 	}
 	
 	function contract()
     {
-    	$data			 = [];
+		$data			 = [];
+		$data['app']	= $this->birms_applist();
     	return View::make("frontend.contract")->with($data);
 	}
 	
 	function watched()
     {
-    	$data			 = [];
+		$data			 = [];
+		$data['app']	 = $this->birms_applist();
     	return View::make("frontend.watched")->with($data);
 	}
 	
+	function abouttender()
+    {
+		$data			 = [];
+		$data['app']	 = $this->birms_applist();
+    	return View::make("frontend.abouttender")->with($data);
+	}
+
 	function documentation()
     {
-    	$data			 = [];
+		$data			 = [];
+		$data['app']	 = $this->birms_applist();
     	return View::make("frontend.documentation")->with($data);
 	}
 }

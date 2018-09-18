@@ -1,79 +1,50 @@
 <section>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12  text-center">
+<div class="container-fluid mx-auto">
+  <div class="row justify-content-center">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <a class="navbar-brand" href="{{ url('')}}"><img src="img/birms.png"></a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navBIRMS" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        
+          <div class="collapse navbar-collapse" id="navBIRMS">
+            <ul class="navbar-nav mr-auto list-inline mb-0  mt-2 border-bottom-1px">
+              <li class="nav-item @if(Request::url() === url('')) active @endif">
+                <a class="nav-link" href="{{ url('')}}">Beranda <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  APPS
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  @foreach ($app as $x => $rw)
+                  <div>
+                      <a class="dropdown-item text-dark" href="{{ $rw['Link'] }}">{{ $rw['Name'] }}<br>
+                      <small class="alert-link">{{ $rw['Desc'] }}</small>
+                      </a>
+                  </div>
+                    @if ($loop->last)
 
-        <ul class="list-inline mb-0  mt-2 border-bottom-1px">
-           <li class="nav-item list-inline-item"><a class="nav-link" href="{{ url('')}}"><img src="{{ url('img/birms.png') }}"></a></li>
-           <li class="nav-item list-inline-item dropdown">
-             <a class="nav-link dropdown-toggle" class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              BIRMS Apps
-             </a>
-             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-               <a class="dropdown-item nav-link" href="http://apbd.bandung.go.id" target="_blank">
-                 <span>e-planning (SIRA)</span><br>
-                 <small>Sistem Informasi Perencanaan & Penganggaran Kota Bandung</small>
-               </a>
-               <div class="dropdown-divider"></div>
-               <a class="dropdown-item nav-link" href="http://bpka.bandung.go.id" target="_blank">
-                 <span>e-finance (SIMDA)</span><br>
-                 <small>Sistem Informasi Manajemen Keuangan Daerah Kota Bandung</small>
-               </a>
-               <div class="dropdown-divider"></div>
-               <a class="dropdown-item nav-link" href="https://sirup.lkpp.go.id/sirup/rekapKldi/D99" target="_blank">
-                 <span>e-RUP (SIRUP LKPP)</span><br>
-                 <small>Rencana Umum Pengadaan</small>
-               </a>
-               <div class="dropdown-divider"></div>
-               <a class="dropdown-item nav-link" href="{{ url('eproject')}}" target="_blank">
-                 <span>e-Project Planning</span><br>
-                 <small>Perencanaan Paket Pekerjaan</small>
-               </a>
-               <div class="dropdown-divider"></div>
-               <a class="dropdown-item nav-link" href="http://lpse.bandung.go.id" target="_blank">
-                 <span>e-Tender</span><br>
-                 <small>Pengadaan Barang/Jasa melalui Tender</small>
-               </a>
-               <div class="dropdown-divider"></div>
-               <a class="dropdown-item nav-link" href="{{ url('econtract') }}" target="_blank">
-                 <span>e-Contract</span><br>
-                 <small>Pengadaan Barang/Jasa melalui Pengadaan/Penunjukan Langsung dan Kontrak</small>
-               </a>
-               <div class="dropdown-divider"></div>
-               <a class="dropdown-item nav-link" href="{{ url('eprogress') }}" target="_blank">
-                 <span>e-Progress</span><br>
-                 <small>Progress Pengadaan Barang/Jasa</small>
-               </a>
-             </div>
-           </li>
-           <!--<li class="nav-item list-inline-item">
-             <a class="nav-link dropdown-toggle" class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              Public Dashboard
-             </a>
-             <div class="dropdown-menu " aria-labelledby="navbarDropdown">
-               <a class="dropdown-item nav-link" href="#">
-                 <span>Login</span>
-                 <p>See contracts, sign-in, check your dashboard</p>
-               </a>
-               <div class="dropdown-divider"></div>
-               <a class="dropdown-item nav-link" href="#">
-                 <span>Contact</span>
-                 <p>Contact us, ask us questions, read faq.</p>
-               </a>
-               <div class="dropdown-divider"></div>
-               <a class="dropdown-item nav-link" href="#">
-                 <span>Developer</span>
-                 <p>Download data, read API documentation.</p>
-               </a>
-             </div>
-           </li>-->
-           <li class="nav-item list-inline-item"><a class="nav-link" target="_blank" href="#">Berita</a></li>
-           <li class="nav-item list-inline-item"><a class="nav-link" target="_blank" href="{{ url('../archive') }}">BIRMS Arsip</a></li>
-           <li class="nav-item list-inline-item"><a class="nav-link" target="_blank" href="{{ url('documentation') }}">Developer</a></li>
-        </ul>
-
-
-      </div>
-    </div>
+                    @else
+                    <div class="dropdown-divider"></div>
+                    @endif
+                  @endforeach
+                </div>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Berita</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link @if(Request::is('archive/*')) active @endif" href="{{ url('../archive') }}">Arsip</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link @if(Request::url() === url('abouttender')) active @endif" href="{{ url('abouttender') }}">Tentang Pengadaan</a>
+              </li>
+              <li class="nav-item @if(Request::url() === url('documentation')) active @endif">
+                  <a class="nav-link" href="{{ url('documentation') }}">Developer</a>
+              </li>  
+            </ul>
+          </div>
+      </nav>
   </div>
 </section>

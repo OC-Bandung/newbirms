@@ -9,8 +9,8 @@
 
     <div class="row">
 
-        <div class="col-6">
-        <div id="graph01" style="min-width: 100%;  height: 400px; margin: 0 auto"></div>
+        <div class="col">
+        <div id="graph01"></div>
         <div class="text-right bg-white pr-3 pb-3">
                 <a target="_blank" href="{{ url('api/graph/1') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 
@@ -18,8 +18,8 @@
         </div>
         </div>
 
-        <div class="col-6">
-        <div id="graph02" style="min-width: 100%; height: 400px; margin: 0 auto"></div>
+        <div class="col">
+        <div id="graph02"></div>
         <div class="text-right bg-white pr-3 pb-3">
                 <a target="_blank" href="{{ url('api/graph/2/2017') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 
@@ -29,8 +29,8 @@
     </div>
 
     <div class="row pt-3">
-        <div class="col-6">
-        <div id="graph03" style="min-width: 100%; height: 400px; margin: 0 auto"></div>
+        <div class="col">
+        <div id="graph03"></div>
         <div class="text-right bg-white pr-3 pb-3">
                 <a target="_blank" href="{{ url('api/graph/3/2017') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 
@@ -38,8 +38,8 @@
         </div>
         </div>
 
-        <div class="col-6">
-        <div id="graph04" style="min-width: 100%; height: 400px; margin: 0 auto"></div>
+        <div class="col">
+        <div id="graph04"></div>
         <div class="text-right bg-white pr-3 pb-3">
                 <a target="_blank" href="{{ url('api/graph/4/2017') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 

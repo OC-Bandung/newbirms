@@ -20,7 +20,7 @@
 
     @include('frontend.homepage.currprocurement')
 
-    @include('frontend.homepage.ocinformation')
+    <!--include('frontend.homepage.ocinformation')-->
 
     @include('frontend.homepage.newsupdate')
 
@@ -29,5 +29,6 @@
 @endsection
 
 @section('footer')
-
+<script type="text/javascript" src="{{ url('js/homepage/graph.js') }}"></script>
+<script type="text/javascript" src="{{ url('js/homepage/recent.js') }}"></script>
 @endsection
