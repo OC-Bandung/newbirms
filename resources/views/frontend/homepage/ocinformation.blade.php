@@ -12,14 +12,14 @@
 
       <div class="row pt-5">
 
-        <div class="col-6 blockquote-list">
+        <div class="col blockquote-list">
           <blockquote class="blockquote blockquote-2 boxed">
               <p>We are committed to using Information Technology in order to support good governance, efficient, effective, transparent, accountable and orderly administration.</p>
               <footer class="blockquote-footer">Boss 1</footer>
             </blockquote>
         </div>
 
-        <div class="col-6 blockquote-list">
+        <div class="col blockquote-list">
 
             <blockquote class="blockquote blockquote-2 boxed mt-5">
                 <p>Kami berkomitmen untuk menggunakan Teknologi Informasi untuk mendukung tata kelola yang baik, administrasi yang efisien, efektif, transparan, dapat dipertanggungjawabkan dan tertib.</p>
@@ -29,7 +29,7 @@
         </div>
 
 
-        <div class="col-12 bg-dark mt-5">
+        <!--<div class="col-12 bg-dark mt-5">
           <h3 class="text-light pl-2 pt-4">How to use Bandung’s Open Contracting data in 3 steps</h3>
           <p class="text-white pl-2"></p>
           <hr class="pb-2 color-white">
@@ -79,7 +79,7 @@
 
             </div>
 
-        </div>
+        </div>-->
 
 
       </div>

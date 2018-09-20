@@ -20,7 +20,7 @@
 
     @include('frontend.homepage.currprocurement')
 
-    <!--include('frontend.homepage.ocinformation')-->
+    @include('frontend.homepage.ocinformation')
 
     @include('frontend.homepage.newsupdate')
 
