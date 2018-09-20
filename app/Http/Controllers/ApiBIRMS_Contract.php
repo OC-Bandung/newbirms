@@ -1409,7 +1409,7 @@ class ApiBIRMS_Contract extends Controller
             $tenderers = [];
             foreach ($results as $row) {
                 $tenderer = $this->getTenderer($year, $row, $parties);
-                if (!in_array($tenderer, $tenderers, true)) {
+                if (!in_array($tenderer, $tenderers, false)) {
                     array_push($tenderers, $tenderer);
                 }
             }
