@@ -45,7 +45,13 @@ $("#awards-count").text(awards.length );
          awardParent = "div#" + element_id + " div.awards-suppliers-parent-container";
 
          displayJsonInUI(myAwardsUI, awards[award]);
+        
+         console.log(awards[award].value.amount);
 
+         //if ( awards[award].value &&  awards[award].value.amount) {
+          $("div#" + element_id + "#awards-value-amount").text(numberWithCommas(awards[award].value.amount));
+          $("div#" + element_id + "#awards-value-amount-container").removeClass("d-none");
+        //}
 
          var suppliers =  awards[award].suppliers;
 

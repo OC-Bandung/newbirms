@@ -787,7 +787,7 @@ class ApiBIRMS extends Controller
 						NULL AS updated_at
 				FROM
 				'.$dbplanning.'.tbl_sirup
-				WHERE tahun = '.$year.' AND pagu <> 0 
+				WHERE tahun = '.$year.' AND pagu <> 0 AND metode_pengadaan IN (1,2,3,4,5,6,10,11,12) AND isswakelola = 0 
 					UNION
 					SELECT
 					CONCAT( "'.env('OCID').'", "b-", '.$year.', "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
@@ -845,7 +845,8 @@ class ApiBIRMS extends Controller
 				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
 				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
 				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-				WHERE YEAR(tbl_pekerjaan.created) = '.$year.' AND sirupID = 0 AND iswork = 1 ORDER BY tanggal_awal_pengadaan DESC LIMIT 5';
+				WHERE tahun = '.$year.' AND sirupID = 0 AND iswork = 1 ORDER BY tanggal_awal_pengadaan DESC LIMIT 5';
+
 		$rsdummy = DB::select($sql);
 
 		$rowdata = array();

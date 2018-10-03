@@ -67,11 +67,11 @@ function load_contracts(data , award, awardID) {
             item_html +=  '<div class=" h5"> ' + items[myItem].description + '</div>';
           item_html +='</div>';
           item_html +='<div class="col ">';
-          item_html   +='<div class="h6">Quantity</div>';
+          item_html   +='<div class="h6">Kuantitas</div>';
           item_html   +=  '<div class=" h5">' + items[myItem].quantity + '</div>';
           item_html +='</div>';
           item_html +='<div class="col ">';
-            item_html +='<div class="h6">Unit</div>';
+            item_html +='<div class="h6">Satuan</div>';
             item_html +='<div class=" h5">' + items[myItem].unit.unit + '</div>';
           item_html +='</div>';
         item_html +='</div>';

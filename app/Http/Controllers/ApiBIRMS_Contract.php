@@ -271,6 +271,7 @@ class ApiBIRMS_Contract extends Controller
     function getBudget($results)
     {
         $budget = new stdClass();
+        $budget->id = $results->koderekening;
         $budget->amount = $this->getAmount($results->pagu);
         $budget->description = $results->sumber_dana_string;
         $budget->project = $results->nama;
@@ -1014,9 +1015,32 @@ class ApiBIRMS_Contract extends Controller
         }
 
         if ($source == 's') {
-            $sql = "SELECT * FROM ".$dbplanning.".tbl_sirup WHERE sirupID = '" . $sirup_id . "'";
+            $sql = "SELECT
+                    NULL AS koderekening,
+                    sirupID,
+                    tahun,
+                    nama,
+                    pagu,
+                    sumber_dana_string,
+                    jenis_belanja,
+                    jenis_pengadaan,
+                    metode_pengadaan,
+                    jenis,
+                    tanggal_awal_pengadaan,
+                    tanggal_akhir_pengadaan,
+                    tanggal_awal_pekerjaan,
+                    tanggal_akhir_pekerjaan,
+                    id_satker,
+                    kldi,
+                    satuan_kerja,
+                    lokasi,
+                    isswakelola,
+                    NULL AS isready,
+					NULL AS pekerjaanstatus
+                    FROM ".$dbplanning.".tbl_sirup WHERE sirupID = '" . $sirup_id . "'";
         } else {
             $sql = "SELECT
+					kodepekerjaan AS koderekening,
                     tbl_pekerjaan.pekerjaanID AS sirupID,
                     ".$year." AS tahun ,
                     tbl_pekerjaan.namapekerjaan AS nama ,

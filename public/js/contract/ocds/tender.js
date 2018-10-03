@@ -61,7 +61,7 @@ function load_tender(data) {
   $("#birms-link").attr("href", "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c");
 
   if (data.tender.tenderPeriod.endDate && data.tender.tenderPeriod && data.tender.tenderPeriod.startDate ) {
-      $("#tender-tender-days-diff").text("Duration: " + moment(data.tender.tenderPeriod.endDate).diff( moment(data.tender.tenderPeriod.startDate), 'days') + " days");
+      $("#tender-tender-days-diff").text("Waktu: " + moment(data.tender.tenderPeriod.endDate).diff( moment(data.tender.tenderPeriod.startDate), 'days') + " hari");
       $("#tender-tender-days-diff-container").removeClass('d-none') ;
       var Dates = data.tender.tenderPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.tenderPeriod.endDate.replace(/-|:|\+\0000/g, "");
 
@@ -69,7 +69,7 @@ function load_tender(data) {
   }
 
   if (data.tender.contractPeriod.endDate && data.tender.contractPeriod && data.tender.contractPeriod.startDate ) {
-     $("#tender-contract-days-diff").text("Duration: " +  moment(data.tender.contractPeriod.endDate).diff( moment(data.tender.contractPeriod.startDate), 'days') + " days" );
+     $("#tender-contract-days-diff").text("Waktu: " +  moment(data.tender.contractPeriod.endDate).diff( moment(data.tender.contractPeriod.startDate), 'days') + " hari" );
      var Dates = data.tender.contractPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.contractPeriod.endDate.replace(/-|:|\+\0000/g, "");
 
      $("#tender-contractPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
@@ -86,8 +86,6 @@ function load_tender(data) {
    }
 
    if (data.planning.budget.amount.amount &&  data.tender.value && data.tender.value.amount) {
-
-     console.log("test");
 
       var myBudget = data.planning.budget.amount.amount;
       var myTender = data.tender.value.amount;
@@ -154,18 +152,18 @@ function load_tender(data) {
                     html+=  '<div class="h6">Mulai : ' + moment(data.tender.milestones[i].dateMet).format('ll')  + '</div>';
                 html += '</div>';
                 if (diff_milestone <=0) {
-                  html += '<div class="col-6 h6 pt-3 text-success float-right">' +  diff_milestone +  '<small> days before deadline</small></div>';
+                  html += '<div class="col-6 h6 pt-3 text-success float-right">' +  diff_milestone +  '<small> hari sebelum tenggat waktu</small></div>';
                 } else {
-                  html += '<div class="col-6 h6 pt-3 text-danger float-right"> ' +  diff_milestone +  '<small> days after deadline</small> </div>';
+                  html += '<div class="col-6 h6 pt-3 text-danger float-right"> ' +  diff_milestone +  '<small> hari sesudah tenggat waktu</small> </div>';
                 }
 
               html+= '</div>';
-             html +='<div><button class="btn btn-sm btn-outline-secondary float-right" type="button" data-target="#t_details" data-toggle="collapse">Add to Calendar ▼</button>';
+             html +='<div><button class="btn btn-sm btn-outline-secondary float-right" type="button" data-target="#t_details" data-toggle="collapse">Tambahkan ke Kalender ▼</button>';
              html +='<div class="collapse bl-3px-black" id="t_details">';
                html +='<div class="p-2 small text-monospace">';
-                 html +='<div><a href="#">add to Google Calendar</a></div>';
-                html += '<div><a href="#">add to Outlook</a></div>';
-                 html +='<div><a href="#">send by email</a></div>';
+                 html +='<div><a href="#"><i class="material-icons small">add_box</i> ke Google Calendar</a></div>';
+                html += '<div><a href="#"><i class="material-icons small">add_box</i> ke Outlook</a></div>';
+                 html +='<div><a href="#"><i class="material-icons small">mail</i> kirim email</a></div>';
               html += '</div>';
            html +='</div>';
           html += '</div></div>';

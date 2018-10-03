@@ -15,3 +15,12 @@ a.list-group-item.active  {
 #documentation-content {
   min-height: 100vh;
 }
+
+ul {
+  list-style: square;
+  padding-left: 50px;
+}
+
+#documentation-content a {
+font-family:'SFMono-Regular',Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}

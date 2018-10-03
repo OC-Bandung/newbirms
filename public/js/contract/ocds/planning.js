@@ -51,6 +51,9 @@ function load_planning(data) {
 
         $("#planning-budget-amount-amount").text(numberWithCommas(planning.budget.amount.amount));
 
+        $("#planning-budget-id-container").removeClass("d-none");
+        $("#planning-budget-id").text(planning.budget.id);
+
         $("#planning-budget-description").text(planning.budget.description);
 
         $("#planning-budget-project-name-container").hide();

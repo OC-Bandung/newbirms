@@ -1,4 +1,4 @@
-<section>
+<section id="currprocurement">
     <div class="container pt-5">
 
         <div class="row">
@@ -9,7 +9,7 @@
         </div>
 
       <div class="row pt-3">
-        <div class="col-4 pr-0">
+        <div class="col-3 pr-0">
               <ul id="load_recent-procurement" class="list-recent-proc sticky">
 
                   <li id="load_perencanaan" class="list-planning active p-3">
@@ -54,7 +54,7 @@
 
         </div>
 
-        <div class="col-8 pl-0 ">
+        <div class="col-9 pl-0 ">
             <div id="recent-from-api"> </div>
                 <div class="list-group rounded-0">
                 </div>

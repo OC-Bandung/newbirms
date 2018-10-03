@@ -1,4 +1,4 @@
-<section class="bg-primary pb-5 pt-5">
+<section id="transparency" class="bg-primary pb-5 pt-5">
     <div class="container">
 
       <div class="row">

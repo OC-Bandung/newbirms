@@ -7,7 +7,7 @@ $(document).ready(function() {
        var options = {
          chart: {
             renderTo: 'graph01',
-            type: 'column'
+            type: 'line'
          },
          title: {
              text: 'Tender vs Non Tender'
@@ -30,6 +30,7 @@ $(document).ready(function() {
              shared: true,
              useHTML: true
          },
+         colors: ['#058DC7', '#50B432'],
          plotOptions: {
              column: {
                  pointPadding: 0.2,
@@ -97,6 +98,7 @@ $(document).ready(function() {
              shared: true,
              useHTML: true
          },
+         colors: ['#058DC7', '#50B432'],
          plotOptions: {
              column: {
                  pointPadding: 0.2,
@@ -206,10 +208,10 @@ $(document).ready(function() {
        var options = {
          chart: {
             renderTo: 'graph04',
-            type: 'column'
+            type: 'line'
          },
          title: {
-             text: 'Total Kontrak'
+             text: 'Jumlah Paket Ber Kontrak'
          },
          subtitle: {
             text: 'Tender dan Non Tender'
@@ -232,6 +234,7 @@ $(document).ready(function() {
              shared: true,
              useHTML: true
          },
+         colors: ['#058DC7', '#50B432'],
          plotOptions: {
              column: {
                  pointPadding: 0.2,

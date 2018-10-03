@@ -28,7 +28,7 @@ $("#load_pengadaan").click(function(e) {
 
 e.preventDefault();
 
-var jqxhr = $.getJSON("https://birms.bandung.go.id/beta/api/recent/pengadaan", function(data) {
+var jqxhr = $.getJSON("api/recent/pengadaan", function(data) {
     get_pengadaan(data);
     });
 });
@@ -38,7 +38,7 @@ $("#load_pemenang").click(function(e) {
 
  e.preventDefault();
 
-var jqxhr = $.getJSON("https://birms.bandung.go.id/beta/api/recent/pemenang", function(data) {
+var jqxhr = $.getJSON("api/recent/pemenang", function(data) {
     get_award(data);
     });
 });
@@ -48,7 +48,7 @@ $("#load_kontrak").click(function(e) {
 
 e.preventDefault();
 
-var jqxhr = $.getJSON("https://birms.bandung.go.id/beta/api/recent/kontrak", function(data) {
+var jqxhr = $.getJSON("api/recent/kontrak", function(data) {
     get_contract(data);
     });
 });
@@ -58,12 +58,50 @@ $("#load_implementasi").click(function(e) {
 
 e.preventDefault();
 
-var jqxhr = $.getJSON("https://birms.bandung.go.id/beta/api/recent/implementasi", function(data) {
+var jqxhr = $.getJSON("api/recent/implementasi", function(data) {
     get_implementasi(data);
     });
 });
 
+function number_format (number, decimals, dec_point, thousands_sep) {
+  // Strip all characters but numerical ones.
+  number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
+  var n = !isFinite(+number) ? 0 : +number,
+      prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+      sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+      dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+      s = '',
+      toFixedFix = function (n, prec) {
+          var k = Math.pow(10, prec);
+          return '' + Math.round(n * k) / k;
+      };
+  // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+  s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+  if (s[0].length > 3) {
+      s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+  }
+  if ((s[1] || '').length < prec) {
+      s[1] = s[1] || '';
+      s[1] += new Array(prec - s[1].length + 1).join('0');
+  }
+  return s.join(dec);
+}
 
+function moneyDisplay(val) {
+  val = parseFloat(val);
+  count = val.length;
+
+	  if ((count >= 16 ) && (count <= 18 )) {
+			result = "Rp. "+ number_format(val/1000000000000000,1,',','.')+" Kd";
+		} else if ((count >= 13 ) && (count <= 15 )) {
+			result = "Rp. "+ number_format(val/1000000000000,1,',','.')+" T";
+		} else if ((count >= 10 ) && (count <= 12 )) {
+			result = "Rp. "+ number_format(val/1000000000,1,',','.')+" M";
+		} else {
+			result = "Rp. "+ number_format(val/1000000,1,',','.')+" jt";
+		}
+		return result;
+}
 
 
 
@@ -100,7 +138,7 @@ function get_planning(data) {
     html+= '<div class="row">'; 
     html+= '  <div class="col">'; 
     html+= '      <small class="text-muted"> Pagu Anggaran</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.budget.amount.currency + ' ' + json.budget.amount.amount / 1000000  + 'Jt </div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moneyDisplay(json.budget.amount.amount)  + '</div>';
     html+= '    </div>'; 
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> Sumber Dana</small>';
@@ -197,7 +235,7 @@ function get_pengadaan(data) {
     html+= '    </div>'; 
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> HPS</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.hps / 1000000  + 'Jt </div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moneyDisplay(json.hps) + '</div>';
     html+= '    </div>'; 
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> Jumlah Peserta</small>';
@@ -206,7 +244,7 @@ function get_pengadaan(data) {
     if(json.nilai_penawaran !== 0){
         html+= '    <div class="col">'; 
         html+= '      <small class="text-muted"> Nilai Penawar</small>';
-        html+= '      <div class="h5 pt-1 font-weight-bold">' + json.nilai_penawaran / 1000000 + 'Jt </div>';
+        html+= '      <div class="h5 pt-1 font-weight-bold">' + moneyDisplay(json.nilai_penawaran) + '</div>';
         html+= '    </div>'; 
     }
     html+= '</div>';
@@ -271,11 +309,11 @@ $("#recent_procurement_title").text("Pemenang")
     html+= '<div class="row">'; 
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> HPS</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.hps / 1000000 + 'Jt </div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moneyDisplay(json.hps) + '</div>';
     html+= '    </div>';
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> Nilai Kontrak</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.nilai_nego / 1000000 + 'Jt </div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moneyDisplay(json.nilai_nego) + '</div>';
     html+= '    </div>';
     if(json.tanggal_penetapan !== undefined){
         html+= '    <div class="col">'; 
@@ -334,7 +372,7 @@ html = "";
 
     html+= '<div class="row">'; 
     html+= '  <div class="col">'; 
-    html+= '      <small class="text-muted"> SPPBJ </small>';
+    html+= '      <small class="text-muted"> Kode Rekening </small>';
     html+= '      <div class="h6 pt-1">' + json.koderekening  + '</div>';
     html+= '    </div>'; 
     html+= '  <div class="col">'; 
@@ -355,15 +393,15 @@ html = "";
     html+= '<div class="row">'; 
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> SPPBJ</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.hps / 1000000 + 'Jt </div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moneyDisplay(json.hps) + '</div>';
     html+= '    </div>';
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> Tanda Tangan Kontrak Kontrak</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.nilai_nego / 1000000 + 'Jt </div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moneyDisplay(json.nilai_nego) + '</div>';
     html+= '    </div>';
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> Nilai Kontrak</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.nilai_nego / 1000000 + '</div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moneyDisplay(json.nilai_nego) + '</div>';
     html+= '    </div>'; 
     html+= '</div>';
     html+= '<div class="row">';     
@@ -373,11 +411,11 @@ html = "";
     html+= '    </div>'; 
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> Mulai Pekerjaan</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.perusahaanalamat + '</div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moment(json.contract.startDate).format('ll') + '</div>';
     html+= '    </div>'; 
     html+= '    <div class="col">'; 
     html+= '      <small class="text-muted"> Selesai Pekerjaan</small>';
-    html+= '      <div class="h5 pt-1 font-weight-bold">' + json.perusahaannpwp + '</div>';
+    html+= '      <div class="h5 pt-1 font-weight-bold">' + moment(json.contract.endDate).format('ll') + '</div>';
     html+= '    </div>'; 
     html+= '</div>';
 

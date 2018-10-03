@@ -1,11 +1,13 @@
-<section class="mt-5">
+<section id="about" class="mt-5">
   <div class="container mt-5">
-    <div class="row mt-3">
-      <div class="col mt-3">
+    <div class="row">
+        <div class="col">
         <h3>@lang('homepage.welcome_title')</h3>
-        <div align="justify">
-        @lang('homepage.welcome_text')
+        <p>@lang('homepage.welcome_text')</p>
         </div>
+    </div>
+    <div class="row">
+      <div class="col mt-3">
         <div class="position-absolute b-5 t-5">
           <a class="hammer text-dark" href="#" data-toggle="modal" data-target="#contactUs">@lang('homepage.about_contactus')</a> | 
           <a class="hammer text-dark" href="#" data-toggle="modal" data-target="#publicationPolicy">@lang('homepage.about_publication')</a> | 

@@ -1,5 +1,5 @@
-<section>
-  <div class="container-fluid">
+<section id="search">
+  <div class="container-fluid mt-2">
     <div class="row">
       <div class="col-12 bdg-city">
         <form action="{{ url('search') }}" method="get">
@@ -7,7 +7,7 @@
          <input type="hidden" name="per_page" value="10">
         <div class="img-bg" style="background-image:url('{{ url('img/bandung.png') }}')">
           <div class="row justify-content-md-center">
-          	<div class="col-12 col-lg-6 bg-primary bg-opacity p-4 mt-4">
+          	<div class="col-12 col-lg-6 bg-primary bg-opacity p-4 mt-2">
               <div class="row">
                   <div class="col"><h4><span class="font-weight-700">Cari</span> Tender dan Kontrak</h4></div>
                   <div class="col">
@@ -117,6 +117,25 @@
           </div>
         </div>
         </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container-fluid">
+    <div class="row mb-0">
+      <div id="bdg-secondary-nav" class="col-12 m-0 p-0" style="position: relative; z-index: 2;">
+        <ul class="list-inline text-lowercase bg-dark  p-1 text-center text-uppercase">
+          <li class="nav-item list-inline-item text-light"><a class="navbar-brand" href="{{ url('')}}"><img src="img/birms-white.png"></a></li>
+          <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#search">Cari</a></li>
+          <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#about">Tentang birms</a></li>
+          <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#statistik">Statistik</a></li>
+          <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#currprocurement">Pengadaan Terkini</a></li>
+          <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#transparency">Transparansi</a></li>
+          <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#news">Berita</a></li>
+          <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#appsquestion">Kontak</a></li>
+        </ul>
       </div>
     </div>
   </div>

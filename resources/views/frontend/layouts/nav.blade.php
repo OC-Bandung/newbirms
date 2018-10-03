@@ -1,5 +1,5 @@
 <section>
-<div class="container-fluid mx-auto">
+<div class="container-fluid m-0 p-0">
   <div class="row justify-content-center">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
           <a class="navbar-brand" href="{{ url('')}}"><img src="img/birms.png"></a>

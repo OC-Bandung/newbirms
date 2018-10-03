@@ -26,7 +26,7 @@
 <!-- footer layout -->
 @include('frontend.layouts.footer')
 
-<button onclick="topFunction()" id="upBtn" title="Kembali ke atas"><i class="material-icons align-middle"> keyboard_arrow_up</i></button>
+<button onclick="topFunction()" id="upBtn" title="Kembali ke atas"><i class="material-icons align-middle"> arrow_upward</i></button>
 <!-- js -->
 @yield('footer')
 

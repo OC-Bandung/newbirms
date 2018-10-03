@@ -39,7 +39,7 @@
           <div class="text-right text-uppercase"><a id="oc-json" target="_blank" href="#">json</a></div>
           <div  class="float-right text-right">
             <div>
-              <a  id="add-to-watchlist" target="_blank" href="#">add to list</a>
+              <a  id="add-to-watchlist" target="_blank" href="#"><i class="material-icons small">add_box</i> ke daftar</a>
             </div>
             <div>
               <ul id="notificationList"  class="list-group d-none">
@@ -54,7 +54,7 @@
           <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle">Create new list</h5>
+                <h5 class="modal-title" id="exampleModalCenterTitle">Buat daftar baru</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -62,19 +62,19 @@
               <div class="modal-body">
                 <div  id="watch-list-input-container">
                   <div class="alert alert-danger d-none" role="alert">
-                      List name already exists, please choose another.
+                      Daftar pengadaan tersebut sudah ada, silahkan pilih yang lainnya.
                     </div>
                  </div>
 
                   <div class="form-group">
-                    <label for="list-name" class="col-form-label">List Name:</label>
+                    <label for="list-name" class="col-form-label">Daftar Pengadaan:</label>
                     <input id="watch-list-name" autofocus type="text" autocomplete="off"  class="form-control">
                   </div>
 
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="addNewList-submit" type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button id="addNewList-submit" type="button" class="btn btn-primary">Simpan Perubahan</button>
               </div>
             </div>
           </div>
@@ -154,8 +154,13 @@
                 </div>
 
                 <div id="planning-budget-year-container" class="col-3 pt-2 d-none">
-                  <h6>Budget Year</h6>
+                  <h6>Tahun Anggaran</h6>
                   <h5 id="planning-budget-year" class="text-capitalize">Budget Year</h5>
+                </div>
+
+                <div id="planning-budget-id-container" class="col-3 pt-2 d-none">
+                  <h6>Kode Rekening</h6>
+                  <h5 id="planning-budget-id" class="text-capitalize"></h5>
                 </div>
 
                 <div id="planning-budget-project-name-container" class="col-5  pt-2">
@@ -263,7 +268,7 @@
                                 <span id="tender-tender-days-diff"></span>
                               </li>
                               <li class="list-group-item  p-2 d-flex justify-content-between align-items-center">
-                              <a href="#" id="tender-tenderPeriod-add" target="_blank" rel="nofollow">+ add to calendar</a>
+                              <a href="#" id="tender-tenderPeriod-add" target="_blank" rel="nofollow"><i class="material-icons small">add_box</i> tambahkan ke kalender</a>
                               </li>
                             </ul>
                           </div>
@@ -287,7 +292,7 @@
                                 <ul class="list-group small pr-3 pt-3 pb-3  w-75 list-group-flush">
                                   <li id="tender-contract-days-diff" class="list-group-item p-2 d-flex justify-content-between align-items-center"></li>
                                   <li class="list-group-item p-2 d-flex justify-content-between align-items-center">
-                                  <a href="#" id="tender-contractPeriod-add" target="_blank" rel="nofollow">+ add to calendar</a>
+                                  <a href="#" id="tender-contractPeriod-add" target="_blank" rel="nofollow"><i class="material-icons small">add_box</i> tambahkan ke kalender</a>
                                   </li>
                                 </ul>
                               </div>
@@ -351,9 +356,9 @@
                           <div id="tender-value-diff-percentage" class="h6 p-2 text-center bg-light"> </div>
                         </div>
                         <div class="col pt-2  font-weight-light bdg-feedback">
-                          <h6 class="mb-5"> Engagement & Update</h6>
+                          <h6 class="mb-5"> Keterlibatan & Pembaruan</h6>
                           <div class="mt-5 ">
-                            <a target="_blank" id="bdg-feedback-form" href="#"><small> Share your feedback </small></a>
+                            <a target="_blank" id="bdg-feedback-form" href="#"><small> Bagikan tanggapan anda </small></a>
                           </div>
                           <div class="">
                             <img class="w-25" src="img/icon-conversation.png" alt="Open Contracting">
@@ -445,7 +450,7 @@
               <div class="col-5">
                 <div class="row">
                   <div class="col-12  awards-id-container d-none">
-                    <div class="h6">Award #<span class="awards-id h6">20160316.21706.0ce0b</span></div>
+                    <div class="h6">Award ID #<span class="awards-id h6">20160316.21706.0ce0b</span></div>
                   </div>
                   <div class="col-12 awards-title-container d-none">
                     <div class="awards-title h5"> </div>
@@ -464,7 +469,7 @@
                     <div class="awards-date h5"> </div>
                   </div>
                   <div class="col awards-value-amount-container d-none">
-                    <div class="h6">Nilai Kontrak</div>
+                    <div class="h6">Nilai Penawaran</div>
                     <div class="awards-value-amount h5"></div>
                   </div>
                 </div>
@@ -495,24 +500,24 @@
                 <div id="awards-contracts-sample-container" class="ml-3 mt-2">
                   <div class="row">
                     <div class="col-3  pt-1 ">
-                      <div class="bg-dark h6 p-2 text-white">CONTRACT</div>
+                      <div class="bg-dark h6 p-2 text-white">KONTRAK</div>
                     </div>
                   </div>
                   <div class="row ">
                     <div class="col-5">
                       <div class="row">
                         <div class="col contracts-value-amount-container d-none">
-                          <div class="h6">Amount</div>
+                          <div class="h6">Nilai Kontrak</div>
                           <div class="contracts-value-amount h5"></div>
                         </div>
                       </div>
                       <div class="row mt-2 d-flex">
                         <div class="col contracts-period-startDate-container d-none">
-                          <div class="h6">Start Date</div>
+                          <div class="h6">Tanggal Mulai</div>
                           <div class="contracts-period-startDate h5"> </div>
                         </div>
                         <div class="col contracts-period-endDate-container d-none">
-                          <div class="h6">End Date</div>
+                          <div class="h6">Tanggal Selesai</div>
                           <div class="contracts-period-endDate h5"> </div>
                         </div>
                       </div>
@@ -522,19 +527,19 @@
                           <div class="contracts-status h5"></div>
                         </div>
                         <div class="col contracts-dateSigned-container d-none">
-                          <div class="h6">Date Signed</div>
+                          <div class="h6">Tanda Tangan Kontrak</div>
                           <div class="contracts-dateSigned h5"> </div>
                         </div>
                       </div>
                     </div>
 
                     <div  class="col">
-                      <div class="row">
+                      <!--<div class="row">
                         <div class="col contracts-items-count-container">
-                          <div class="h6">Contract Document</div>
+                          <div class="h6">Dokumen Kontrak</div>
                           <div class="h5"> <a href="#">link</a> </div>
                         </div>
-                      </div>
+                      </div>-->
                       <div class= "contract-items-container">
                       </div>
 
