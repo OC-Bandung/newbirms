@@ -60,12 +60,14 @@ function load_tender(data) {
   $("#lpse-link").attr("href", "http://lpse.bandung.go.id/eproc4/lelang/" + data.tender.id + "/pengumumanlelang");
   $("#birms-link").attr("href", "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c");
 
-  if (data.tender.tenderPeriod.endDate && data.tender.tenderPeriod && data.tender.tenderPeriod.startDate ) {
-      $("#tender-tender-days-diff").text("Waktu: " + moment(data.tender.tenderPeriod.endDate).diff( moment(data.tender.tenderPeriod.startDate), 'days') + " hari");
-      $("#tender-tender-days-diff-container").removeClass('d-none') ;
-      var Dates = data.tender.tenderPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.tenderPeriod.endDate.replace(/-|:|\+\0000/g, "");
+  if (data.tender.tenderPeriod) {
+  	if (data.tender.tenderPeriod.endDate && data.tender.tenderPeriod && data.tender.tenderPeriod.startDate ) {
+    	$("#tender-tender-days-diff").text("Waktu: " + moment(data.tender.tenderPeriod.endDate).diff( moment(data.tender.tenderPeriod.startDate), 'days') + " hari");
+    	$("#tender-tender-days-diff-container").removeClass('d-none') ;
+      	var Dates = data.tender.tenderPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.tenderPeriod.endDate.replace(/-|:|\+\0000/g, "");
 
-      $("#tender-tenderPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
+      	$("#tender-tenderPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
+  	}
   }
 
   if (data.tender.contractPeriod.endDate && data.tender.contractPeriod && data.tender.contractPeriod.startDate ) {
