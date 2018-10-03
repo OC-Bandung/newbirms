@@ -985,7 +985,7 @@ class ApiBIRMS_Contract extends Controller
         $publisher->name = "Regional Secretariat for the Procurement Section of Bandung City";
         $publisher->uri = "https://bandung.go.id";
         $publisher->uid = "4.05.4.05.02.08";
-        $publisher->scheme = "Ministry of of Internal Affairs Republic of Indonesia (Kementerian Dalam Negeri)";
+        $publisher->scheme = "Ministry of Internal Affairs Republic of Indonesia (Kementerian Dalam Negeri)";
         $p->publisher = $publisher;
         $p->license = "https://creativecommons.org/licenses/by-sa/4.0/";
         $p->publicationPolicy=url("/api/publication-policy.txt");
