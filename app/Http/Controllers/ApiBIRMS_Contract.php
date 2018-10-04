@@ -406,12 +406,15 @@ class ApiBIRMS_Contract extends Controller
             WHERE lls_id = " . $lls_id . " ORDER BY akt_urut";
             $results = DB::select($sql);
 
-            /*if (sizeof($results) == 0) {
-                abort(404, 'No milestone found by lelang ID ' . $lls_id);
-            }*/
-
             $milestones = [];
-            if (sizeof($results) != 0) {
+            if (sizeof($results) == 0) {
+                $lpse_jadwal = env('LINK_JADWAL_LELANG').$lls_id;
+                $rs_json = json_decode(file_get_contents($lpse_jadwal));
+
+                for ($i = 0; $i < count($rs_json); $i++) { 
+                    array_push($milestones, $this->getTenderMilestone_json($i, $rs_json[$i]));
+                }
+            } else {
                 foreach ($results as $row) {
                     array_push($milestones, $this->getTenderMilestone($row));
                 }
@@ -587,6 +590,22 @@ class ApiBIRMS_Contract extends Controller
         return $milestone;
     }
 
+    function getTenderMilestone_json($urutan, $row)
+    {
+        $milestoneDateFormat = 'Y-m-d H:i:s';
+
+        $milestone = new stdClass();
+        $milestone->id = $urutan+1;
+        $milestone->title = $row->tahapan;
+        $tanggal_akhir = date('Y-m-d H:i:s', substr("".$row->tanggal_akhir."",0,10));
+        $tanggal_awal = date('Y-m-d H:i:s', substr("".$row->tanggal_awal."",0,10));
+        $milestone->dueDate = $this->getOcdsDateFromString($tanggal_akhir, $milestoneDateFormat);
+        $milestone->dateMet = $this->getOcdsDateFromString($tanggal_awal, $milestoneDateFormat);
+        //$milestone->dateModified = $this->getOcdsDateFromString($row->auditupdate, $milestoneDateFormat);
+        $milestone->status = $this->getMilestoneStatus($tanggal_akhir, $tanggal_awal);
+        return $milestone;
+    }
+
     function getTenderMilestone($row)
     {
         $milestoneDateFormat = 'Y-m-d H:i:s';
@@ -645,6 +664,18 @@ class ApiBIRMS_Contract extends Controller
 
             if (sizeof($rsperiod) != 0) {
                 $tender->tenderPeriod = $this->getPeriod($rsperiod[0]->dtj_tglawal, $rsperiod[0]->dtj_tglakhir, $milestoneDateFormat);
+            } else {
+                $lpse_jadwal = env('LINK_JADWAL_LELANG').$rslelang[0]->lls_id;
+                $rs_json = json_decode(file_get_contents($lpse_jadwal));
+
+                for ($i = 0; $i < count($rs_json); $i++) {
+                    if ($i == 0) {
+                        $tanggal_akhir = date('Y-m-d H:i:s', substr("".$rs_json[$i]->tanggal_akhir."",0,10));
+                        $tanggal_awal = date('Y-m-d H:i:s', substr("".$rs_json[$i]->tanggal_awal."",0,10));
+                
+                        $tender->tenderPeriod = $this->getPeriod($tanggal_awal, $tanggal_akhir, $milestoneDateFormat);
+                    }
+                }
             }
 
             //Tandatangan Kontrak
@@ -655,6 +686,18 @@ class ApiBIRMS_Contract extends Controller
 
             if (sizeof($rskontrak) != 0) {
                 $tender->contractPeriod = $this->getPeriod($rskontrak[0]->dtj_tglawal, $results->tanggal_akhir_pekerjaan. ' 00:00:00', $milestoneDateFormat);
+            } else {
+                $lpse_jadwal = env('LINK_JADWAL_LELANG').$rslelang[0]->lls_id;
+                $rs_json = json_decode(file_get_contents($lpse_jadwal));
+
+                for ($i = 0; $i < count($rs_json); $i++) {
+                    if ($i == count($rs_json)-1) {
+                        $tanggal_akhir = date('Y-m-d H:i:s', substr("".$rs_json[$i]->tanggal_akhir."",0,10));
+                        $tanggal_awal = date('Y-m-d H:i:s', substr("".$rs_json[$i]->tanggal_awal."",0,10));
+                
+                        $tender->contractPeriod = $this->getPeriod($tanggal_awal, $tanggal_akhir, $milestoneDateFormat);
+                    }
+                }
             }
             
             $tender->value=$this->getAmount($rslelang[0]->nilai_nego);

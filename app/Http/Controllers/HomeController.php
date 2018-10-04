@@ -473,7 +473,7 @@ class HomeController extends Controller
 						}
 
 						if (!empty($tahap) && ($tahap != 0)) {
-							$sql .= ' AND pengadaan.pekerjaanstatus = '.$tahap.' ';
+							$sql .= ' AND tahap = '.$tahap.' ';
 						}
 
 						if (!empty($jenis_pengadaanID) && ($jenis_pengadaanID != 0)) {

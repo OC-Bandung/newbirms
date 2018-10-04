@@ -4,11 +4,10 @@ $(function () {
 
 $("#bdg-feedback-form").click(function() {
   var lnk = "https://docs.google.com/forms/d/e/1FAIpQLScs-1715tHTn60Ncj85_1zW7TQg8vzTWjwajCJCEdBGEmSfJw/viewform?usp=pp_url";
-  lnk += "&entry.1755301375=" + $("#ocid").text();
-  lnk += "&entry.788440630=" +   $("#page-title").text() ;
-  lnk += "&entry.1796765524= ";
-  lnk += "&entry.439080160= ";
-  lnk += "&entry.831032170= ";
+  var lnk = "https://docs.google.com/forms/d/e/1FAIpQLSetaf51Okqj1_k-aN8wQhxNlGyk0LeQgCKP1Mv-2D5M08XHvQ/viewform?usp=pp_url";
+  
+  lnk += "&entry.1257443447=" + $("#ocid").text();
+  lnk += "&entry.1070094881=" +   $("#page-title").text() ;
   $(this).attr("href", lnk);
 });
 

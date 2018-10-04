@@ -127,7 +127,7 @@
     <div class="row mb-0">
       <div id="bdg-secondary-nav" class="col-12 m-0 p-0" style="position: relative; z-index: 2;">
         <ul class="list-inline text-lowercase bg-dark  p-1 text-center text-uppercase">
-          <li class="nav-item list-inline-item text-light"><a class="navbar-brand" href="{{ url('')}}"><img src="img/birms-white.png"></a></li>
+          <li class="nav-item list-inline-item text-light"><a class="navbar-brand" href="http://birms.bandung.go.id/beta"><img src="img/birms-white.png"></a></li>
           <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#search">Cari</a></li>
           <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#about">Tentang birms</a></li>
           <li class="nav-item list-inline-item"><a class="nav-link text-light" href="#statistik">Statistik</a></li>

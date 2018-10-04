@@ -61,8 +61,11 @@ function load_tender(data) {
   $("#birms-link").attr("href", "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c");
 
   if (data.tender.tenderPeriod) {
-  	if (data.tender.tenderPeriod.endDate && data.tender.tenderPeriod && data.tender.tenderPeriod.startDate ) {
-    	$("#tender-tender-days-diff").text("Waktu: " + moment(data.tender.tenderPeriod.endDate).diff( moment(data.tender.tenderPeriod.startDate), 'days') + " hari");
+  	if (data.tender.tenderPeriod && data.tender.tenderPeriod.endDate && data.tender.tenderPeriod.startDate ) {
+      $("#tender-tenderPeriod-endDate").text(moment(data.tender.tenderPeriod.endDate).format('ll'));
+      $("#tender-tenderPeriod-startDate").text(moment(data.tender.tenderPeriod.startDate).format('ll'));
+      
+      $("#tender-tender-days-diff").text("Waktu: " + moment(data.tender.tenderPeriod.endDate).diff( moment(data.tender.tenderPeriod.startDate), 'days') + " hari");
     	$("#tender-tender-days-diff-container").removeClass('d-none') ;
       	var Dates = data.tender.tenderPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.tenderPeriod.endDate.replace(/-|:|\+\0000/g, "");
 
@@ -70,11 +73,16 @@ function load_tender(data) {
   	}
   }
 
-  if (data.tender.contractPeriod.endDate && data.tender.contractPeriod && data.tender.contractPeriod.startDate ) {
-     $("#tender-contract-days-diff").text("Waktu: " +  moment(data.tender.contractPeriod.endDate).diff( moment(data.tender.contractPeriod.startDate), 'days') + " hari" );
-     var Dates = data.tender.contractPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.contractPeriod.endDate.replace(/-|:|\+\0000/g, "");
+  if(data.tender.contractPeriod) {
+  	if (data.tender.contractPeriod && data.tender.contractPeriod.endDate && data.tender.contractPeriod.startDate ) {
+      $("#tender-contractPeriod-endDate").text(moment(data.tender.contractPeriod.endDate).format('ll'));
+      $("#tender-contractPeriod-startDate").text(moment(data.tender.contractPeriod.startDate).format('ll'));
 
-     $("#tender-contractPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
+      $("#tender-contract-days-diff").text("Waktu: " +  moment(data.tender.contractPeriod.endDate).diff( moment(data.tender.contractPeriod.startDate), 'days') + " hari" );
+     	var Dates = data.tender.contractPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.contractPeriod.endDate.replace(/-|:|\+\0000/g, "");
+
+     	$("#tender-contractPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
+  	}
   }
 
   if ( data.planning.budget.amount.amount &&  data.planning.budget) {
@@ -107,9 +115,9 @@ function load_tender(data) {
       $("#tender-value-diff").text(numberWithCommas(diff_tb));
 
       if (diff_tb_perc <= 0 ) {
-        $("#tender-value-diff-percentage").append("<div class='text-success'><i class='material-icons'>arrow_downward</i>" + numberWithCommas(diff_tb_perc) + " % </div>");
+        $("#tender-value-diff-percentage").append("<div class='text-success'><i class='material-icons'>arrow_downward</i>" + numberWithCommas(diff_tb_perc.toFixed(2)) + " % </div>");
       } else {
-        $("#tender-value-diff-percentage").append("<div class='text-danger'><i class='material-icons'>arrow_upward</i>" + numberWithCommas(diff_tb_perc) + " % </div>");
+        $("#tender-value-diff-percentage").append("<div class='text-danger'><i class='material-icons'>arrow_upward</i>" + numberWithCommas(diff_tb_perc.toFixed(2)) + " % </div>");
       }
 
       var highest = Math.max(myBudget, myTender);
