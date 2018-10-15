@@ -10,8 +10,7 @@
 
       <div class="row pt-3">
         <div class="col-3 pr-0">
-              <ul id="load_recent-procurement" class="list-recent-proc sticky">
-
+              <ul id="load_recent-procurement" class="list-recent-proc sticky pl-0">
                   <li id="load_perencanaan" class="list-planning active p-3">
                       <span class="d-block">
                           <a class="text-dark no-underline" href="#">

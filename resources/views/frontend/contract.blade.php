@@ -342,10 +342,8 @@
                           <dl class="small">
                             <dt>SIRUP Links</dt>
                             <dd>Lihat Data asli dari sirup di <a href="#" id="sirup-link" target="_blank">sini</a>. </dd>
-                            <dt>LPSE Links</dt>
-                            <dd>Lihat Data asli dari lpse LKPP di <a href="#" id="lpse-link" target="_blank">sini</a>. </dd>
-                            <dt>BIRMS Links</dt>
-                            <dd>Lihat Data asli dari BIRMS di <a href="#" id="birms-link" target="_blank">sini</a>. </dd>
+                            <dt id="link-title">BIRMS Links</dt>
+                            <dd id="link-content">Lihat Data asli dari di <a href="#" target="_blank">sini</a>. </dd>
                           </dl>
                         </div>
                         <div id="vertical-chart-container" class="col-5 d-none">

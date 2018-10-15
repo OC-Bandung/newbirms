@@ -759,9 +759,9 @@ class ApiBIRMS extends Controller
 
 		$year = date('Y');
 		$sql = 'SELECT
-						CONCAT("'.env('OCID').'","s-",tahun,"-",sirupID) AS ocid,
+						CONCAT("'.env('OCID').'","s-",tahun,"-",tbl_sirup.sirupID) AS ocid,
 						NULL AS koderekening,
-						sirupID,
+						tbl_sirup.sirupID,
 						tahun,
 						nama,
 						pagu,
@@ -782,12 +782,22 @@ class ApiBIRMS extends Controller
 						lokasi,
 						isswakelola, 
 						NULL AS isready,
-						NULL AS pekerjaanstatus,
+						tlelangumum.pekerjaanstatus,
 						NULL AS created_at,
 						NULL AS updated_at
 				FROM
 				'.$dbplanning.'.tbl_sirup
-				WHERE tahun = '.$year.' AND pagu <> 0 AND metode_pengadaan IN (1,2,3,4,5,6,10,11,12) AND isswakelola = 0 
+				LEFT JOIN '.$dbcontract.'.tlelangumum ON tbl_sirup.sirupID = tlelangumum.sirupID 
+				WHERE
+					tbl_sirup.tahun = '.$year.' 
+					AND pagu <> 0  
+                    AND tlelangumum.hps <> 0 
+                    AND tlelangumum.penawaran <> 0 
+                    AND tlelangumum.nilai_nego <> 0 
+                    AND tlelangumum.pekerjaanstatus <= 3
+                    AND (NOT ISNULL(tlelangumum.namakegiatan) AND TRIM(tlelangumum.namakegiatan) <> "")	
+                    AND metode_pengadaan IN (1,2,3,4,5,6,10,11,12) AND isswakelola = 0
+
 					UNION
 					SELECT
 					CONCAT( "'.env('OCID').'", "b-", '.$year.', "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
@@ -845,7 +855,9 @@ class ApiBIRMS extends Controller
 				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
 				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
 				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-				WHERE tahun = '.$year.' AND sirupID = 0 AND iswork = 1 ORDER BY tanggal_awal_pengadaan DESC LIMIT 5';
+				WHERE tahun = '.$year.' AND sirupID = 0 AND iswork = 1 
+				AND tpekerjaan.pekerjaanstatus <= 3
+				ORDER BY tanggal_awal_pengadaan DESC LIMIT 10';
 
 		$rsdummy = DB::select($sql);
 

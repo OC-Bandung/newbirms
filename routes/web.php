@@ -22,6 +22,7 @@ Route::get('/contract', 'HomeController@contract');
 Route::get('/watched', 'HomeController@watched');
 Route::get('/abouttender', 'HomeController@abouttender');
 Route::get('/documentation', 'HomeController@documentation');
+Route::get('/download', 'HomeController@download');
 
 /*Route::group(['prefix' => 'id', 'namespace' => 'id', 'middleware' => 'locale:id'], function() {
     Route::get('/', 'HomeController@index')->name('idHome');

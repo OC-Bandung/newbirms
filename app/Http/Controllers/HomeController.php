@@ -529,4 +529,11 @@ class HomeController extends Controller
 		$data['app']	 = $this->birms_applist();
     	return View::make("frontend.documentation")->with($data);
 	}
+
+	function download()
+    {
+		$data			 = [];
+		$data['app']	 = $this->birms_applist();
+    	return View::make("frontend.downloaddata")->with($data);
+	}
 }

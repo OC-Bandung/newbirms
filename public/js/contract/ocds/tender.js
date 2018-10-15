@@ -7,10 +7,6 @@ function load_tender(data) {
   var myUI = [
 
     {
-      "name": "tender.title",
-      "ui_element": "#page-title",
-    },
-    {
       "name": "tender.status",
       "ui_element": "#tender-status",
       "ui_container": "#tender-status-container"
@@ -57,8 +53,8 @@ function load_tender(data) {
 
   // custom if conditions for calculated fields
   $("#sirup-link").attr("href", "https://sirup.lkpp.go.id/sirup/rup/detailPaketPenyedia2018?idPaket=" + data.id + "");
-  $("#lpse-link").attr("href", "http://lpse.bandung.go.id/eproc4/lelang/" + data.tender.id + "/pengumumanlelang");
-  $("#birms-link").attr("href", "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c");
+  //$("#lpse-link").attr("href", "http://lpse.bandung.go.id/eproc4/lelang/" + data.tender.id + "/pengumumanlelang");
+  //$("#birms-link").attr("href", "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c");
 
   if (data.tender.tenderPeriod) {
   	if (data.tender.tenderPeriod && data.tender.tenderPeriod.endDate && data.tender.tenderPeriod.startDate ) {
@@ -180,9 +176,26 @@ function load_tender(data) {
          html +='</div>';
       html +=' </div>';
 
+    load_document_link(data.ocid);
+
     $("#tender-milestones-cards").append(html);
 
    }
+   function load_document_link(ocid) {
+    // custom links based on ocid
+    // if it has s: ocds-afzrfb-s-2016-6124079 - show sirup links
+    // if it has b: show birms link ocds-afzrfb-b-2016-38800
+    var the_link = "#";
+     if (ocid.substring(12, 13) == "s") {
+      $("#link-title").text("LPSE Link");
+      the_link = "http://lpse.bandung.go.id/eproc4/lelang/" + data.tender.id + "/pengumumanlelang";
+    }
+     if (ocid.substring(12, 13) == "b") {
+        $("#link-title").text("BIRMS Link");
+        the_link = "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c";
+    }
+     $("#link-content").html('Lihat Data asli dari di <a  target="_blank" href="' +  the_link + '">this link</a>.');
+  }
 }
 
 function load_tenderers (data) {

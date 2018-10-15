@@ -42,7 +42,10 @@
               </li>
               <li class="nav-item @if(Request::url() === url('documentation')) active @endif">
                   <a class="nav-link" href="{{ url('documentation') }}">Developer</a>
-              </li>  
+              </li>
+              <li class="nav-item @if(Request::url() === url('download')) active @endif">
+                <a class="nav-link" href="{{ url('download') }}">Download Data</a>
+            </li>  
             </ul>
           </div>
       </nav>
