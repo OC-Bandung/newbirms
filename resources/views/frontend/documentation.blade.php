@@ -24,14 +24,11 @@
             <div class="col-3 bg-dark h6">
               <div class="h4 p-2 text-light">Table of Contents</div>
               <div class="list-group text-light list-group-flush list-group-dark">
-                <a class="list-group-item active" id="list-summary-list" doc="{{ url('documentation-files/1-summary.md') }}">Summary (TLDR;)</a>
-                <a class="list-group-item" id="list-operations-list"  doc="{{ url('documentation-files/2-queries.md') }}">Endpoints</a>
-                <a class="list-group-item" id="list-ocds-list"        doc="{{ url('documentation-files/ocds.md') }}">Data fields</a>
-                <a class="list-group-item" id="list-curl-list"        doc="{{ url('documentation-files/3-download.md') }}">Downloading the data & converting to CSV</a>
-                <a class="list-group-item" id="list-queries-list"     doc="{{ url('documentation-files/queries.md') }}">Advanced queries</a>
-                <a class="list-group-item" id="list-ocds-list"        doc="{{ url('documentation-files/usecase.md') }}">Use cases: ideas for what to build</a>
-                <a class="list-group-item" id="list-opensource-list"  doc="{{ url('documentation-files/opensource.md') }}">Open source directory: projects using the data</a>
-                <a class="list-group-item" id="list-help-list"        doc="{{ url('documentation-files/help.md') }}">Help and community</a>
+                  <a class="list-group-item active" id="list-summary-list"  doc="{{ url('documentation-files/1-summary.md') }}">Summary</a>
+                  <a class="list-group-item" id="list-basic-list"           doc="{{ url('documentation-files/2-basic.md') }}">Basic and advanced API queries</a>
+                  <a class="list-group-item" id="list-understand-list"      doc="{{ url('documentation-files/3-understand.md') }}">Understand the data</a>
+                  <a class="list-group-item" id="list-download-list"        doc="{{ url('documentation-files/4-download.md') }}">Download the data</a>
+                  <a class="list-group-item" id="list-endless-list"         doc="{{ url('documentation-files/5-endless.md') }}">Endless possibilities</a>
               </div>
             </div>
 

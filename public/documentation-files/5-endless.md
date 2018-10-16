@@ -1,0 +1,5 @@
+## Endless possibilities
+
+Besides the endpoints presented in this API documentation, the MongoDB Query Language provides endless possibilities. We put the power of MongoDB Query Language - a full-featured query language - at your fingertips. Imagine being able to query an API with sql-like parameters. This is exactly what's happening here, except you will be using queries represented in a JSON-like structure. It gives you endless possibilities for what you can query and build.
+
+MongoDB provides detailed documentation for how to use the MongoDB Query language. The documentation can be found on: [https://docs.mongodb.com/manual/tutorial/query-documents/](https://docs.mongodb.com/manual/tutorial/query-documents/). There are also tons of online tutorials, classes, forums and blogs that discuss MongoDB Query Language.
