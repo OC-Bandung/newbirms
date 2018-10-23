@@ -2,7 +2,7 @@
 <div class="container-fluid m-0 p-0">
   <div class="row justify-content-center">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="{{ url('')}}"><img src="img/birms.png"></a>
+          <a class="navbar-brand" href="{{ url('')}}"><img src="{{ url('img/birms.png') }}"></a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navBIRMS" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>

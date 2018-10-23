@@ -855,9 +855,9 @@ class ApiBIRMS extends Controller
 				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
 				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
 				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-				WHERE tahun = '.$year.' AND sirupID = 0 AND iswork = 1 
-				AND tpekerjaan.pekerjaanstatus <= 3
-				ORDER BY tanggal_awal_pengadaan DESC LIMIT 10';
+				WHERE tahun = '.$year.' AND sirupID = 0 AND iswork = 1 ';
+				//AND tpekerjaan.pekerjaanstatus <= 3
+				$sql .= ' ORDER BY tanggal_awal_pengadaan DESC LIMIT 10';
 
 		$rsdummy = DB::select($sql);
 

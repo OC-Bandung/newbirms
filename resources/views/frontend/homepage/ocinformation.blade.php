@@ -3,14 +3,18 @@
 
       <div class="row">
         <div class="col">
+          <h3 class="color-white">Komitmen Kami Untuk Transparansi dan <i>Open Data</i></h3>
+            <p align="justify">Sejak 2015, Lembaga Kebijakan Pengadaan Barang Jasa Pemerintah (<a href="https://lkpp.go.id/">LKPP</a>) dan <a href="https://bandung.go.id">Pemerintah Kota Bandung</a> (Pemkot Bandung) telah bekerja dengan <i><a href="http://www.worldbank.org">World Bank</a></i> untuk menerapkan standar dan praktek <i>open contracting</i>. <i>Open Contracting</i> mengacu pada serangkaian prinsip untuk meningkatkan keterbukaan data dan keterlibatan berbagai pemangku kepentingan di seluruh rantai pengadaan publik, mulai dari perencanaan hingga pengadaan barang, konstruksi, konsultansi dan jasa lainnya.</p>
+            <p align="justify">Kolaborasi dan keterlibatan data adalah kunci untuk <i>open contracting</i>. Pemerintah Kota Bandung mendorong pengguna dari semua sektor masyarakat (pemerintah, sektor swasta, dan masyarakat sipil) untuk mengunjungi situs web secara teratur, berlangganan pembaharuan tentang peluang pengadaan baik tender ataupun non tender, informasi tentang kontrak tertentu, dan memanfaatkan data ini.</p>
+        </div>
+        <!--<div class="col-6">
           <h3 class="color-white">Our commitment to Transparency and Open Data</h3>
           <p>Since 2015, the National Public Procurement Agency (LKPP) and the Government of Bandung City (Pemkot Bandung) have been working with the World Bank to implement open contracting norms and practices. Open contracting refers to a set of principles for improving data disclosure and multi-stakeholder engagement across the entire chain of public procurement, from planning to delivery of goods, works and services.</p>
           <p>Collaboration and data engagement are key to open contracting. The Government of Bandung City encourages users from all sectors of society (government, private sector, and civil society) to visit the website regularly, subscribe to updates on tender opportunities or information on specific contracts, and put this data into use.</p>
-</p>
-        </div>
+        </div>-->
       </div>
 
-      <div class="row pt-5">
+      <!--<div class="row pt-5">
 
         <div class="col blockquote-list">
           <blockquote class="blockquote blockquote-2 boxed">
@@ -26,7 +30,7 @@
                 <footer class="blockquote-footer">Boss 2</footer>
               </blockquote>
 
-        </div>
+        </div>-->
 
 
         <!--<div class="col-12 bg-dark mt-5">
@@ -87,7 +91,8 @@
 
       <div class="row pt-5">
           <div class="col text-center text-white">
-            <p><span class="badge badge-pill bg-light text-dark mr-1 font-weight-bold p-2">Open Data</span> All our published data falls under the open data license of <a class="text-white " href="http://data.bandung.go.id/" target="_blank">data.bandung.go.id </a> -  <a href="https://opendefinition.org/od/2.1/en/" target="_blank">learn more</a></p>
+            <!--<p><span class="badge badge-pill bg-light text-dark mr-1 font-weight-bold p-2">Open Data</span> All our published data falls under the open data license of <a class="text-white " href="http://data.bandung.go.id/" target="_blank">data.bandung.go.id </a> -  <a href="https://opendefinition.org/od/2.1/en/" target="_blank">learn more</a></p>-->
+            <p><span class="badge badge-pill bg-light text-dark mr-1 font-weight-bold p-2">Open Data</span> Semua data kami yang dipublikasikan berada di bawah lisensi Data Terbuka <a class="text-white " href="http://data.bandung.go.id/" target="_blank">data.bandung.go.id </a> - <a href="https://opendefinition.org/od/2.1/en/" target="_blank">pelajari lebih lanjut</a></p>
           </div>
       </div>
 </section>

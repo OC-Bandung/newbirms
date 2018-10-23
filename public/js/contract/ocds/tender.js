@@ -55,6 +55,10 @@ function load_tender(data) {
   $("#sirup-link").attr("href", "https://sirup.lkpp.go.id/sirup/rup/detailPaketPenyedia2018?idPaket=" + data.id + "");
   //$("#lpse-link").attr("href", "http://lpse.bandung.go.id/eproc4/lelang/" + data.tender.id + "/pengumumanlelang");
   //$("#birms-link").attr("href", "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c");
+  $("#tender-status").text(data.tender.status);
+  $("#tender-mainProcurementCategory").text(data.tender.mainProcurementCategory);
+  $("#tender-procurementMethod").text(data.tender.procurementMethod);
+  $("#tender-numberOfTenderers").text(data.tender.numberOfTenderers);
 
   if (data.tender.tenderPeriod) {
   	if (data.tender.tenderPeriod && data.tender.tenderPeriod.endDate && data.tender.tenderPeriod.startDate ) {
@@ -63,9 +67,17 @@ function load_tender(data) {
       
       $("#tender-tender-days-diff").text("Waktu: " + moment(data.tender.tenderPeriod.endDate).diff( moment(data.tender.tenderPeriod.startDate), 'days') + " hari");
     	$("#tender-tender-days-diff-container").removeClass('d-none') ;
-      	var Dates = data.tender.tenderPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.tenderPeriod.endDate.replace(/-|:|\+\0000/g, "");
+      
+        base_url = "https://calendar.google.com/calendar/r/eventedit";
+        text = "?text=" + $("#page-title").text();
+        due_date1 = moment(data.tender.tenderPeriod.startDate).format("YYYYMMDD") ;
+        due_date2 = moment(data.tender.tenderPeriod.endDate).format("YYYYMMDD");
+        dates = "&dates=" + due_date1 + "/" + due_date2 ;
+        details = "&details=Tahapan: Tender dimulai<br> Untuk data lebih lanjut silahkan berkunjung ke : " + window.location.href;
+        details += "&location="+data.tender.procuringEntity.name;
+        calendar_url = base_url + text + dates + details ;
 
-      	$("#tender-tenderPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
+        $("#tender-tenderPeriod-add").attr("href", calendar_url);
   	}
   }
 
@@ -75,9 +87,20 @@ function load_tender(data) {
       $("#tender-contractPeriod-startDate").text(moment(data.tender.contractPeriod.startDate).format('ll'));
 
       $("#tender-contract-days-diff").text("Waktu: " +  moment(data.tender.contractPeriod.endDate).diff( moment(data.tender.contractPeriod.startDate), 'days') + " hari" );
-     	var Dates = data.tender.contractPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.contractPeriod.endDate.replace(/-|:|\+\0000/g, "");
+     	//var Dates = data.tender.contractPeriod.startDate.replace(/-|:|\+\0000/g, "") + "/" + data.tender.contractPeriod.endDate.replace(/-|:|\+\0000/g, "");
+     	//var Dates = moment(data.tender.contractPeriod.startDate).format("YYYYMMDD") + "/" + moment(data.tender.contractPeriod.endDate).format("YYYYMMDD");
 
-     	$("#tender-contractPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
+       //$("#tender-contractPeriod-add").attr("href", "https://www.google.com/calendar/render?action=TEMPLATE&text=Tender+Mulai&dates="+Dates+"&details="+data.planning.budget.project+",+link+here:+https://birms.bandung.go.id&location="+data.tender.procuringEntity.name+"&sf=true&output=xml");
+       base_url = "https://calendar.google.com/calendar/r/eventedit";
+       text = "?text=" + $("#page-title").text();
+       due_date1 = moment(data.tender.contractPeriod.startDate).format("YYYYMMDD") ;
+       due_date2 = moment(data.tender.contractPeriod.endDate).add(1, 'days').format("YYYYMMDD");
+       dates = "&dates=" + due_date1 + "/" + due_date2 ;
+       details = "&details=Tahapan: Estimasi Pengerjaan Paket Pekerjaan<br> Untuk data lebih lanjut silahkan berkunjung ke : " + window.location.href;
+       details += "&location="+data.tender.procuringEntity.name;
+       calendar_url = base_url +  text + dates + details ;
+
+     	$("#tender-contractPeriod-add").attr("href", calendar_url);
   	}
   }
 
@@ -154,7 +177,7 @@ function load_tender(data) {
               html +='<h5 class="card-title">' +   data.tender.milestones[i].title +   '</h5>';
                 html += '<div class="row">';
                 html += '<div class="col-6">';
-                    html+= '<div class="h6">Batas Akhir: ' + moment(data.tender.milestones[i].dueDate).format('ll')  + '</div>';
+                    html+= '<div class="h6 cal-duedate">Batas Akhir: ' + moment(data.tender.milestones[i].dueDate).format('ll')  + '</div>';
                     html+=  '<div class="h6">Mulai : ' + moment(data.tender.milestones[i].dateMet).format('ll')  + '</div>';
                 html += '</div>';
                 if (diff_milestone <=0) {
@@ -164,12 +187,21 @@ function load_tender(data) {
                 }
 
               html+= '</div>';
+
+              base_url = "https://calendar.google.com/calendar/r/eventedit";
+              text = "?text=" + $("#page-title").text();
+              due_date1 = moment(data.tender.milestones[i].dateMet ).format("YYYYMMDD") ;
+              due_date2 = moment(data.tender.milestones[i].dueDate ).add(1, 'days').format("YYYYMMDD");
+              dates = "&dates=" + due_date1 + "/" + due_date2 ;
+              details = "&details=Milestone: " +  data.tender.milestones[i].title + ". <br> For more details please visit: " + window.location.href  ;
+              calendar_url = base_url +  text + dates + details ;
+
              html +='<div><button class="btn btn-sm btn-outline-secondary float-right" type="button" data-target="#t_details" data-toggle="collapse">Tambahkan ke Kalender ▼</button>';
              html +='<div class="collapse bl-3px-black" id="t_details">';
                html +='<div class="p-2 small text-monospace">';
-                 html +='<div><a href="#"><i class="material-icons small">add_box</i> ke Google Calendar</a></div>';
-                html += '<div><a href="#"><i class="material-icons small">add_box</i> ke Outlook</a></div>';
-                 html +='<div><a href="#"><i class="material-icons small">mail</i> kirim email</a></div>';
+                 html +='<div><a  target="_blank" class="cal-addtocalendar" href="' + calendar_url + ' "><i class="material-icons small">add_box</i> ke Google Calendar</a></div>';
+                //html += '<div><a href="#"><i class="material-icons small">add_box</i> ke Outlook</a></div>';
+                 //html +='<div><a href="#"><i class="material-icons small">mail</i> kirim email</a></div>';
               html += '</div>';
            html +='</div>';
           html += '</div></div>';

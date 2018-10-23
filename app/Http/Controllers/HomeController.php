@@ -322,6 +322,7 @@ class HomeController extends Controller
 
     	$data			 = [];
 		$data['article'] = $rspost;
+		$data['app']	 = $this->birms_applist();		
     	return View::make("frontend.post")->with($data);
     }
 

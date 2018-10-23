@@ -11,7 +11,7 @@
       <div class="row  pt-3 pb-5">
         <div class="col">
           <div class="h3 text-white">
-            Non Developer Dokumentasi
+            Download Data
           </div>
         </div>
       </div>
@@ -22,9 +22,9 @@
     <div class="container-fluid p-0 ">
         <div class="row no-gutters">
             <div class="col-3 bg-dark h6">
-              <div class="h4 p-2 text-light">Daftar Isi</div>
+              <!--<div class="h4 p-2 text-light">Daftar Isi</div>-->
               <div class="list-group text-light list-group-flush list-group-dark">
-                <a class="list-group-item active" id="list-summary-list" doc="{{ url('downloaddata-files/summary.md') }}">Summary</a>
+                <a class="list-group-item active" id="list-summary-list" doc="{{ url('downloaddata-files/summary.md') }}">Bagi Yang Bukan Developer</a>
               </div>
             </div>
 

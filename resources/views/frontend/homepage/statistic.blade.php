@@ -14,7 +14,7 @@
         <div class="text-right bg-white pr-3 pb-3">
                 <a target="_blank" href="{{ url('api/graph/1') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 
-                <a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/1') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>
+                <!--<a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/1') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>-->
         </div>
         </div>
 
@@ -23,7 +23,7 @@
         <div class="text-right bg-white pr-3 pb-3">
                 <a target="_blank" href="{{ url('api/graph/2') }}/{{ date('Y') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 
-                <a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/2') }}/{{ date('Y') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>
+                <!--<a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/2') }}/{{ date('Y') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>-->
         </div>
         </div>
     </div>
@@ -34,7 +34,7 @@
         <div class="text-right bg-white pr-3 pb-3">
                 <a target="_blank" href="{{ url('api/graph/3') }}/{{ date('Y') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 
-                <a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/3') }}/{{ date('Y') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>
+                <!--<a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/3') }}/{{ date('Y') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>-->
         </div>
         </div>
 
@@ -43,7 +43,7 @@
         <div class="text-right bg-white pr-3 pb-3">
                 <a target="_blank" href="{{ url('api/graph/4/') }}{{ date('Y') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 
-                <a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/4') }}/{{ date('Y') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>
+                <!--<a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/4') }}/{{ date('Y') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>-->
         </div>
 
         </div>

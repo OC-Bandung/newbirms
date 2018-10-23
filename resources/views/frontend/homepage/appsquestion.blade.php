@@ -57,14 +57,15 @@
                 <div class="bg-primary p-4">
                     <div class="row text-md-left">
                         <div class="col-md-12">
-                        <h3 class="mb-1">Have a question? Get in touch with us.</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <h3 class="mb-1">Ada pertanyaan? Silahkan hubungi kami.</h3>
+                        <p>Pertanyaan terkait yang belum tertuangkan dalam situs maupun dengan aplikasi ini silahkan baca link dibawah ini</p>
                         <ul class="list-unstyled ">
-                            <li> <a class="text-dark" href="#"> Read the docs</a>  | <a class="text-dark" href="#">FAQ</a> </li>
+                            <li> <a class="text-dark" href="{{ url('abouttender')}} "> Tentang Pengadaan</a> | <a class="text-dark" href="{{ url('documentation')}} "> Developer</a> | <a class="text-dark" href="{{ url('download')}} "> Download Data</a> 
+                                <!-- <a class="text-dark" href="#">FAQ</a>--> </li>
                         </ul>
                         </div>
                         <div class="col-md-12 ">
-                        <button type="button" class="btn btn-outline-dark">Write to us</button>
+                        <button type="button" class="btn btn-outline-dark" onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSetaf51Okqj1_k-aN8wQhxNlGyk0LeQgCKP1Mv-2D5M08XHvQ/viewform?entry.1257443447=&entry.1070094881=';">Berikan tanggapan kepada kami</button>
                         </div>
                     </div>
                 </div>
