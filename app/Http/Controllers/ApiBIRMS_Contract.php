@@ -44,7 +44,7 @@ class ApiBIRMS_Contract extends Controller
         $planning = new stdClass();
         $planning->budget = $this->getBudget($results);
 
-        $planning->milestones = $this->getPlanningMilestones($results); 
+        $planning->milestones = $this->getPlanningMilestones($results);
         return $planning;
     }
 
@@ -73,7 +73,7 @@ class ApiBIRMS_Contract extends Controller
         $milestone->dateMet = $this->getOcdsDateFromString($results->tanggal_akhir_pengadaan);
         $milestone->status = $this->getMilestoneStatus($results->tanggal_akhir_pengadaan, $results->tanggal_awal_pengadaan);
 
-        return $milestone;   
+        return $milestone;
     }
 
     function getPlanningWork($results)
@@ -88,7 +88,7 @@ class ApiBIRMS_Contract extends Controller
         $milestone->dateMet = $this->getOcdsDateFromString($results->tanggal_akhir_pekerjaan);
         $milestone->status = $this->getMilestoneStatus($results->tanggal_akhir_pengadaan, $results->tanggal_awal_pengadaan);
 
-        return $milestone;   
+        return $milestone;
     }
 
     function getContactPoint($row)
@@ -152,7 +152,7 @@ class ApiBIRMS_Contract extends Controller
         }
         //die($sql);
         $results = DB::select($sql);
-        
+
         $org = new stdClass();
 
         if (sizeof($results) == 0) {
@@ -160,13 +160,13 @@ class ApiBIRMS_Contract extends Controller
             $org->name = $name;
         } else {
             $row = $results[0];
-            
+
             if ($competitive === false) {
                 $org->id = $row->npwp;
                 $org->name = $row->namaperusahaan;
                 $org->address = $this->getAddressPerusahaan($row);
-                $org->contactPoint = $this->getContactPoint($row); 
-                
+                $org->contactPoint = $this->getContactPoint($row);
+
                 $id = new stdClass();
                 $id->id = $row->npwp;
                 $id->legalName = $row->namaperusahaan;
@@ -174,7 +174,7 @@ class ApiBIRMS_Contract extends Controller
             } else if ($competitive === true) {
                 $org->id = $row->rkn_npwp;
                 $org->name = $row->rkn_nama;
-                
+
                 $address = new stdClass();
                 $address->streetAddress = $row->rkn_alamat;
                 $org->address = $address;
@@ -182,12 +182,12 @@ class ApiBIRMS_Contract extends Controller
                 $cp = new stdClass();
                 $cp->email = $row->rkn_email;
                 $cp->telephone = $row->rkn_telepon;
-                $org->contactPoint = $cp; 
-                
+                $org->contactPoint = $cp;
+
                 $id = new stdClass();
                 $id->id = $row->rkn_npwp;
                 $id->legalName = $row->rkn_nama;
-                $org->identifier = $id;  
+                $org->identifier = $id;
             } else {
                 $org->id = $row->unitID;
                 $org->name = $row->nama;
@@ -292,7 +292,7 @@ class ApiBIRMS_Contract extends Controller
     function getPeriod($startDate, $endDate, $format = 'Y-m-d')
     {
         $period = new stdClass();
-        
+
         $period->startDate = $this->getOcdsDateFromString($startDate, $format);
         $period->endDate = $this->getOcdsDateFromString($endDate, $format);
         return $period;
@@ -327,13 +327,13 @@ class ApiBIRMS_Contract extends Controller
         }
         return $lelangID;
     }
-   
+
     function getRegistrant($row, $year,  &$parties)
     {
         $registrant = new stdClass();
         $registrant->id = $row->rkn_npwp;
         $registrant->name = $row->rkn_nama;
-        
+
         $address = new stdClass();
         $address->streetAddress = $row->rkn_alamat;
         $registrant->address = $address;
@@ -342,7 +342,7 @@ class ApiBIRMS_Contract extends Controller
         $cp->email = $row->rkn_email;
         $cp->telephone = $row->rkn_telepon;
         $registrant->contactPoint = $cp;
-        
+
         $id = new stdClass();
         $id->id = $row->rkn_npwp;
         $id->legalName = $row->rkn_nama;
@@ -411,7 +411,7 @@ class ApiBIRMS_Contract extends Controller
                 $lpse_jadwal = env('LINK_JADWAL_LELANG').$lls_id;
                 $rs_json = json_decode(file_get_contents($lpse_jadwal));
 
-                for ($i = 0; $i < count($rs_json); $i++) { 
+                for ($i = 0; $i < count($rs_json); $i++) {
                     array_push($milestones, $this->getTenderMilestone_json($i, $rs_json[$i]));
                 }
             } else {
@@ -461,7 +461,7 @@ class ApiBIRMS_Contract extends Controller
         $addr->streetAddress=$row->perusahaanalamat;
         $supl->address=$addr;
 
-        $supl->contactPoint = $this->getContactPoint($row); 
+        $supl->contactPoint = $this->getContactPoint($row);
 
         $orgId      = new stdClass();
         $orgId->id  = $row->perusahaannpwp;
@@ -478,7 +478,7 @@ class ApiBIRMS_Contract extends Controller
         $a->id = $row->lgid;
         $a->title = $row->namapekerjaan;
         $a->date = $this->getOcdsDateFromString($row->tanggalpengumuman);
-        
+
         if ($row->nilai_nego != 0) {
             $a->status = "active";
             $a->value = $this->getAmount($row->nilai_nego);
@@ -505,7 +505,7 @@ class ApiBIRMS_Contract extends Controller
     function getNonCompetitiveAwards($year, $pekerjaanID, &$parties) {
         $db = env('DB_CONTRACT');
         $dbeproc = env('DB_EPROC');
-        
+
         $sql = "SELECT
                     CONCAT(
                         REPLACE ( tpekerjaan.tanggalrencana, '-', '' ),
@@ -641,11 +641,11 @@ class ApiBIRMS_Contract extends Controller
         return $tender;
     }
 
-    function getTender($year, $results, &$parties) 
+    function getTender($year, $results, &$parties)
     {
         $db = env('DB_CONTRACT');
         $milestoneDateFormat = 'Y-m-d H:i:s';
-        
+
         $tender = $this->getSharedTender($year, $results, $parties);
         $tender->id = $this->getLelangID($results->sirupID);
         $tender->milestones = $this->getTenderMilestones($results->sirupID);
@@ -672,7 +672,7 @@ class ApiBIRMS_Contract extends Controller
                     if ($i == 0) {
                         $tanggal_akhir = date('Y-m-d H:i:s', substr("".$rs_json[$i]->tanggal_akhir."",0,10));
                         $tanggal_awal = date('Y-m-d H:i:s', substr("".$rs_json[$i]->tanggal_awal."",0,10));
-                
+
                         $tender->tenderPeriod = $this->getPeriod($tanggal_awal, $tanggal_akhir, $milestoneDateFormat);
                     }
                 }
@@ -694,12 +694,12 @@ class ApiBIRMS_Contract extends Controller
                     if ($i == count($rs_json)-1) {
                         $tanggal_akhir = date('Y-m-d H:i:s', substr("".$rs_json[$i]->tanggal_akhir."",0,10));
                         $tanggal_awal = date('Y-m-d H:i:s', substr("".$rs_json[$i]->tanggal_awal."",0,10));
-                
+
                         $tender->contractPeriod = $this->getPeriod($tanggal_awal, $tanggal_akhir, $milestoneDateFormat);
                     }
                 }
             }
-            
+
             $tender->value=$this->getAmount($rslelang[0]->nilai_nego);
             $tender->tenderers=$this->getTenderers($year, $rslelang[0]->lls_id, $parties);
             if (sizeof($tender->tenderers) != 0) {
@@ -766,7 +766,7 @@ class ApiBIRMS_Contract extends Controller
         $rsnontender = DB::select($sql);
 
         $tender->numberOfTenderers = count($rsnontender); //Total tenderers from Non Competitive / Direct Procurement
-        
+
         if (sizeof($rsnontender) <> 0) {
             $sql = "SELECT SUM(nilai_nego) AS jumlah_nilai FROM tbl_pekerjaan
                     LEFT JOIN ".$db.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
@@ -799,7 +799,7 @@ class ApiBIRMS_Contract extends Controller
         return null;
     }
 
-    function getNonCompetitiveContracts($year, $pekerjaanID, &$parties) 
+    function getNonCompetitiveContracts($year, $pekerjaanID, &$parties)
     {
         $db  = env('DB_CONTRACT');
         $sql = "SELECT 
@@ -852,7 +852,7 @@ class ApiBIRMS_Contract extends Controller
             array_push($contracts, $this->getNonCompetitiveContract($year, $row, $parties));
         }
 
-        return $contracts;    
+        return $contracts;
     }
 
     function getNonCompetitiveContract($year, $row, &$parties)
@@ -869,7 +869,7 @@ class ApiBIRMS_Contract extends Controller
         } else {
             $a->status = "pending";
         }
-        
+
         $a->period = array(
             'startDate' => $this->getOcdsDateFromString($row->spk_tgl_surat, $ContractDateFormat),
             'endDate' => $this->getOcdsDateFromString($row->spk_tgl_slskontrak, $ContractDateFormat)
@@ -883,7 +883,7 @@ class ApiBIRMS_Contract extends Controller
         return $a;
     }
 
-    function getNonCompetitiveItems($pid) 
+    function getNonCompetitiveItems($pid)
     {
         $db = env('DB_CONTRACT');
         $sql = "SELECT DISTINCT
@@ -923,7 +923,7 @@ class ApiBIRMS_Contract extends Controller
 
         return $a;
     }
-    
+
     /**
      * You should return here only initiaion type allowed by ocds. Example 'tender'. This is NOT an open code-type,
      * so you cannot use any string you like here.
@@ -987,7 +987,14 @@ class ApiBIRMS_Contract extends Controller
      */
     function getOcdsDateFromString($date, $format = 'Y-m-d')
     {
-        return DateTime::createFromFormat($format, $date)->format(DATE_ATOM);
+        $jsonDate = DateTime::createFromFormat($format, $date);
+        $lastErrors = DateTime::getLastErrors();
+        if ($lastErrors['error_count'] !== 0 || $lastErrors['warning_count'] !== 0) {
+            abort(404, 'Issues parsing date ' . $date . '.'
+                . implode(",", $lastErrors['errors']).' '
+                . implode(",", $lastErrors['warnings']));
+        }
+        return $jsonDate->format(DATE_ATOM);
     }
 
     /**
@@ -995,7 +1002,7 @@ class ApiBIRMS_Contract extends Controller
      *
      * @param $r the release
      */
-    function appendTag($r) 
+    function appendTag($r)
     {
         if(property_exists ($r, "tender")) {
             array_push($r->tag, "tender");
@@ -1047,7 +1054,7 @@ class ApiBIRMS_Contract extends Controller
         $source    = $pieces[2]; // s = sirup.lkpp.go.id. b = birms.bandung.go.id
         $year      = $pieces[3];
         $sirup_id  = $pieces[4];
-        
+
         $dbplanning = env('DB_PLANNING');
         $dbcontract = env('DB_CONTRACT');
 
@@ -1133,7 +1140,7 @@ class ApiBIRMS_Contract extends Controller
                 LEFT JOIN ".$dbprime.".tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
                 LEFT JOIN ".$dbplanning.".tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
                 LEFT JOIN ".$dbcontract.".tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-                WHERE tbl_pekerjaan.pekerjaanID = '". $sirup_id."'";    
+                WHERE tbl_pekerjaan.pekerjaanID = '". $sirup_id."'";
         }
         //die($sql);
         $results = DB::select($sql);
@@ -1148,7 +1155,7 @@ class ApiBIRMS_Contract extends Controller
         $r->parties = [];
         $r->tag = ['planning'];
         $r->initiationType = $this->getInitiationType($results);
-        
+
         if ($source == 's') {
             $r->date = $this->getOcdsDateFromString($results->tanggal_awal_pengadaan);
         } else {
@@ -1210,59 +1217,59 @@ class ApiBIRMS_Contract extends Controller
     public function jenis_pengadaan($jenis) {
 		switch ($jenis) {
             case 1:
-				$jenis_pengadaan = 'Barang'; 
+				$jenis_pengadaan = 'Barang';
 				break;
 			case 2:
-				$jenis_pengadaan = 'Pekerjaan Konstruksi'; 
+				$jenis_pengadaan = 'Pekerjaan Konstruksi';
 				break;
 			case 3:
-				$jenis_pengadaan = 'Jasa Konsultansi'; 
+				$jenis_pengadaan = 'Jasa Konsultansi';
 				break;
 			case 4:
-				$jenis_pengadaan = 'Jasa Lainnya'; 
-				break;	
+				$jenis_pengadaan = 'Jasa Lainnya';
+				break;
 			default:
                 $jenis_pengadaan = '';
-        }		
+        }
 		return $jenis_pengadaan;
 	}
 
 	public function metode_pengadaan($metode) {
 		switch ($metode) {
             case 1:
-				$metode_pengadaan = 'Lelang Umum'; 
+				$metode_pengadaan = 'Lelang Umum';
 				break;
 			case 2:
-				$metode_pengadaan = 'Lelang Sederhana'; 
+				$metode_pengadaan = 'Lelang Sederhana';
 				break;
 			case 3:
-				$metode_pengadaan = 'Lelang Terbatas'; 
+				$metode_pengadaan = 'Lelang Terbatas';
 				break;
 			case 4:
-				$metode_pengadaan = 'Seleksi Umum'; 
+				$metode_pengadaan = 'Seleksi Umum';
 				break;
 			case 5:
-				$metode_pengadaan = 'Seleksi Sederhana'; 
+				$metode_pengadaan = 'Seleksi Sederhana';
 				break;
 			case 6:
-				$metode_pengadaan = 'Pemilihan Langsung'; 
+				$metode_pengadaan = 'Pemilihan Langsung';
 				break;
 			case 7:
-				$metode_pengadaan = 'Penunjukan Langsung'; 
+				$metode_pengadaan = 'Penunjukan Langsung';
 				break;
 			case 8:
-				$metode_pengadaan = 'Pengadaan Langsung'; 
+				$metode_pengadaan = 'Pengadaan Langsung';
 				break;
 			case 9:
-				$metode_pengadaan = 'e-Purchasing'; 
-				break;				
+				$metode_pengadaan = 'e-Purchasing';
+				break;
 			default:
                 $metode_pengadaan = '';
-        }		
+        }
 		return $metode_pengadaan;
 	}
 
-    public function get_program($year, $kode) 
+    public function get_program($year, $kode)
     {
 		$dbplanning = env('DB_PLANNING');
 
@@ -1274,7 +1281,7 @@ class ApiBIRMS_Contract extends Controller
 				ta_program.Kd_Sub = SUBSTRING_INDEX(SUBSTRING_INDEX('".$kode."', '.', 6), '.', -1) AND
 				ta_program.Kd_Prog = SUBSTRING_INDEX(SUBSTRING_INDEX('".$kode."', '.', 7), '.', -1) ";
 		$rsprogram = DB::select($sql);
-		
+
 		if (sizeof($rsprogram) != 0) {
 			$rsprogram = $rsprogram[0];
 			$namaprogram = $rsprogram->Ket_Program;
@@ -1283,7 +1290,7 @@ class ApiBIRMS_Contract extends Controller
 		}
 		return $namaprogram;
     }
-    
+
     function get_contract($ocid)
     {
         /*------------------------------*/
@@ -1442,7 +1449,7 @@ class ApiBIRMS_Contract extends Controller
         $tenderer = new stdClass();
         $tenderer->id = $row->rkn_npwp;
         $tenderer->name = $row->rkn_nama;
-        
+
         $address = new stdClass();
         $address->streetAddress = $row->rkn_alamat;
         $tenderer->address = $address;
@@ -1450,12 +1457,12 @@ class ApiBIRMS_Contract extends Controller
         $cp = new stdClass();
         $cp->email = $row->rkn_email;
         $cp->telephone = $row->rkn_telepon;
-        $tenderer->contactPoint = $cp; 
-        
+        $tenderer->contactPoint = $cp;
+
         $id = new stdClass();
         $id->id = $row->rkn_npwp;
         $id->legalName = $row->rkn_nama;
-        $tenderer->identifier = $id; 
+        $tenderer->identifier = $id;
 
         return $this->getOrganizationReferenceByName($year, $tenderer->name, "tenderer", $parties, $tenderer);
     }
