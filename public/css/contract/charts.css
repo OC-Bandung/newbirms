@@ -1,7 +1,7 @@
 
 ul#vertical-chart li {
     list-style: none;
-    display: inline-grid;
+    display: inline-block;
     vertical-align: bottom;
     margin-left: 10px;
     border-top-left-radius: 5px;

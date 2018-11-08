@@ -477,8 +477,9 @@ class ApiBIRMS_Contract extends Controller
         $a = new stdClass();
         $a->id = $row->lgid;
         $a->title = $row->namapekerjaan;
-        $a->date = $this->getOcdsDateFromString($row->tanggalpengumuman);
-        
+        if (isset($row->tanggalpengumuman) && ($row->tanggalpengumuman != "0000-00-00")) {
+            $a->date = $this->getOcdsDateFromString($row->tanggalpengumuman);
+        }
         if ($row->nilai_nego != 0) {
             $a->status = "active";
             $a->value = $this->getAmount($row->nilai_nego);
@@ -987,7 +988,14 @@ class ApiBIRMS_Contract extends Controller
      */
     function getOcdsDateFromString($date, $format = 'Y-m-d')
     {
-        return DateTime::createFromFormat($format, $date)->format(DATE_ATOM);
+        $jsonDate = DateTime::createFromFormat($format, $date);
+        $lastErrors = DateTime::getLastErrors();
+        if ($lastErrors['error_count'] !== 0 || $lastErrors['warning_count'] !== 0) {
+            abort(404, 'Issues parsing date ' . $date . '.'
+                . implode(",", $lastErrors['errors']).' '
+                . implode(",", $lastErrors['warnings']));
+        }
+        return $jsonDate->format(DATE_ATOM);
     }
 
     /**
@@ -1284,7 +1292,7 @@ class ApiBIRMS_Contract extends Controller
 		return $namaprogram;
     }
     
-    function get_contract($ocid)
+    function get_contract($ocid) /* this main body part of get contract */
     {
         /*------------------------------*/
         /* Settings
