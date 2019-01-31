@@ -163,8 +163,8 @@ class Myglobals {
                         3 => 'milyar',
                         4 => 'trilyun');
         
-        $val = floatval($val);
 		$count = strlen($val);
+        $val = floatval($val);
 
         if (($count >= 16 ) && ($count <= 18 )) {
 			$result = "Rp. ". number_format($val/1000000000000000,1,',','.')." Kd";

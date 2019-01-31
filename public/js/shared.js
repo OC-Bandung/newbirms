@@ -14,6 +14,9 @@ function displayJsonInUI(myUIMap, data) {
     if (typeof content   !== 'undefined')  {
       //format date.
       if(moment(content,  moment.ISO_8601, true).isValid()) content = moment(content).format('ll');
+      //format number.
+      if(typeof content == 'number') content = numberWithCommas(content);
+      if(content == 'active') content = 'Berjalan';
 
       $(item.ui_element).html(content);
       $(item.ui_container).removeClass("d-none");

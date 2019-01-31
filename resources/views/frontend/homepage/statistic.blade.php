@@ -41,9 +41,9 @@
         <div class="col">
         <div id="graph04"></div>
         <div class="text-right bg-white pr-3 pb-3">
-                <a target="_blank" href="{{ url('api/graph/4/') }}{{ date('Y') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
+                <a target="_blank" href="{{ url('api/graph/4') }}"><i class="material-icons align-bottom pr-1">code</i>json</a>
 
-                <!--<a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/4') }}/{{ date('Y') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>-->
+                <!--<a class="pl-3" id="open-data-graph1" href="{{ url('api/graph/csv/4') }}" target="_blank">   <i class="material-icons align-bottom pr-1">description</i>csv   </a>-->
         </div>
 
         </div>

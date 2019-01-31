@@ -86,12 +86,14 @@ function load_data(data) {
     // order is important
     if (data.hasOwnProperty('planning')) {
         stage = "planning";
+        stageID = "Perencanaan";
         load_planning(data);
     }
 
 
     if (data.hasOwnProperty('tender') ) {
-        stage = "tender"
+        stage = "tender";
+        stageID = "Pemilihan";
         load_planning(data);
         load_tender(data);
 
@@ -100,7 +102,8 @@ function load_data(data) {
     }
 
     if (data.hasOwnProperty('awards') && data.awards.length > 0 ) {
-        stage = "award"
+        stage = "award";
+        stageID = "Pemenang";
         load_awards(data);
 
     }
@@ -110,7 +113,7 @@ function load_data(data) {
     // load_parties(data.parties);
 
     $("#ocid").text(data.ocid);
-    $("#stage").text(stage);
+    $("#stage").text(stageID);
     $("#ocdate").text(moment(data.date).format(("ll")));
 
 

@@ -169,7 +169,11 @@
                                             {{ date('d-m-Y', strtotime($row->tanggal_awal_pengadaan)) }} 
                                         @else
                                             &mdash;
-                                        @endif  -  Klasifikasi: {{ $row->jenis_pengadaan }}</div>
+                                        @endif  
+                                        @if (!empty($row->jenis_pengadaan))
+                                        -  Klasifikasi: {{ $row->jenis_pengadaan }}
+                                        @endif
+                                      </div>
             </a>
           @endforeach
           </div>

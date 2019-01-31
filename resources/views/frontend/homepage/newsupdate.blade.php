@@ -17,8 +17,8 @@
                       <img class="card-img-top" src="{{ url("assets/media")}}/{{ $row->filename }}" alt="{{ $row->title }}">
                       <!--<img class="card-img-top" src="http://localhost/birms2016/assets/media/{{ $row->filename }}" alt="{{ $row->title }}">-->
                       <a class="text-dark " href="{{ url("post")}}/{{ $row->pst_id }}"> <h5 class="card-title">{{ $row->title }}</h5></a>
-                      <p class="card-text">{{ $row->summary }}</p>
                       <p class="card-text"><small class="text-muted">{{ MyGlobals::indo_date($row->created) }}</small> </p>
+                      <p class="card-text">{{ $row->summary }}</p>
                       <a href="{{ url("post")}}/{{ $row->pst_id }}" class="btn btn-primary">Selengkapnya</a>
                     </div>
                   </div>

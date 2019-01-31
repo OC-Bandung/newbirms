@@ -55,9 +55,36 @@ function load_tender(data) {
   $("#sirup-link").attr("href", "https://sirup.lkpp.go.id/sirup/rup/detailPaketPenyedia2018?idPaket=" + data.id + "");
   //$("#lpse-link").attr("href", "http://lpse.bandung.go.id/eproc4/lelang/" + data.tender.id + "/pengumumanlelang");
   //$("#birms-link").attr("href", "https://birms.bandung.go.id/econtract/index.php?fa=site.pengumuman&id=" + data.id + "&token=2ee26f554a683f4cefef30b86d39323c");
-  $("#tender-status").text(data.tender.status);
-  $("#tender-mainProcurementCategory").text(data.tender.mainProcurementCategory);
-  $("#tender-procurementMethod").text(data.tender.procurementMethod);
+  if (data.tender.status == "planned") {
+      $("#tender-status").text("Perencanaan");
+  } else if (data.tender.status == "active") {
+      $("#tender-status").text("Berjalan");
+  } else if (data.tender.status == "unsuccesful") {
+      $("#tender-status").text("Gagal");
+  } else if (data.tender.status == "complete") {
+      $("#tender-status").text("Selesai");
+  } else {
+      $("#tender-status").text("-");
+  }
+  //$("#tender-status").text(data.tender.status);
+
+  if (data.tender.mainProcurementCategory == "goods") {
+    $("#tender-mainProcurementCategory").text("Pengadaan Barang");
+  } else if (data.tender.mainProcurementCategory == "works") {
+    $("#tender-mainProcurementCategory").text("Konstruksi");
+  } else if (data.tender.mainProcurementCategory == "services") {
+    $("#tender-mainProcurementCategory").text("Konsultan / Jasa Lainnya");
+  }
+  //$("#tender-mainProcurementCategory").text(data.tender.mainProcurementCategory);
+
+  if (data.tender.procurementMethod == "open") {
+    $("#tender-procurementMethod").text("Tender");
+  } else if (data.tender.procurementMethod == "limited") {
+    $("#tender-procurementMethod").text("Limited");
+  } if (data.tender.procurementMethod == "direct") {
+    $("#tender-procurementMethod").text("Non Tender");
+  }
+  //$("#tender-procurementMethod").text(data.tender.procurementMethod);
   $("#tender-numberOfTenderers").text(data.tender.numberOfTenderers);
 
   if (data.tender.tenderPeriod) {
@@ -147,8 +174,10 @@ function load_tender(data) {
       $("#actual").css('height', (myTender/highest)*max);
 
 
-      $("li#expected").append('<span class="chart-label mt-5 h6 bg-dark text-white p-2" style="margin-left:-120px;"> Pagu Anggaran: Rp. ' + numberWithCommas(myBudget) + '<span>');
-      $("li#actual").append( '<span class="chart-label mt-5 ml-5 h6 bg-dark text-white p-2"> Penawaran: Rp. ' + numberWithCommas(myTender) + '<span>');
+      //$("li#expected").append('<span class="chart-label mt-5 h6 bg-dark text-white p-2" style="margin-left:-120px;"> Pagu Anggaran: Rp. ' + numberWithCommas(myBudget) + '<span>');
+      //$("li#actual").append( '<span class="chart-label mt-5 ml-5 h6 bg-dark text-white p-2" style="margin-left:-120px;"> Penawaran: Rp. ' + numberWithCommas(myTender) + '<span>');
+      $("li#expected").append('<span class="chart-label mt-1 ml-3 h6 bg-dark text-white p-2"> Pagu Anggaran: Rp.' + numberWithCommas(myBudget) + '<span>');
+      $("li#actual").append('<span class="chart-label mt-5 ml-3 h6 bg-dark text-white p-2"> Penawaran: Rp.' + numberWithCommas(myTender) + '<span>');
 
    }
 

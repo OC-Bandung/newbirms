@@ -31,11 +31,11 @@
                   @endforeach
                 </div>
               </li>
-              <li class="nav-item">
+              <!--<li class="nav-item">
                 <a class="nav-link" href="#">Berita</a>
-              </li>
+              </li>-->
               <li class="nav-item">
-                <a class="nav-link @if(Request::is('archive/*')) active @endif" href="{{ url('../archive') }}">Arsip</a>
+                <a class="nav-link @if(Request::is('archive/*')) active @endif" href="{{ url('archive') }}">Arsip</a>
               </li>
               <li class="nav-item">
                   <a class="nav-link @if(Request::url() === url('abouttender')) active @endif" href="{{ url('abouttender') }}">Tentang Pengadaan</a>

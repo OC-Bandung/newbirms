@@ -208,7 +208,7 @@
     <div class="container">
       <div class="row pb-2 pt-3">
         <div class="col">
-          <span class="h3">Pengadaan</span> <span id="tender-status-container" class="h6 ml-3"> <i class="material-icons">outlined_flag</i>status: <span id="tender-status"></span></span>
+          <span class="h3">Pemilihan</span> <span id="tender-status-container" class="h6 ml-3"> <i class="material-icons">outlined_flag</i>status: <span id="tender-status"></span></span>
         </div>
       </div>
       <div class="row">
@@ -355,11 +355,11 @@
                         </div>
                         <div class="col pt-2  font-weight-light bdg-feedback">
                           <h6 class="mb-5"> Keterlibatan & Pembaruan</h6>
-                          <div class="mt-5 ">
-                            <a target="_blank" id="bdg-feedback-form" href="#"><small> Bagikan tanggapan anda </small></a>
-                          </div>
-                          <div class="">
-                            <img class="w-25" src="img/icon-conversation.png" alt="Open Contracting">
+                          <div class="mt-5" align="center">
+                            <a target="_blank" id="bdg-feedback-form" href="#">
+                                <img class="w-25 responsive" src="img/icon-conversation.png" alt="Bagikan Tanggapan Anda">
+                                <small> Bagikan Tanggapan Anda </small>
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -467,8 +467,11 @@
                     <div class="awards-date h5"> </div>
                   </div>
                   <div class="col awards-value-amount-container d-none">
-                    <div class="h6">Nilai Penawaran</div>
-                    <div class="awards-value-amount h5"></div>
+                    <div class="h6">Nilai Kontrak</div>
+                    <div>
+                      <span class="h5">Rp.</span>
+                      <span class="awards-value-amount h4"></span>
+                    </div>  
                   </div>
                 </div>
               </div>

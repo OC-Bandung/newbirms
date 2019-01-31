@@ -474,12 +474,26 @@ class ApiBIRMS_Contract extends Controller
 
     function getCompetitiveAward($year, $row, &$parties)
     {
+        $db = env('DB_CONTRACT');
+        $format = 'Y-m-d H:i:s';
+
         $a = new stdClass();
         $a->id = $row->lgid;
         $a->title = $row->namapekerjaan;
-        if (isset($row->tanggalpengumuman) && ($row->tanggalpengumuman != "0000-00-00")) {
+
+        $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
+            LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
+            WHERE lls_id = " . $row->lls_id . " AND lpse_aktivitas.akt_urut = 22 ORDER BY akt_urut"; //Penunjukan Pemenang
+        //echo $sql;
+        $rspengumuman = DB::select($sql);
+
+        if (sizeof($rspengumuman) != 0) {
+            //die($rspengumuman[0]->dtj_tglawal." - ".$row->tanggalpengumuman);
+            $a->date = $this->getOcdsDateFromString($rspengumuman[0]->dtj_tglawal, $format);
+        } else if (isset($row->tanggalpengumuman) && ($row->tanggalpengumuman != "0000-00-00")) {
             $a->date = $this->getOcdsDateFromString($row->tanggalpengumuman);
-        }
+        } 
+        //Get Data harusnya ambil dari Penunjukan Pemenang
         if ($row->nilai_nego != 0) {
             $a->status = "active";
             $a->value = $this->getAmount($row->nilai_nego);
@@ -663,8 +677,13 @@ class ApiBIRMS_Contract extends Controller
             WHERE lls_id = " . $rslelang[0]->lls_id . " AND lpse_aktivitas.akt_urut = 1 ORDER BY akt_urut";
             $rsperiod = DB::select($sql);
 
-            if (sizeof($rsperiod) != 0) {
-                $tender->tenderPeriod = $this->getPeriod($rsperiod[0]->dtj_tglawal, $rsperiod[0]->dtj_tglakhir, $milestoneDateFormat);
+            $sql = "SELECT dtj_id, thp_id, lpse_jadwal.lls_id, lpse_jadwal.auditupdate, dtj_tglawal, dtj_tglakhir, dtj_keterangan, akt_jenis, akt_urut, akt_status, lpse_aktivitas.akt_id FROM " . $db . ".lpse_jadwal
+            LEFT JOIN " . $db . ".lpse_aktivitas ON lpse_jadwal.akt_id = lpse_aktivitas.akt_id
+            WHERE lls_id = " . $rslelang[0]->lls_id . " AND lpse_aktivitas.akt_urut = 21 ORDER BY akt_urut";
+            $rsperiod_akhir = DB::select($sql);
+
+            if ((sizeof($rsperiod) != 0) && (sizeof($rsperiod_akhir) != 0)) {
+                $tender->tenderPeriod = $this->getPeriod($rsperiod[0]->dtj_tglawal, $rsperiod_akhir[0]->dtj_tglawal, $milestoneDateFormat);
             } else {
                 $lpse_jadwal = env('LINK_JADWAL_LELANG').$rslelang[0]->lls_id;
                 $rs_json = json_decode(file_get_contents($lpse_jadwal));
@@ -988,6 +1007,8 @@ class ApiBIRMS_Contract extends Controller
      */
     function getOcdsDateFromString($date, $format = 'Y-m-d')
     {
+        return DateTime::createFromFormat($format, $date)->format(DATE_ATOM);
+
         $jsonDate = DateTime::createFromFormat($format, $date);
         $lastErrors = DateTime::getLastErrors();
         if ($lastErrors['error_count'] !== 0 || $lastErrors['warning_count'] !== 0) {
@@ -1067,7 +1088,7 @@ class ApiBIRMS_Contract extends Controller
 
         if ($source == 's') {
             $sql = "SELECT
-                    NULL AS koderekening,
+                    kode AS koderekening,
                     sirupID,
                     tahun,
                     nama,

@@ -21,6 +21,7 @@ Route::get('/search', 'HomeController@search');
 Route::get('/contract', 'HomeController@contract');
 Route::get('/watched', 'HomeController@watched');
 Route::get('/abouttender', 'HomeController@abouttender');
+Route::get('/archive', 'HomeController@archive');
 Route::get('/documentation', 'HomeController@documentation');
 Route::get('/download', 'HomeController@download');
 

@@ -46,11 +46,12 @@ $("#awards-count").text(awards.length );
 
          displayJsonInUI(myAwardsUI, awards[award]);
         
+         console.log(awards[award].date);
          console.log(numberWithCommas(awards[award].value.amount));
 
          //if ( awards[award].value &&  awards[award].value.amount) {
-          $("div#" + element_id + "#awards-value-amount").text(numberWithCommas(awards[award].value.amount));
-          //$("div#" + element_id + "#awards-value-amount-container").removeClass("d-none");
+         //$("div#" + element_id + "#awards-value-amount").text(numberWithCommas(awards[award].value.amount));
+         //$("div#" + element_id + "#awards-value-amount-container").removeClass("d-none");
         //}
 
          var suppliers =  awards[award].suppliers;

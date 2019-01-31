@@ -59,7 +59,7 @@ Kebijakan Publikasi<br>
 <p><strong>Rencana pengembangan ke depan:</strong></p>
 <p>Pemerintah Kota Bandung mendorong pengguna dari semua sektor masyarakat (pemerintah, sektor swasta, masyarakat sipil) untuk mengunjungi situs web secara teratur, berlangganan pembaruan tentang peluang tender atau informasi tentang kontrak tertentu, dan memanfaatkan data ini. Pemerintah Kota Bandung berkomitmen untuk meningkatkan kualitas data yang dipublikasikan dari waktu ke waktu, dan menyambut setiap umpan balik dari pengguna tentang kualitas data. Kota Bandung sedang bekerja untuk memperkenalkan data geolokasi paket-paket pengadaan, dan saat ini memprakarsai inisiatif ini pada data 2018. Data geolokasi termasuk dalam dataset dan API 2018, dan juga dapat divisualisasikan pada peta interaktif.</p>
 <p><strong>Informasi kontak penerbit:</strong></p>
-<p>Jika Anda memiliki pertanyaan, komentar atau ide, silakan hubungi kami. Pertanyaan umum dapat dikirimkan ke <a href="mailto:lpsebandungjuara@gmail.com">lpsebandungjuara@gmail.com</a> atau <a href="mailto:infobirms@bandung.go.id">infobirms@bandung.go.id</a>. Anda dapat berlangganan pembaruan tentang peluang tender dan informasi tentang kontrak tertentu, dan bergabung dengan percakapan online di twitter dengan hashtag <strong>#BDGOpenContracting</strong>.</p>
+<p>Jika Anda memiliki pertanyaan, komentar atau ide, silakan hubungi kami. Pertanyaan umum dapat dikirimkan ke <a href="mailto:lpsebandungjuara@gmail.com">lpsebandungjuara@gmail.com</a><!-- atau <a href="mailto:birms@bandung.go.id">birms@bandung.go.id</a>-->. Anda dapat berlangganan pembaruan tentang peluang tender dan informasi tentang kontrak tertentu, dan bergabung dengan percakapan online di twitter dengan hashtag <strong>#OCbandung</strong>.</p>
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -119,7 +119,7 @@ Kebijakan Publikasi<br>
                 </div>
                 <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#timeline">
                   <div class="card-body pt-0 pb-5">
-                    <p class="card-text">Jika Anda memiliki pertanyaan, komentar atau ide, silakan hubungi kami. Pertanyaan umum dapat disampaikan kepada <a href="mailto:info@birms.bandung.go.id ">info@birms.bandung.go.id</a> atau melalui formulir online. Anda dapat berlangganan pembaruan pada peluang tender dan informasi tentang kontrak tertentu, dan bergabung dengan percakapan online di twitter dengan hashtag #BDGopencontracting.</p>
+                    <p class="card-text">Jika Anda memiliki pertanyaan, komentar atau ide, silakan hubungi kami. Pertanyaan umum dapat disampaikan kepada <a href="mailto:lpsebandungjuara@gmail.com ">lpsebandungjuara@gmail.com</a> atau melalui formulir online. Anda dapat berlangganan pembaharuan pada peluang tender dan informasi tentang kontrak tertentu, dan bergabung dengan percakapan online di twitter dengan hashtag #OCbandung.</p>
                   </div>
                 </div>
               </div>

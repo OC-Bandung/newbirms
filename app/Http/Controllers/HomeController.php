@@ -78,6 +78,10 @@ class HomeController extends Controller
 		/* Dashboard Data ---- End --- Current Year*/
 
 		/* Dashboard Data ---- Start --- Previous Year */
+		$sql = "SELECT COUNT(*) AS jumlah, SUM(pagu) AS pagu FROM ".$dbplanning.".tbl_sirup WHERE tahun = YEAR(NOW())-1";
+		$rssirup_select 		= DB::select($sql);
+		$rssirup_prev			= json_decode(json_encode($rssirup_select), true);
+
     	$sql = "SELECT SUM(anggaran) AS anggaran, SUM(nilai_nego) AS nilai_nego, SUM(IF (NOT ISNULL(tkontrak.sp_nosurat),nilai_nego,0)) AS realisasikontrak, SUM(IF (NOT ISNULL(tprogress_pembayaran.tgl_surat),nilai_nego,0)) AS realisasikeuangan FROM $dbecontract.tlelangumum
 				LEFT OUTER JOIN $dbecontract.tkontrak ON $dbecontract.tlelangumum.lgid = $dbecontract.tkontrak.lgid
 				LEFT OUTER JOIN $dbecontract.tprogress_pembayaran ON $dbecontract.tlelangumum.lgid = $dbecontract.tprogress_pembayaran.lgid
@@ -110,8 +114,6 @@ class HomeController extends Controller
 
 		/* Dashboard Data ---- End --- Previous Year */
 
-		
-
 		/* Chart ---- Start */
 		$sql = "SELECT * FROM $dbecontract.vlelang_bypaket";
 		$rspaketlelang_select = DB::select($sql);
@@ -129,43 +131,103 @@ class HomeController extends Controller
 		/* Search Reference ---- End */
 
 		$total_prev_nilai_pengadaan 	= $rspgd_prev[0]['nilai_nego'] + $rspl_prev[0]['nilai_nego'];
-		$total_prev_paket_tender		= number_format($rsjmllelang_prev[0]['jumlah'],0,',','.');
-		$total_prev_nilai_tender		= number_format($rsjmllelang_prev[0]['kontrak'],0,',','.');
-		$total_prev_paket_nontender 	= number_format($rsjmlpl_prev[0]['jumlah'],0,',','.');
-		$total_prev_nilai_nontender 	= number_format($rsjmlpl_prev[0]['kontrak'],0,',','.');
 		$total_prev_nilai_pengumuman_pl = $rsjmlplselesai_prev[0]['jumlah'];
 
 		$data							= [];
 
 		$data['ref_skpd']				= $rsskpd;
+	
+		$prevyear = ' active';
+		$curryear = '';
+//SIRUP RENCANA
+		//----- Previous
+		if (count($rssirup_prev) != 0) {
+			$data['total_prev_paket_sirup']		= $rssirup_prev[0]['jumlah'];
+			$data['total_prev_nilai_sirup']		= $rssirup_prev[0]['pagu'];
+		} else {
+			$data['total_prev_paket_sirup']		= 0;
+			$data['total_prev_nilai_sirup']		= 0;
+		}
+
+		//----- Current
+		if (count($rssirup) != 0) {
+			$data['total_paket_sirup']			= $rssirup[0]['jumlah'];
+			$data['total_nilai_sirup']			= $rssirup[0]['pagu'];
+			if ($rssirup[0]['jumlah'] != 0) {
+				$prevyear = '';
+				$curryear = ' active';
+			}
+		} else {
+			$data['total_paket_sirup']			= 0;
+			$data['total_nilai_sirup']			= 0;
+			$prevyear = ' active';
+			$curryear = '';
+		}
 		
-		$data['total_paket_sirup']			= number_format($rssirup[0]['jumlah'],0,',','.');
-		$data['total_nilai_sirup']			= $rssirup[0]['pagu'];
+// TENDER
+		//----- Previous
+		if (count($rsjmllelang_prev) != 0) {
+			$data['total_prev_paket_tender'] 		= $rsjmllelang_prev[0]['jumlah'];
+			$data['total_prev_nilai_tender'] 		= $rsjmllelang_prev[0]['kontrak'];
+		} else {
+			$data['total_prev_paket_tender'] 		= 0;
+			$data['total_prev_nilai_tender'] 		= 0;
+		}
 
-		$data['total_paket_tender'] 		= number_format($rsjmllelang[0]['jumlah'],0,',','.');
-		$data['total_nilai_tender'] 		= $rsjmllelang[0]['kontrak'];
-		$data['total_paket_nontender'] 		= number_format($rsjmlpl[0]['jumlah'],0,',','.');
-		$data['total_nilai_nontender'] 		= $rsjmlpl[0]['kontrak'];
+		//----- Current
+		if (count($rsjmllelang) != 0) {
+			$data['total_paket_tender'] 		= $rsjmllelang[0]['jumlah'];
+			$data['total_nilai_tender'] 		= $rsjmllelang[0]['kontrak'];
+		} else {
+			$data['total_paket_tender'] 		= 0;
+			$data['total_nilai_tender'] 		= 0;
+		}
 
-		$data['total_paket_kontrak'] 		= $rsjmllelang[0]['jumlah'] + $rsjmlpl[0]['jumlah'];
-		$data['total_nilai_kontrak'] 		= $rsjmllelang[0]['kontrak'] + $rsjmlpl[0]['kontrak'];
+// NON TENDER
+		//----- Previous
+		if (count($rsjmlpl_prev) != 0) {
+			$data['total_prev_paket_nontender'] 		= $rsjmlpl_prev[0]['jumlah'];
+			$data['total_prev_nilai_nontender'] 		= $rsjmlpl_prev[0]['kontrak'];
+		} else {
+			$data['total_prev_paket_nontender'] 		= 0;
+			$data['total_prev_nilai_nontender'] 		= 0;
+		}
+
+		//----- Current
+		if (count($rsjmlpl) != 0) {
+			$data['total_paket_nontender'] 		= $rsjmlpl[0]['jumlah'];
+			$data['total_nilai_nontender'] 		= $rsjmlpl[0]['kontrak'];
+		} else {
+			$data['total_paket_nontender'] 		= 0;
+			$data['total_nilai_nontender'] 		= 0;
+		}		
+
+// KONTRAK
+		//----- Previous
+		$data['total_prev_paket_kontrak'] 		= $data['total_prev_paket_tender'] + $data['total_prev_paket_nontender'];
+		$data['total_prev_nilai_kontrak'] 		= $data['total_prev_nilai_tender'] + $data['total_prev_nilai_nontender'];
+		//----- Current
+		$data['total_paket_kontrak'] 		= $data['total_paket_tender'] + $data['total_paket_nontender'] ;
+		$data['total_nilai_kontrak'] 		= $data['total_nilai_tender'] + $data['total_nilai_nontender'] ;
 
 		$data['total_nilai_pengumuman_pl'] = $rsjmlplselesai[0]['jumlah'];
 
-		$data['total_prev_nilai_pengadaan'] 	= $total_prev_nilai_pengadaan;
+		//$data['total_prev_nilai_pengadaan'] 	= $total_prev_nilai_pengadaan;
 		
-		$data['total_prev_paket_tender'] 		= $total_prev_paket_tender;
-		$data['total_prev_nilai_tender'] 		= $total_prev_nilai_tender;
-		$data['total_prev_paket_nontender'] 	= $total_prev_paket_nontender;
-		$data['total_prev_nilai_nontender'] 	= $total_prev_nilai_nontender;
 		
-		$data['total_prev_nilai_pengumuman_pl'] = $total_prev_nilai_pengumuman_pl;
+		//$data['total_prev_paket_nontender'] 	= $total_prev_paket_nontender;
+		//$data['total_prev_nilai_nontender'] 	= $total_prev_nilai_nontender;
+		
+		//data['total_prev_nilai_pengumuman_pl'] = $total_prev_nilai_pengumuman_pl;
 
 		$data['article']				= $rspost;
 		$data['app']					= $this->birms_applist();
 
 		$data['paket_lelang']			= $rspaketlelang;
 		$data['paket_pl']				= $rspaketpl;
+
+		$data['prevyear'] = $prevyear;
+		$data['curryear'] = $curryear;
 
     	return View::make("frontend.home")->with($data);
     }
@@ -448,7 +510,7 @@ class HomeController extends Controller
 								tbl_pekerjaan.anggaran AS pagu_anggaran,
 								tbl_sumberdana.sumberdana AS sumber_dana_string,
 								tbl_jenis.jenisID AS jenis_pengadaanID, 
-								tbl_jenis.nama AS jenis_pengadaan,
+								IF(tbl_pekerjaan.anggaran >= 10000000,tbl_jenis.nama,"") AS jenis_pengadaan,
 								pilih_start AS tanggal_awal_pengadaan,
 								pilih_end AS tanggal_akhir_pengadaan,
 								tbl_skpd.nama AS namaskpd,
@@ -515,6 +577,13 @@ class HomeController extends Controller
 		$data			 = [];
 		$data['app']	 = $this->birms_applist();
     	return View::make("frontend.watched")->with($data);
+	}
+	
+	function archive()
+    {
+		$data			 = [];
+		$data['app']	 = $this->birms_applist();
+    	return View::make("frontend.archive")->with($data);
 	}
 	
 	function abouttender()

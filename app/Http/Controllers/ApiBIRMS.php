@@ -300,6 +300,7 @@ class ApiBIRMS extends Controller
 					(
 						(`tlelangumum`.`nilai_nego` <> 0)
 						AND(`tlelangumum`.`ta` = '.$year.')
+						AND (`tlelangumum`.`skpdID` <> 0)
 					)
 					GROUP BY
 						`tlelangumum`.`skpdID` ,
@@ -323,10 +324,9 @@ class ApiBIRMS extends Controller
 						)
 					WHERE
 						(
-							(
-								`tpengadaan`.`pekerjaanstatus` = 7
-							)
-							AND(`tpengadaan`.`ta` = '.$year.')
+							(`tpengadaan`.`pekerjaanstatus` = 7)
+							AND (`tpengadaan`.`ta` = '.$year.')
+							AND (`tpengadaan`.`skpdID` <> 0)
 						)
 					GROUP BY
 						`tpengadaan`.`skpdID` ,
@@ -335,6 +335,7 @@ class ApiBIRMS extends Controller
 					ORDER BY
 						`nilai_kontrak` DESC
 					LIMIT 10';
+					//echo $sql;
 		$rs1 = DB::select($sql);
 
 		$rowdata = array();
@@ -758,6 +759,13 @@ class ApiBIRMS extends Controller
         $dbprime    = env('DB_PRIME');
 
 		$year = date('Y');
+
+		$sql = 'SELECT COUNT(*) AS jumlah FROM tbl_sirup WHERE tahun = '.$year.' AND sirupID = 0';
+		$rscheck = DB::select($sql);
+		if ($rscheck[0]->jumlah == 0) {
+			$year = date('Y') - 1;
+		}
+
 		$sql = 'SELECT
 						CONCAT("'.env('OCID').'","s-",tahun,"-",tbl_sirup.sirupID) AS ocid,
 						NULL AS koderekening,
@@ -800,10 +808,10 @@ class ApiBIRMS extends Controller
 
 					UNION
 					SELECT
-					CONCAT( "'.env('OCID').'", "b-", '.$year.', "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
+					CONCAT( "'.env('OCID').'", "b-", tbl_pekerjaan.tahun, "-", tbl_pekerjaan.pekerjaanID  ) AS ocid,
 					kodepekerjaan AS koderekening,
 					sirupID,
-					'.$year.' AS tahun ,
+					tbl_pekerjaan.tahun ,
 					tbl_pekerjaan.namapekerjaan AS nama ,
 					tbl_pekerjaan.anggaran AS pagu ,
 					tbl_sumberdana.sumberdana AS sumber_dana_string ,
@@ -855,10 +863,12 @@ class ApiBIRMS extends Controller
 				LEFT JOIN '.$dbprime.'.tbl_skpd ON tbl_pekerjaan.skpdID = tbl_skpd.skpdID
 				LEFT JOIN '.$dbplanning.'.tbl_metode ON tbl_pekerjaan.metodeID = tbl_metode.metodeID
 				LEFT JOIN '.$dbcontract.'.tpekerjaan ON tbl_pekerjaan.pekerjaanID = tpekerjaan.pekerjaanID
-				WHERE tahun = '.$year.' AND sirupID = 0 AND iswork = 1 ';
+				WHERE 
+				tbl_pekerjaan.tahun = '.$year.' AND 
+				sirupID = 0 AND 
+				iswork = 1 ';
 				//AND tpekerjaan.pekerjaanstatus <= 3
 				$sql .= ' ORDER BY tanggal_awal_pengadaan DESC LIMIT 10';
-
 		$rsdummy = DB::select($sql);
 
 		$rowdata = array();
